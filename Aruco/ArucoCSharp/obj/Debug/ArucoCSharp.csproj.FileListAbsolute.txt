@@ -1,0 +1,8 @@
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\ArucoCSharp.exe.config
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\ArucoCSharp.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\ArucoCSharp.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.csprojResolveAssemblyReference.cache
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.Properties.Resources.resources
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.csproj.GenerateResource.Cache
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.pdb
