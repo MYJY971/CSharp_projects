@@ -1,0 +1,94 @@
+﻿  markerdetector.cpp
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(55): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(61): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(77): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(81): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(85): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(103): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(116): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(126): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\cameraparameters.h(127): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(57): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(60): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(61): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(63): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(64): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(65): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(66): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(71): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\dictionary.h(72): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\marker.h(79): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\marker.h(86): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\marker.h(91): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\marker.h(103): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerlabeler.h(53): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerlabeler.h(69): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(118): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(119): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(132): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(148): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(166): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(175): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(243): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(276): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(300): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(301): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(325): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(347): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(360): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(92): warning C4305: '=' : troncation de 'double' à 'float'
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.h(93): warning C4305: '=' : troncation de 'double' à 'float'
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(77): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(83): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(97): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(118): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(144): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(151): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(165): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(254): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(255): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(360): warning C4101: 'i' : variable locale non référencée
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(417): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(418): warning C4244: 'initialisation' : conversion de 'const float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(573): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(574): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(575): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(576): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(590): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(619): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(639): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(661): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(670): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(671): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(672): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(684): warning C4244: '=' : conversion de 'const float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(685): warning C4244: '=' : conversion de 'const float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(714): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(731): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(753): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(757): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(776): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(845): warning C4244: '+=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(847): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(848): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(849): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(867): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(868): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(869): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(871): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(872): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(941): warning C4244: '+=' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(984): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(992): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1198): warning C4244: 'argument' : conversion de 'const int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1199): warning C4244: 'argument' : conversion de 'const int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1201): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1212): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1218): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1226): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1229): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1238): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1244): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1248): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+  ArucoDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.dll
+  ArucoDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.pdb (Full PDB)

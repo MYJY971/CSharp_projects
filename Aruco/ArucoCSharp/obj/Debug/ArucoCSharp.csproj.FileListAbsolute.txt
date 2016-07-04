@@ -6,3 +6,9 @@ C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.Propertie
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.csproj.GenerateResource.Cache
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.exe
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\Emgu.CV.UI.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\Emgu.CV.World.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\ZedGraph.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\Emgu.CV.UI.xml
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\bin\Debug\Emgu.CV.World.xml
+C:\Stage\Yanis\CSharp_projects\Aruco\ArucoCSharp\obj\Debug\ArucoCSharp.ArucoForm.resources
