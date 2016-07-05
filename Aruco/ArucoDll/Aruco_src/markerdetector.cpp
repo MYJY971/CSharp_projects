@@ -325,6 +325,181 @@ void MarkerDetector::detectRectangles(const cv::Mat &thres, vector< std::vector<
         MarkerCanditates[i] = candidates[i];
 }
 //////////////////////////
+static inline void setSize(Mat& m, int _dims, const int* _sz,
+	const size_t* _steps, bool autoSteps = false)
+{
+	CV_Assert(0 <= _dims && _dims <= CV_MAX_DIM);
+	if (m.dims != _dims)
+	{
+		if (m.step.p != m.step.buf)
+		{
+			fastFree(m.step.p);
+			m.step.p = m.step.buf;
+			m.size.p = &m.rows;
+		}
+		if (_dims > 2)
+		{
+			m.step.p = (size_t*)fastMalloc(_dims * sizeof(m.step.p[0]) + (_dims + 1) * sizeof(m.size.p[0]));
+			m.size.p = (int*)(m.step.p + _dims) + 1;
+			m.size.p[-1] = _dims;
+			m.rows = m.cols = -1;
+		}
+	}
+
+	m.dims = _dims;
+	if (!_sz)
+		return;
+
+	size_t esz = CV_ELEM_SIZE(m.flags), esz1 = CV_ELEM_SIZE1(m.flags), total = esz;
+	int i;
+	for (i = _dims - 1; i >= 0; i--)
+	{
+		int s = _sz[i];
+		CV_Assert(s >= 0);
+		m.size.p[i] = s;
+
+		if (_steps)
+		{
+			if (_steps[i] % esz1 != 0)
+			{
+				CV_Error(Error::BadStep, "Step must be a multiple of esz1");
+			}
+
+			m.step.p[i] = i < _dims - 1 ? _steps[i] : esz;
+		}
+		else if (autoSteps)
+		{
+			m.step.p[i] = total;
+			int64 total1 = (int64)total*s;
+			if ((uint64)total1 != (size_t)total1)
+				CV_Error(CV_StsOutOfRange, "The total matrix size does not fit to \"size_t\" type");
+			total = (size_t)total1;
+		}
+	}
+
+	if (_dims == 1)
+	{
+		m.dims = 2;
+		m.cols = 1;
+		m.step[1] = esz;
+	}
+}
+///
+static void updateContinuityFlag(Mat& m)
+{
+	int i, j;
+	for (i = 0; i < m.dims; i++)
+	{
+		if (m.size[i] > 1)
+			break;
+	}
+
+	for (j = m.dims - 1; j > i; j--)
+	{
+		if (m.step[j] * m.size[j] < m.step[j - 1])
+			break;
+	}
+
+	uint64 t = (uint64)m.step[0] * m.size[0];
+	if (j <= i && t == (size_t)t)
+		m.flags |= Mat::CONTINUOUS_FLAG;
+	else
+		m.flags &= ~Mat::CONTINUOUS_FLAG;
+}
+///
+static void finalizeHdr(Mat& m)
+{
+	updateContinuityFlag(m);
+	int d = m.dims;
+	if (d > 2)
+		m.rows = m.cols = -1;
+	if (m.u)
+		m.datastart = m.data = m.u->data;
+	if (m.data)
+	{
+		m.datalimit = m.datastart + m.size[0] * m.step[0];
+		if (m.size[0] > 0)
+		{
+			m.dataend = m.ptr() + m.size[d - 1] * m.step[d - 1];
+			for (int i = 0; i < d - 1; i++)
+				m.dataend += (m.size[i] - 1)*m.step[i];
+		}
+		else
+			m.dataend = m.datalimit;
+	}
+	else
+		m.dataend = m.datalimit = 0;
+}
+
+////////////
+void MYMatCreate(Mat &m, int d, const int* _sizes, int _type)
+{
+	
+	int i;
+	CV_Assert(0 <= d && d <= CV_MAX_DIM && _sizes);
+	_type = CV_MAT_TYPE(_type);
+	
+	if (m.data && (d == m.dims || (d == 1 && m.dims <= 2)) && _type == m.type())
+	{
+		if (d == 2 && m.rows == _sizes[0] && m.cols == _sizes[1])
+			return;
+		for (i = 0; i < d; i++)
+			if (m.size[i] != _sizes[i])
+				break;
+		if (i == d && (d > 1 || m.size[1] == 1))
+			return;
+	}
+
+	m.release();
+	if (d == 0)
+		return;
+	m.flags = (_type & CV_MAT_TYPE_MASK) | m.MAGIC_VAL;
+	setSize(m, d, _sizes, 0, true);
+
+	if (m.total() > 0)
+	{
+		MatAllocator *a = m.allocator, *a0 = m.getStdAllocator();
+#ifdef HAVE_TGPU
+		if (!a || a == tegra::getAllocator())
+			a = tegra::getAllocator(d, _sizes, _type);
+#endif
+		if (!a)
+			a = a0;
+		try
+		{
+			m.u = a->allocate(m.dims, m.size, _type, 0, m.step.p, 0, USAGE_DEFAULT);
+			CV_Assert(m.u != 0);
+		}
+		catch (...)
+		{
+			if (a != a0)
+				m.u = a0->allocate(m.dims, m.size, _type, 0, m.step.p, 0, USAGE_DEFAULT);
+			CV_Assert(m.u != 0);
+		}
+		CV_Assert(m.step[m.dims - 1] == (size_t)CV_ELEM_SIZE(m.flags));
+	}
+
+	m.addref();
+	finalizeHdr(m);
+}
+/////////////////
+
+/*void MYcreate(_OutputArray &OutArray, int _rows, int _cols, int mtype, int i, bool allowTransposed, int fixedDepthMask) 
+{
+	int k = OutArray.kind();
+	if (k == OutArray.MAT && i < 0 && !allowTransposed && fixedDepthMask == 0)
+	{
+		CV_Assert(!OutArray.fixedSize() || ((Mat*)OutArray.obj)->size.operator()() == Size(_cols, _rows));
+		CV_Assert(!fixedType() || ((Mat*)obj)->type() == mtype);
+		((Mat*)obj)->create(_rows, _cols, mtype);
+		return;
+	}
+	
+	int sizes[] = { _rows, _cols };
+	MYcreate(2, sizes, mtype, i, allowTransposed, fixedDepthMask);
+}*/
+
+////////////////
 
 void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
 	OutputArray _hierarchy, int mode, int method, Point offset=Point())
@@ -360,7 +535,7 @@ void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
 	int i, total = (int)all_contours.size();
 	//~~~~~~~~~~~~~~~~~~ OK
 	
-	_contours.create(total, 1, 0, -1, true);
+	//_contours.create(total, 1, 0, -1, true);
 	//~~~~~~~~~~~~~~~~~~ NOT OK
 	/*
 
