@@ -16,3 +16,5 @@ C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\Aruco.Net.dll
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\OpenCV.Net.dll
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\Aruco.Net.xml
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\OpenCV.Net.xml
+C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\OpenTK.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\OpenTK.GLControl.dll

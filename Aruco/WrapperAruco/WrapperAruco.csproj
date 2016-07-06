@@ -54,6 +54,9 @@
     <Reference Include="OpenTK">
       <HintPath>..\..\..\Libraries\OpenTK\OpenTK V1.0.0.0\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>..\..\..\Libraries\OpenTK\OpenTK V1.0.0.0\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

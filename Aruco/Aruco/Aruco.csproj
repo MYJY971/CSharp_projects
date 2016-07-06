@@ -39,6 +39,9 @@
     <Reference Include="Emgu.CV.UI">
       <HintPath>..\..\..\Libraries\Emgu\emgucv-windesktop 3.1.0.2282\bin\Emgu.CV.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Emgu.CV.UI.GL">
+      <HintPath>..\..\..\Libraries\Emgu\emgucv-windesktop 3.1.0.2282\bin\Emgu.CV.UI.GL.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV.World">
       <HintPath>..\..\..\Libraries\Emgu\emgucv-windesktop 3.1.0.2282\bin\Emgu.CV.World.dll</HintPath>
     </Reference>

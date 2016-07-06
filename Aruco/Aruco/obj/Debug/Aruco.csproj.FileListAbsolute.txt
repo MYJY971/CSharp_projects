@@ -18,3 +18,6 @@ C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\obj\Debug\Aruco.Properties.Resources.
 C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\obj\Debug\Aruco.csproj.GenerateResource.Cache
 C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\obj\Debug\Aruco.exe
 C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\obj\Debug\Aruco.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\bin\Debug\Emgu.CV.UI.GL.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\bin\Debug\Emgu.CV.UI.GL.xml
+C:\Stage\Yanis\CSharp_projects\Aruco\Aruco\obj\Debug\MYAruco.ArucoForm.resources

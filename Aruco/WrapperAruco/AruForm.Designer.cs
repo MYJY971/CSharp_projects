@@ -28,33 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.imageVideo = new Emgu.CV.UI.ImageBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.glControl1 = new OpenTK.GLControl();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.imageVideo)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 323);
+            this.panel1.Location = new System.Drawing.Point(0, 529);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(540, 100);
+            this.panel1.Size = new System.Drawing.Size(689, 52);
             this.panel1.TabIndex = 0;
-            // 
-            // imageVideo
-            // 
-            this.imageVideo.BackColor = System.Drawing.Color.Black;
-            this.imageVideo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageVideo.Location = new System.Drawing.Point(0, 0);
-            this.imageVideo.Name = "imageVideo";
-            this.imageVideo.Size = new System.Drawing.Size(540, 323);
-            this.imageVideo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.imageVideo.TabIndex = 2;
-            this.imageVideo.TabStop = false;
             // 
             // label1
             // 
@@ -65,19 +52,31 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "label1";
             // 
+            // glControl1
+            // 
+            this.glControl1.BackColor = System.Drawing.Color.Black;
+            this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.glControl1.Location = new System.Drawing.Point(0, 0);
+            this.glControl1.Name = "glControl1";
+            this.glControl1.Size = new System.Drawing.Size(689, 529);
+            this.glControl1.TabIndex = 1;
+            this.glControl1.VSync = false;
+            this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
+            // 
             // AruForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(540, 423);
-            this.Controls.Add(this.imageVideo);
+            this.ClientSize = new System.Drawing.Size(689, 581);
+            this.Controls.Add(this.glControl1);
             this.Controls.Add(this.panel1);
             this.Name = "AruForm";
             this.Text = "ArucoCSharp";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.glControl1_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.imageVideo)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -85,8 +84,8 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private Emgu.CV.UI.ImageBox imageVideo;
         private System.Windows.Forms.Label label1;
+        private OpenTK.GLControl glControl1;
     }
 }
 

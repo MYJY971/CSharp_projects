@@ -28,24 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.glControl = new OpenTK.GLControl();
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.imageVideo = new Emgu.CV.UI.ImageBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageVideo)).BeginInit();
             this.SuspendLayout();
-            // 
-            // glControl
-            // 
-            this.glControl.BackColor = System.Drawing.Color.Black;
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(0, 0);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(343, 344);
-            this.glControl.TabIndex = 0;
-            this.glControl.VSync = false;
-            this.glControl.Load += new System.EventHandler(this.glControl_Load);
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
             // 
             // panel1
             // 
@@ -65,26 +54,34 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "label1";
             // 
+            // imageVideo
+            // 
+            this.imageVideo.Location = new System.Drawing.Point(145, 122);
+            this.imageVideo.Name = "imageVideo";
+            this.imageVideo.Size = new System.Drawing.Size(75, 23);
+            this.imageVideo.TabIndex = 2;
+            this.imageVideo.TabStop = false;
+            // 
             // ArucoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(343, 344);
+            this.Controls.Add(this.imageVideo);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.glControl);
             this.Name = "ArucoForm";
             this.Text = "Aruco";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageVideo)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private OpenTK.GLControl glControl;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
+        private Emgu.CV.UI.ImageBox imageVideo;
     }
 }
 
