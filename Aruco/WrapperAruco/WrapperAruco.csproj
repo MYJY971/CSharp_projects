@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TexLib.cs" />
     <EmbeddedResource Include="AruForm.resx">
       <DependentUpon>AruForm.cs</DependentUpon>
     </EmbeddedResource>

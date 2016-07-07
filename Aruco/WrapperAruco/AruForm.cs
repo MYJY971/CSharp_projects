@@ -20,6 +20,7 @@ using OpenTK.Graphics;
 using System.Drawing.Imaging;
 
 using cvSize = OpenCV.Net.Size;
+using TexLib;
 
 namespace WrapperAruco
 {
@@ -27,11 +28,11 @@ namespace WrapperAruco
     {
         private Capture _cameraCapture;
         private CameraParameters _parameters;
-        private int _markerSize;
+        private float _markerSize;
         private Mat _cameraMatrix;
         private Mat _distortion;
         private MarkerDetector detector;
-        private IList<Marker> detectedMarkers;
+        private IList<Marker> _detectedMarkers;
         private bool _initContextGLisOk;
         Matrix4 _defaultProjection, _lookatMatrix;
         IplImage _backgroundImage;
@@ -39,11 +40,14 @@ namespace WrapperAruco
         IntPtr _backgroundData;
         bool _cameraOn = false;
 
+
         private Vector3 _eye = new Vector3(-10.0f, 0.0f, 0.0f);
         private Vector3 _target = Vector3.Zero;
         private Vector3 _up = new Vector3(0.0f, 0.0f, 1.0f);
 
         float _angle = 0;
+
+        private int _objectTextureId;
 
         IplImage _frame;
         Emgu.CV.Mat _emguFrame;
@@ -60,7 +64,7 @@ namespace WrapperAruco
             _distortion = new Mat(1, 4, Depth.F32, 1);
 
             detector = new MarkerDetector();
-            _markerSize = 10;
+            _markerSize = 4f;
 
             try
             {
@@ -84,6 +88,7 @@ namespace WrapperAruco
         private void glControl1_Load(object sender, EventArgs e)
         {
             //SetupViewport();
+            _objectTextureId = TexUtil.CreateTextureFromFile("texture.png");
             Run();
             SetupViewport();
         }
@@ -119,17 +124,20 @@ namespace WrapperAruco
         {
             while (glControl1.IsIdle)
             {
+                
                 _frame = _cameraCapture.QueryFrame();
                 //glControl1.Width = _frame.Width;
                 //glControl1.Height = _frame.Height;
 
-                //IList<Marker> detectedMarkers;
+                IList<Marker> detectedMarkers;
                 detectedMarkers = detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
                 /*foreach (var marker in detectedMarkers)
                 {
                     label1.Text = "" + marker.Id;
                 }*/
-                label1.Text = "" + detectedMarkers.Count;
+
+                _detectedMarkers = detectedMarkers;
+                label1.Text = "" + _detectedMarkers.Count;
 
 
                 System.Drawing.Size sizeFrame = new System.Drawing.Size(_frame.Width, _frame.Height);
@@ -271,17 +279,21 @@ namespace WrapperAruco
                 //now, for each marker,
                 double[] modelview_matrix=new double[16];
 
-                for (int m = 0; m < detectedMarkers.Count; m++)
+                for (int m = 0; m < _detectedMarkers.Count; m++)
                 {
-                    modelview_matrix = detectedMarkers.ElementAt(m).GetGLModelViewMatrix();
+                    modelview_matrix = _detectedMarkers.ElementAt(m).GetGLModelViewMatrix();
                     GL.MatrixMode(MatrixMode.Modelview);
                     GL.LoadIdentity();
                     GL.LoadMatrix(modelview_matrix);
 
                     //axis(TheMarkerSize);
-                    DrawCube();
-
-                    
+                    //DrawCube();
+                    GL.Rotate(-90, Vector3.UnitY);
+                    GL.Rotate(-90, Vector3.UnitX);
+                    //DrawTrihedral();
+                    DrawCube(_markerSize);
+                    GL.Rotate(90, Vector3.UnitX);
+                    GL.Rotate(90, Vector3.UnitY);
 
                     GL.Translate(0, 0, _markerSize / 2);
                     GL.PushMatrix();
@@ -418,7 +430,7 @@ namespace WrapperAruco
             GL.Vertex3(-0.5f, 0.5f, 0.5f);
 
             // Back Face
-            //GL.Color3(0.0f, 1.0f, 0.0f);
+            GL.Color3(0.0f, 1.0f, 0.0f);
             GL.Normal3(0.0f, 0.0f, -1.0f);
             GL.Vertex3(-0.5, -0.5, -0.5);
             GL.Vertex3(-0.5, 0.5, -0.5);
@@ -426,7 +438,7 @@ namespace WrapperAruco
             GL.Vertex3(0.5, -0.5, -0.5);
 
             // Top Face
-            //GL.Color3(1.0f, 1.0f, 0.0f);
+            GL.Color3(1.0f, 1.0f, 0.0f);
             GL.Normal3(0.0f, 1.0f, 0.0f);
             GL.Vertex3(-0.5, 0.5, -0.5);
             GL.Vertex3(-0.5, 0.5, 0.5);
@@ -434,7 +446,7 @@ namespace WrapperAruco
             GL.Vertex3(0.5, 0.5, -0.5);
 
             // Bottom Face
-            //GL.Color3(1f, 0.4f, 0f);
+            GL.Color3(1f, 0.4f, 0f);
             GL.Normal3(0.0f, -1.0f, 0.0f);
             GL.Vertex3(-0.5, -0.5, -0.5);
             GL.Vertex3(0.5, -0.5, -0.5);
@@ -450,7 +462,7 @@ namespace WrapperAruco
             GL.Vertex3(0.5, -0.5, 0.5);
 
             // Left Face
-            //GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Color3(0.0f, 0.0f, 1.0f);
             GL.Normal3(-1.0f, 0.0f, 0.0f);
             GL.Vertex3(-0.5, -0.5, -0.5);
             GL.Vertex3(-0.5, -0.5, 0.5);
@@ -461,6 +473,80 @@ namespace WrapperAruco
 
             GL.End();
 
+        }
+
+        private void DrawCube(float size)
+        {
+            float[] l_couleur = new float[4];
+            float l_shin;
+
+            // axe X
+            //GL.Color4(1.0f, 0.0f, 0.0f, 0.5f);
+            //l_couleur[0] = 1.0f; l_couleur[1] = 0.0f; l_couleur[2] = 0.0f; l_couleur[3] = 1.0f;
+            ///*
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new Color4(0.3f, 0.3f, 0.3f, 1.0f));
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 128f);
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new Color4(0.0f, 0.0f, 0.0f, 1.0f)/*@l_couleur*/);
+
+            GL.Begin(BeginMode.Quads);
+            //GL.Color3(1.0f, 0.0f, 0.0f);
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, _objectTextureId);
+            // Front Face
+            //GL.Color3(1.0f, 0.0f, 0.0f);
+            GL.Normal3(0.0f, 0.0f, 1.0f);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size/2, -size/2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(-size / 2, -size / 2, size);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(size / 2, -size / 2, 0.0);
+
+            // Back Face
+            //GL.Color3(0.0f, 1.0f, 0.0f);
+            GL.Normal3(0.0f, 0.0f, -1.0f);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, size / 2, 0);
+            GL.TexCoord2(1, 1); GL.Vertex3(-size / 2, size / 2, size);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, size / 2, size);
+            GL.TexCoord2(0, 0); GL.Vertex3(size / 2, size / 2, 0.0);
+
+            // Top Face
+            //GL.Color3(1.0f, 1.0f, 0.0f);
+            GL.Normal3(0.0f, 1.0f, 0.0f);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size/2, -size/2, size);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, size / 2, size);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, size / 2,  size);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2,  size);
+
+            // Bottom Face
+            //GL.Color3(1f, 0.4f, 0f);
+            GL.Normal3(0.0f, -1.0f, 0.0f);
+            GL.TexCoord2(1, 1); GL.Vertex3(-size / 2, -size / 2, 0);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, size / 2, 0);
+            GL.TexCoord2(0, 0); GL.Vertex3(size / 2, size / 2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, -size / 2, 0);
+
+
+            // Right face
+            //GL.Color3(1f, 0f, 1f);
+            GL.Normal3(1.0f, 0.0f, 0.0f);
+            GL.TexCoord2(1, 0); GL.Vertex3(size/2, -size/2, 0);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(size / 2, size / 2, size);
+            GL.TexCoord2(0, 0); GL.Vertex3(size / 2, -size / 2, size);
+
+
+            // Left Face
+            //GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Normal3(-1.0f, 0.0f, 0.0f);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, -size / 2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(-size / 2, -size / 2, size);
+            GL.TexCoord2(1, 1); GL.Vertex3(-size / 2, size / 2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, -size / 2, size);
+
+            GL.Disable(EnableCap.Texture2D);
+            GL.Color3(1.0f, 1.0f, 1.0f);
+
+            GL.End();
         }
 
         private void DrawScene()
@@ -476,15 +562,6 @@ namespace WrapperAruco
 
         #region Aruco Methods
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="orgImgSize"></param>
-        /// <param name="size"></param>
-        /// <param name="proj_matrix"></param>
-        /// <param name="gnear"></param>
-        /// <param name="gfar"></param>
-        /// <param name="invert"></param>
         private void GlGetProjectionMatrix(cvSize orgImgSize, cvSize size, out double[] proj_matrix, double gnear, double gfar, bool invert)
         {
             // Deterime the rsized info
