@@ -19,6 +19,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using System.Drawing.Imaging;
 
+using cvSize = OpenCV.Net.Size;
+
 namespace WrapperAruco
 {
     public partial class AruForm : Form
@@ -29,10 +31,11 @@ namespace WrapperAruco
         private Mat _cameraMatrix;
         private Mat _distortion;
         private MarkerDetector detector;
-        //private IList<Marker> detectedMarkers;
+        private IList<Marker> detectedMarkers;
         private bool _initContextGLisOk;
         Matrix4 _defaultProjection, _lookatMatrix;
         IplImage _backgroundImage;
+        IplImage _copyFrame;
         IntPtr _backgroundData;
         bool _cameraOn = false;
 
@@ -49,37 +52,40 @@ namespace WrapperAruco
         {
 
             InitializeComponent();
-                //Create camera parameters and load them from a YML file
-                _parameters = new CameraParameters();
-                
-                
-                _cameraMatrix = new Mat(3, 3, Depth.F32, 1);
-                _distortion = new Mat(1, 4, Depth.F32, 1);
-                
-                detector = new MarkerDetector();
-                _markerSize = 10;
-               
+            //Create camera parameters and load them from a YML file
+            _parameters = new CameraParameters();
+
+
+            _cameraMatrix = new Mat(3, 3, Depth.F32, 1);
+            _distortion = new Mat(1, 4, Depth.F32, 1);
+
+            detector = new MarkerDetector();
+            _markerSize = 10;
+
             try
             {
                 _parameters.ReadFromXmlFile("C:\\Stage\\Yanis\\Data\\intrinsics.yml");
                 OpenCV.Net.Size size;
                 _parameters.CopyParameters(_cameraMatrix, _distortion, out size);
+                label1.Text = "" + _cameraMatrix[0, 2];
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 return;
             }
 
 
-           
+
 
         }
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            SetupViewport();
+            //SetupViewport();
             Run();
+            SetupViewport();
         }
 
 
@@ -114,8 +120,10 @@ namespace WrapperAruco
             while (glControl1.IsIdle)
             {
                 _frame = _cameraCapture.QueryFrame();
+                //glControl1.Width = _frame.Width;
+                //glControl1.Height = _frame.Height;
 
-                IList<Marker> detectedMarkers;
+                //IList<Marker> detectedMarkers;
                 detectedMarkers = detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
                 /*foreach (var marker in detectedMarkers)
                 {
@@ -129,10 +137,11 @@ namespace WrapperAruco
                 _emguFrame = new Emgu.CV.Mat(sizeFrame, DepthType.Cv8U, _frame.Channels, _frame.ImageData, _frame.WidthStep);
                 //_backgroundImage = _emguFrame.Bitmap;
 
-                
+
                 _cameraOn = true;
                 //imageVideo.Image = _emguFrame;
-                _angle += 10;
+
+                //_angle += 10;
                 Render();
             }
         }
@@ -145,7 +154,7 @@ namespace WrapperAruco
 
 
         //OpenGL
-        
+
 
         private void SetupViewport()
         {
@@ -168,7 +177,7 @@ namespace WrapperAruco
             GL.LoadIdentity();
         }
 
-        
+
         protected void InitGLContext()
         {
 
@@ -214,7 +223,7 @@ namespace WrapperAruco
             if (!_initContextGLisOk)
                 InitGLContext();
 
-            
+
 
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -239,27 +248,67 @@ namespace WrapperAruco
                 GL.PixelZoom(1.0f, -1.0f);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
 
-                OpenCV.Net.Size s = new OpenCV.Net.Size(w, h);
-                _backgroundImage = new IplImage(s, _frame.Depth, _frame.Channels);
-                OpenCV.Net.CV.Resize(_frame, _backgroundImage);
-                //_backgroundImage = _frame;
+                cvSize s = new cvSize(w, h);
+
+                //IplImage tmpFrame = _frame;
+                //_backgroundImage = new IplImage(s, _frame.Depth, _frame.Channels);
+                //OpenCV.Net.CV.Resize(_copyFrame, _backgroundImage);
+
+
+                _backgroundImage = _frame;
+
                 GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.ImageData);
                 GL.Enable(EnableCap.Texture2D);
+
+                //Scene 3D
+                GL.MatrixMode(MatrixMode.Projection);
+                double[] projMatrix = new double[16];
+                cvSize glSize = new cvSize(glControl1.Width, glControl1.Height);
+                GlGetProjectionMatrix(_frame.Size, glSize, out projMatrix, 0.1, 100, false);
+                GL.LoadIdentity();
+                GL.MultMatrix(projMatrix);
+
+                //now, for each marker,
+                double[] modelview_matrix=new double[16];
+
+                for (int m = 0; m < detectedMarkers.Count; m++)
+                {
+                    modelview_matrix = detectedMarkers.ElementAt(m).GetGLModelViewMatrix();
+                    GL.MatrixMode(MatrixMode.Modelview);
+                    GL.LoadIdentity();
+                    GL.LoadMatrix(modelview_matrix);
+
+                    //axis(TheMarkerSize);
+                    DrawCube();
+
+                    
+
+                    GL.Translate(0, 0, _markerSize / 2);
+                    GL.PushMatrix();
+                    //glutWireCube(TheMarkerSize);
+
+                    GL.PopMatrix();
+
+                }
+
+            }
+
+            else
+            {
+                //Scene 3D
+
+                GL.MatrixMode(MatrixMode.Projection);
+                GL.LoadIdentity();
+                GL.MultMatrix(ref _defaultProjection);
+
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                _lookatMatrix = Matrix4.LookAt(_eye, _target, _up);
+                GL.LoadMatrix(ref _lookatMatrix);
+
+                DrawScene();
             }
             
-            
-            //Scene 3D
-
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-            GL.MultMatrix(ref _defaultProjection);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            _lookatMatrix = Matrix4.LookAt(_eye, _target, _up);
-            GL.LoadMatrix(ref _lookatMatrix);
-
-            DrawScene();
 
             glControl1.SwapBuffers();
             //Refresh();
@@ -417,11 +466,189 @@ namespace WrapperAruco
         private void DrawScene()
         {
             DrawTrihedral();
-            
+
             GL.Rotate(_angle, Vector3.UnitZ);
             DrawCube();
         }
 
-        
+        ///ARUCO
+        ///GLProjection
+
+        #region Aruco Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="orgImgSize"></param>
+        /// <param name="size"></param>
+        /// <param name="proj_matrix"></param>
+        /// <param name="gnear"></param>
+        /// <param name="gfar"></param>
+        /// <param name="invert"></param>
+        private void GlGetProjectionMatrix(cvSize orgImgSize, cvSize size, out double[] proj_matrix, double gnear, double gfar, bool invert)
+        {
+            // Deterime the rsized info
+            double Ax = (double)size.Width / (double)orgImgSize.Width;
+            double Ay = (double)size.Height / (double)orgImgSize.Height;
+            double fx = _cameraMatrix[0, 0].Val0;
+            double cx = _cameraMatrix[0, 2].Val0;
+            double fy = _cameraMatrix[1, 1].Val0;
+            double cy = _cameraMatrix[1, 2].Val0;
+
+            double[,] cparam = new double[3, 4] { { fx, 0, cx, 0 }, { 0, fy, cy, 0 }, { 0, 0, 1, 0 } };
+
+            argConvGLcpara2(cparam, size.Width, size.Height, gnear, gfar, out proj_matrix, invert);
+        }
+        #region glGetProjectionMatrix
+
+
+
+        private void argConvGLcpara2(double[,] cparam, int width, int height, double gnear, double gfar, out double[] m, bool invert)
+        {
+            m = new double[16];
+            double[,] icpara = new double[3, 4];
+            double[,] trans = new double[3, 4];
+            double[,] p = new double[3, 3];
+            double[,] q = new double[4, 4];
+            int i, j;
+
+            cparam[0, 2] *= -1.0;
+            cparam[1, 2] *= -1.0;
+            cparam[2, 2] *= -1.0;
+
+            if (arParamDecompMat(cparam, icpara, trans) < 0)
+                MessageBox.Show("Error"); 
+
+            for (i = 0; i < 3; i++)
+            {
+                for (j = 0; j < 3; j++)
+                {
+                    p[i, j] = icpara[i, j] / icpara[2, 2];
+                }
+            }
+
+            q[0, 0] = (2.0 * p[0, 0] / width);
+            q[0, 1] = (2.0 * p[0, 1] / width);
+            q[0, 2] = ((2.0 * p[0, 2] / width) - 1.0);
+            q[0, 3] = 0.0;
+
+            q[1, 0] = 0.0;
+            q[1, 1] = (2.0 * p[1, 1] / height);
+            q[1, 2] = ((2.0 * p[1, 2] / height) - 1.0);
+            q[1, 3] = 0.0;
+
+            q[2, 0] = 0.0;
+            q[2, 1] = 0.0;
+            q[2, 2] = (gfar + gnear) / (gfar - gnear);
+            q[2, 3] = -2.0 * gfar * gnear / (gfar - gnear);
+
+            q[3, 0] = 0.0;
+            q[3, 1] = 0.0;
+            q[3, 2] = 1.0;
+            q[3, 3] = 0.0;
+
+            for (i = 0; i < 4; i++)
+            {
+                for (j = 0; j < 3; j++)
+                {
+                    m[i + j * 4] = q[i, 0] * trans[0, j] + q[i, 1] * trans[1, j] + q[i, 2] * trans[2, j];
+                }
+                m[i + 3 * 4] = q[i, 0] * trans[0, 3] + q[i, 1] * trans[1, 3] + q[i, 2] * trans[2, 3] + q[i, 3];
+            }
+
+            if (!invert)
+            {
+                m[13] = -m[13];
+                m[1] = -m[1];
+                m[5] = -m[5];
+                m[9] = -m[9];
+            }
+        }
+
+        double norm(double a, double b, double c) { return (Math.Sqrt(a * a + b * b + c * c)); }
+
+        double dot(double a1, double a2, double a3, double b1, double b2, double b3) { return (a1 * b1 + a2 * b2 + a3 * b3); }
+
+        private int arParamDecompMat(double[,] source, double[,] cpara, double[,] trans)
+        {
+            int r, c;
+            double[,] Cpara = new double[3, 4];
+            double rem1, rem2, rem3;
+
+            if (source[2, 3] >= 0)
+            {
+                for (r = 0; r < 3; r++)
+                {
+                    for (c = 0; c < 4; c++)
+                    {
+                        Cpara[r, c] = source[r, c];
+                    }
+                }
+            }
+            else
+            {
+                for (r = 0; r < 3; r++)
+                {
+                    for (c = 0; c < 4; c++)
+                    {
+                        Cpara[r, c] = -(source[r, c]);
+                    }
+                }
+            }
+
+            for (r = 0; r < 3; r++)
+            {
+                for (c = 0; c < 4; c++)
+                {
+                    cpara[r,c] = 0.0;
+                }
+            }
+
+            cpara[2,2] = norm(Cpara[2,0], Cpara[2,1], Cpara[2,2]);
+            trans[2,0] = Cpara[2,0] / cpara[2,2];
+            trans[2,1] = Cpara[2,1] / cpara[2,2];
+            trans[2,2] = Cpara[2,2] / cpara[2,2];
+            trans[2,3] = Cpara[2,3] / cpara[2,2];
+
+            cpara[1,2] = dot(trans[2,0], trans[2,1], trans[2,2], Cpara[1,0], Cpara[1,1], Cpara[1,2]);
+            rem1 = Cpara[1,0] - cpara[1,2] * trans[2,0];
+            rem2 = Cpara[1,1] - cpara[1,2] * trans[2,1];
+            rem3 = Cpara[1,2] - cpara[1,2] * trans[2,2];
+            cpara[1,1] = norm(rem1, rem2, rem3);
+            trans[1,0] = rem1 / cpara[1,1];
+            trans[1,1] = rem2 / cpara[1,1];
+            trans[1,2] = rem3 / cpara[1,1];
+
+            cpara[0,2] = dot(trans[2,0], trans[2,1], trans[2,2], Cpara[0,0], Cpara[0,1], Cpara[0,2]);
+            cpara[0,1] = dot(trans[1,0], trans[1,1], trans[1,2], Cpara[0,0], Cpara[0,1], Cpara[0,2]);
+            rem1 = Cpara[0,0] - cpara[0,1] * trans[1,0] - cpara[0,2] * trans[2,0];
+            rem2 = Cpara[0,1] - cpara[0,1] * trans[1,1] - cpara[0,2] * trans[2,1];
+            rem3 = Cpara[0,2] - cpara[0,1] * trans[1,2] - cpara[0,2] * trans[2,2];
+            cpara[0,0] = norm(rem1, rem2, rem3);
+            trans[0,0] = rem1 / cpara[0,0];
+            trans[0,1] = rem2 / cpara[0,0];
+            trans[0,2] = rem3 / cpara[0,0];
+
+            trans[1,3] = (Cpara[1,3] - cpara[1,2] * trans[2,3]) / cpara[1,1];
+            trans[0,3] = (Cpara[0,3] - cpara[0,1] * trans[1,3] - cpara[0,2] * trans[2,3]) / cpara[0,0];
+
+            for (r = 0; r < 3; r++)
+            {
+                for (c = 0; c < 3; c++)
+                {
+                    cpara[r,c] /= cpara[2,2];
+                }
+            }
+
+            return 0;
+
+        }
+
+
+        #endregion
+
+        #endregion
+
+
     }
 }
