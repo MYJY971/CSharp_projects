@@ -27,7 +27,7 @@ namespace ArucoCSharp
         double _nbMarkers;
         private Size _glWindowSize;
         //public  = "";
-        public string _path = "C:\\Stage\\Yanis\\CSharp_projects\\Librairies\\ARUCO\\aruco-2.0.7\\MY-Build\\aruco-test-data-2.0\\1_single\\out_cam_calibration.yml";
+        //public string _path = "C:\\Stage\\Yanis\\CSharp_projects\\Librairies\\ARUCO\\aruco-2.0.7\\MY-Build\\aruco-test-data-2.0\\1_single\\out_cam_calibration.yml";
 
         /*
         [DllImport("C:\\Stage\\Yanis\\CSharp_projects\\MY_Stage\\ArucoCSharp\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
@@ -37,8 +37,8 @@ namespace ArucoCSharp
         //[DllImport("C:\\Stage\\Yanis\\CSharp_projects\\MY_Stage\\ArucoCSharp\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         //public static extern double Add(double a, double b);
 
-        [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        public static extern double Add(double a, double b);
+        //[DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern double Add(double a, double b);
         //public static extern double TestAR(byte[] image, int width, int height, string path);
         //public static extern double performAR2(string path);
 
@@ -74,7 +74,7 @@ namespace ArucoCSharp
 
 
 
-            _nbMarkers =(int) Add(5, 5);//TestAR(byteImageForARCompute, _imageForARCompute.Width, _imageForARCompute.Height, _path);
+            //_nbMarkers =(int) Add(5, 5);//TestAR(byteImageForARCompute, _imageForARCompute.Width, _imageForARCompute.Height, _path);
             label1.Text = "" + _nbMarkers;
 
             imageVideo.Image = frame;

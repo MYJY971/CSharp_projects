@@ -98,6 +98,8 @@ namespace OpenCVFormTest
             Emgu.CV.Mat emguFrame = new Emgu.CV.Mat(sizeFrame, DepthType.Cv8U, frame.Channels, frame.ImageData, frame.WidthStep);
             imageVideo.Image = emguFrame;
 
+
+
         }
 
         private void ImageVideo_Resize(object sender, EventArgs e)

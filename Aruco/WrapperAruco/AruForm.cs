@@ -20,6 +20,7 @@ using OpenTK.Graphics;
 using System.Drawing.Imaging;
 
 using cvSize = OpenCV.Net.Size;
+using sSize = System.Drawing.Size;
 using TexLib;
 
 namespace WrapperAruco
@@ -39,7 +40,10 @@ namespace WrapperAruco
         IplImage _copyFrame;
         IntPtr _backgroundData;
         bool _cameraOn = false;
+        bool _sizeChanged = false;
+        float _factorSize = 1f;
 
+        private Aruco.Net.BoardDetector board;
 
         private Vector3 _eye = new Vector3(-10.0f, 0.0f, 0.0f);
         private Vector3 _target = Vector3.Zero;
@@ -64,14 +68,20 @@ namespace WrapperAruco
             _distortion = new Mat(1, 4, Depth.F32, 1);
 
             detector = new MarkerDetector();
+            detector.ThresholdMethod = ThresholdMethod.AdaptiveThreshold;
+            detector.Param1 = 7.0;
+            detector.Param2 = 7.0;
+            detector.MinSize = 0.04f;
+            detector.MaxSize = 0.5f;
+            detector.CornerRefinement = CornerRefinementMethod.Lines;
+
             _markerSize = 4f;
 
             try
             {
-                _parameters.ReadFromXmlFile("C:\\Stage\\Yanis\\Data\\intrinsics.yml");
+                _parameters.ReadFromXmlFile("intrinsics.yml");
                 OpenCV.Net.Size size;
                 _parameters.CopyParameters(_cameraMatrix, _distortion, out size);
-                label1.Text = "" + _cameraMatrix[0, 2];
 
             }
             catch (Exception e)
@@ -99,13 +109,10 @@ namespace WrapperAruco
         {
             try
             {
+
                 _cameraCapture = OpenCV.Net.Capture.CreateCameraCapture(0);
-                detector.ThresholdMethod = ThresholdMethod.AdaptiveThreshold;
-                detector.Param1 = 7.0;
-                detector.Param2 = 7.0;
-                detector.MinSize = 0.04f;
-                detector.MaxSize = 0.5f;
-                detector.CornerRefinement = CornerRefinementMethod.Lines;
+                //_cameraCapture.SetProperty(CaptureProperty.FrameWidth, panelVideo.Width/*5120*/);
+                //_cameraCapture.SetProperty(CaptureProperty.FrameHeight,panelVideo.Height/*2160*/);
 
             }
             catch (Exception e)
@@ -124,33 +131,49 @@ namespace WrapperAruco
         {
             while (glControl1.IsIdle)
             {
-                
-                _frame = _cameraCapture.QueryFrame();
-                //glControl1.Width = _frame.Width;
-                //glControl1.Height = _frame.Height;
-
-                IList<Marker> detectedMarkers;
-                detectedMarkers = detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
-                /*foreach (var marker in detectedMarkers)
+                try
                 {
-                    label1.Text = "" + marker.Id;
-                }*/
 
-                _detectedMarkers = detectedMarkers;
-                label1.Text = "" + _detectedMarkers.Count;
+                    
+                    _cameraCapture = OpenCV.Net.Capture.CreateCameraCapture(0);
+                    
+                    _frame = _cameraCapture.QueryFrame();
+
+                    //IList<Marker> detectedMarkers;
+                    _detectedMarkers = detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
+                    foreach (var marker in _detectedMarkers)
+                    {
+                        label1.Text = "" + marker.Id;
+                    }
+
+                    //label1.Text = "nb marqueurs: " + _detectedMarkers.Count;
 
 
-                System.Drawing.Size sizeFrame = new System.Drawing.Size(_frame.Width, _frame.Height);
+                    System.Drawing.Size sizeFrame = new System.Drawing.Size(_frame.Width, _frame.Height);
 
-                _emguFrame = new Emgu.CV.Mat(sizeFrame, DepthType.Cv8U, _frame.Channels, _frame.ImageData, _frame.WidthStep);
-                //_backgroundImage = _emguFrame.Bitmap;
+                    _emguFrame = new Emgu.CV.Mat(sizeFrame, DepthType.Cv8U, _frame.Channels, _frame.ImageData, _frame.WidthStep);
+                    
 
+                    if (!_cameraOn)
+                        _cameraOn = true;
+                    //imageVideo.Image = _emguFrame;
 
-                _cameraOn = true;
-                //imageVideo.Image = _emguFrame;
+                    //_angle += 10;
+                    _backgroundImage = _frame;
+                    
+                    /*
+                     cvSize size = new cvSize(panelVideo.Width, panelVideo.Height);
+                     IplImage frameResized = new IplImage(size, OpenCV.Net.IplDepth.U8, 3);
+                     OpenCV.Net.CV.Resize(_backgroundImage, frameResized);
+                    */
 
-                //_angle += 10;
-                Render();
+                    Render();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("oh non!"+ex.Message);
+                    return;
+                }
             }
         }
 
@@ -166,6 +189,8 @@ namespace WrapperAruco
 
         private void SetupViewport()
         {
+
+
             int w = glControl1.Width;
             int h = glControl1.Height;
 
@@ -223,6 +248,7 @@ namespace WrapperAruco
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
+
             Render();
         }
 
@@ -238,6 +264,17 @@ namespace WrapperAruco
 
             if (_cameraOn)
             {
+                if (!_sizeChanged)
+                {
+                    //glControl1.Size = new sSize(_backgroundImage.Width, _backgroundImage.Height);
+                    //glControl1.Size = panelVideo.Size;
+                    sSize frameSize = new sSize(_frame.Width, _frame.Height);
+                    AdaptSize(frameSize, out _factorSize);
+                    label2.Text = "" + _frame.Width + " x " + _frame.Height;
+                    _sizeChanged = true;
+                    //glControl1.SetBounds(0, 10, _backgroundImage.Width, _backgroundImage.Height);
+                }
+
                 int w = glControl1.Width;
                 int h = glControl1.Height;
 
@@ -247,13 +284,14 @@ namespace WrapperAruco
                 GL.MatrixMode(MatrixMode.Projection);                               // Select The Projection Matrix
                 GL.LoadIdentity();                                                  // Reset The Projection Matrix
 
-                GL.Ortho(0, w, 0, h, -1, 1);
+                GL.Ortho(0, w, 0, h, -1.0, 1.0);
+                GL.Viewport(0, 0, w, h);
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-
+                float fact = _factorSize;
                 GL.Disable(EnableCap.Texture2D);
-                GL.PixelZoom(1.0f, -1.0f);
+                GL.PixelZoom(1.0f*fact, -1.0f*fact);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
 
                 cvSize s = new cvSize(w, h);
@@ -263,7 +301,7 @@ namespace WrapperAruco
                 //OpenCV.Net.CV.Resize(_copyFrame, _backgroundImage);
 
 
-                _backgroundImage = _frame;
+                //_backgroundImage = _frame;
 
                 GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.ImageData);
                 GL.Enable(EnableCap.Texture2D);
@@ -272,13 +310,14 @@ namespace WrapperAruco
                 GL.MatrixMode(MatrixMode.Projection);
                 double[] projMatrix = new double[16];
                 cvSize glSize = new cvSize(glControl1.Width, glControl1.Height);
-                GlGetProjectionMatrix(_frame.Size, glSize, out projMatrix, 0.1, 100, false);
+                GlGetProjectionMatrix(_backgroundImage.Size, glSize, out projMatrix, 0.1, 100, false);
                 GL.LoadIdentity();
                 GL.MultMatrix(projMatrix);
 
                 //now, for each marker,
-                double[] modelview_matrix=new double[16];
+                double[] modelview_matrix = new double[16];
 
+                
                 for (int m = 0; m < _detectedMarkers.Count; m++)
                 {
                     modelview_matrix = _detectedMarkers.ElementAt(m).GetGLModelViewMatrix();
@@ -302,6 +341,7 @@ namespace WrapperAruco
                     GL.PopMatrix();
 
                 }
+                
 
             }
 
@@ -320,7 +360,7 @@ namespace WrapperAruco
 
                 DrawScene();
             }
-            
+
 
             glControl1.SwapBuffers();
             //Refresh();
@@ -411,7 +451,7 @@ namespace WrapperAruco
         {
             float[] l_couleur = new float[4];
             float l_shin;
-
+            GL.Rotate(_angle, Vector3.UnitZ);
             // axe X
             //GL.Color4(1.0f, 0.0f, 0.0f, 0.5f);
             //l_couleur[0] = 1.0f; l_couleur[1] = 0.0f; l_couleur[2] = 0.0f; l_couleur[3] = 1.0f;
@@ -496,7 +536,7 @@ namespace WrapperAruco
             // Front Face
             //GL.Color3(1.0f, 0.0f, 0.0f);
             GL.Normal3(0.0f, 0.0f, 1.0f);
-            GL.TexCoord2(0, 0); GL.Vertex3(-size/2, -size/2, 0);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, -size / 2, 0);
             GL.TexCoord2(1, 0); GL.Vertex3(-size / 2, -size / 2, size);
             GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
             GL.TexCoord2(0, 1); GL.Vertex3(size / 2, -size / 2, 0.0);
@@ -512,10 +552,10 @@ namespace WrapperAruco
             // Top Face
             //GL.Color3(1.0f, 1.0f, 0.0f);
             GL.Normal3(0.0f, 1.0f, 0.0f);
-            GL.TexCoord2(0, 1); GL.Vertex3(-size/2, -size/2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, -size / 2, size);
             GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, size / 2, size);
-            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, size / 2,  size);
-            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2,  size);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, size / 2, size);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
 
             // Bottom Face
             //GL.Color3(1f, 0.4f, 0f);
@@ -529,7 +569,7 @@ namespace WrapperAruco
             // Right face
             //GL.Color3(1f, 0f, 1f);
             GL.Normal3(1.0f, 0.0f, 0.0f);
-            GL.TexCoord2(1, 0); GL.Vertex3(size/2, -size/2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, -size / 2, 0);
             GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
             GL.TexCoord2(0, 1); GL.Vertex3(size / 2, size / 2, size);
             GL.TexCoord2(0, 0); GL.Vertex3(size / 2, -size / 2, size);
@@ -594,7 +634,7 @@ namespace WrapperAruco
             cparam[2, 2] *= -1.0;
 
             if (arParamDecompMat(cparam, icpara, trans) < 0)
-                MessageBox.Show("Error"); 
+                MessageBox.Show("Error");
 
             for (i = 0; i < 3; i++)
             {
@@ -677,43 +717,43 @@ namespace WrapperAruco
             {
                 for (c = 0; c < 4; c++)
                 {
-                    cpara[r,c] = 0.0;
+                    cpara[r, c] = 0.0;
                 }
             }
 
-            cpara[2,2] = norm(Cpara[2,0], Cpara[2,1], Cpara[2,2]);
-            trans[2,0] = Cpara[2,0] / cpara[2,2];
-            trans[2,1] = Cpara[2,1] / cpara[2,2];
-            trans[2,2] = Cpara[2,2] / cpara[2,2];
-            trans[2,3] = Cpara[2,3] / cpara[2,2];
+            cpara[2, 2] = norm(Cpara[2, 0], Cpara[2, 1], Cpara[2, 2]);
+            trans[2, 0] = Cpara[2, 0] / cpara[2, 2];
+            trans[2, 1] = Cpara[2, 1] / cpara[2, 2];
+            trans[2, 2] = Cpara[2, 2] / cpara[2, 2];
+            trans[2, 3] = Cpara[2, 3] / cpara[2, 2];
 
-            cpara[1,2] = dot(trans[2,0], trans[2,1], trans[2,2], Cpara[1,0], Cpara[1,1], Cpara[1,2]);
-            rem1 = Cpara[1,0] - cpara[1,2] * trans[2,0];
-            rem2 = Cpara[1,1] - cpara[1,2] * trans[2,1];
-            rem3 = Cpara[1,2] - cpara[1,2] * trans[2,2];
-            cpara[1,1] = norm(rem1, rem2, rem3);
-            trans[1,0] = rem1 / cpara[1,1];
-            trans[1,1] = rem2 / cpara[1,1];
-            trans[1,2] = rem3 / cpara[1,1];
+            cpara[1, 2] = dot(trans[2, 0], trans[2, 1], trans[2, 2], Cpara[1, 0], Cpara[1, 1], Cpara[1, 2]);
+            rem1 = Cpara[1, 0] - cpara[1, 2] * trans[2, 0];
+            rem2 = Cpara[1, 1] - cpara[1, 2] * trans[2, 1];
+            rem3 = Cpara[1, 2] - cpara[1, 2] * trans[2, 2];
+            cpara[1, 1] = norm(rem1, rem2, rem3);
+            trans[1, 0] = rem1 / cpara[1, 1];
+            trans[1, 1] = rem2 / cpara[1, 1];
+            trans[1, 2] = rem3 / cpara[1, 1];
 
-            cpara[0,2] = dot(trans[2,0], trans[2,1], trans[2,2], Cpara[0,0], Cpara[0,1], Cpara[0,2]);
-            cpara[0,1] = dot(trans[1,0], trans[1,1], trans[1,2], Cpara[0,0], Cpara[0,1], Cpara[0,2]);
-            rem1 = Cpara[0,0] - cpara[0,1] * trans[1,0] - cpara[0,2] * trans[2,0];
-            rem2 = Cpara[0,1] - cpara[0,1] * trans[1,1] - cpara[0,2] * trans[2,1];
-            rem3 = Cpara[0,2] - cpara[0,1] * trans[1,2] - cpara[0,2] * trans[2,2];
-            cpara[0,0] = norm(rem1, rem2, rem3);
-            trans[0,0] = rem1 / cpara[0,0];
-            trans[0,1] = rem2 / cpara[0,0];
-            trans[0,2] = rem3 / cpara[0,0];
+            cpara[0, 2] = dot(trans[2, 0], trans[2, 1], trans[2, 2], Cpara[0, 0], Cpara[0, 1], Cpara[0, 2]);
+            cpara[0, 1] = dot(trans[1, 0], trans[1, 1], trans[1, 2], Cpara[0, 0], Cpara[0, 1], Cpara[0, 2]);
+            rem1 = Cpara[0, 0] - cpara[0, 1] * trans[1, 0] - cpara[0, 2] * trans[2, 0];
+            rem2 = Cpara[0, 1] - cpara[0, 1] * trans[1, 1] - cpara[0, 2] * trans[2, 1];
+            rem3 = Cpara[0, 2] - cpara[0, 1] * trans[1, 2] - cpara[0, 2] * trans[2, 2];
+            cpara[0, 0] = norm(rem1, rem2, rem3);
+            trans[0, 0] = rem1 / cpara[0, 0];
+            trans[0, 1] = rem2 / cpara[0, 0];
+            trans[0, 2] = rem3 / cpara[0, 0];
 
-            trans[1,3] = (Cpara[1,3] - cpara[1,2] * trans[2,3]) / cpara[1,1];
-            trans[0,3] = (Cpara[0,3] - cpara[0,1] * trans[1,3] - cpara[0,2] * trans[2,3]) / cpara[0,0];
+            trans[1, 3] = (Cpara[1, 3] - cpara[1, 2] * trans[2, 3]) / cpara[1, 1];
+            trans[0, 3] = (Cpara[0, 3] - cpara[0, 1] * trans[1, 3] - cpara[0, 2] * trans[2, 3]) / cpara[0, 0];
 
             for (r = 0; r < 3; r++)
             {
                 for (c = 0; c < 3; c++)
                 {
-                    cpara[r,c] /= cpara[2,2];
+                    cpara[r, c] /= cpara[2, 2];
                 }
             }
 
@@ -726,6 +766,90 @@ namespace WrapperAruco
 
         #endregion
 
+        private void AdaptSize(sSize frameSize, out float factor)
+        {
 
+            float diffW, diffH;
+            sSize panSize = panelVideo.Size;
+
+            diffW = frameSize.Width - panSize.Width;
+            diffH = frameSize.Height - panSize.Height;
+
+            if (diffW > 0 || diffH > 0)
+            {
+                if (frameSize.Width <= frameSize.Height)
+                {
+                    factor = (float)panelVideo.Size.Width / (float)frameSize.Width;
+                }
+                else
+                {
+                    factor = (float)panelVideo.Size.Height / (float)frameSize.Height;
+                }
+            }
+            else
+            {
+                factor = 1.0f;
+            }
+
+            sSize newSize =  new sSize((int)(frameSize.Width * factor), (int)(frameSize.Height * factor));
+
+            CenterImage(newSize);
+
+        }
+
+        private void CenterImage(sSize size)
+        {
+            float diffW, diffH;
+            sSize sizePan = panelVideo.Size;
+
+            diffW = sizePan.Width - size.Width ;
+            diffH = sizePan.Height - size.Height;
+
+            int x=0, y=0;
+
+            if (diffW > 0 )
+            {
+                x = (int)diffW / 2;
+            }
+            if (diffH > 0)
+            {
+                y = (int)diffH / 2;
+            }
+
+            glControl1.SetBounds(x, y, size.Width, size.Height);
+        }
+
+        private void MultMatGL(double[] mat, double f)
+        {
+            //int i;
+           
+            for(int i=0; i< mat.Count(); i++)
+            {
+                mat[i] = mat[i] * f;
+            }
+            
+        }
+
+        private double[] AddMatGL(double[] mat1, double[] mat2)
+        {
+            for(int i=0; i<mat1.Count(); i++)
+            {
+                mat1[i] = mat1[i] + mat2[2];
+            }
+            return mat1;
+        }
+
+        private double[] DivMatGL(double[] mat, double q)
+        {
+            for (int i = 0; i < mat.Count(); i++)
+            {
+                if(mat[i] != 0)
+                {
+                    mat[i] = mat[i] / q;
+                }
+            }
+
+            return mat;
+        }
     }
 }
