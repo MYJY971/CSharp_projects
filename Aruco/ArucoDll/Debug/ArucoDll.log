@@ -47,48 +47,48 @@ c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(151):
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(165): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(254): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(255): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(518): warning C4101: 'i' : variable locale non référencée
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(575): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(576): warning C4244: 'initialisation' : conversion de 'const float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(731): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(732): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(733): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(734): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(748): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(777): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(797): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(819): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(828): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(829): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(830): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(842): warning C4244: '=' : conversion de 'const float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(843): warning C4244: '=' : conversion de 'const float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(872): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(535): warning C4101: 'i' : variable locale non référencée
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(592): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(593): warning C4244: 'initialisation' : conversion de 'const float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(748): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(749): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(750): warning C4244: 'initialisation' : conversion de 'const double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(751): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(765): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(794): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(814): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(836): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(845): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(846): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(847): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(859): warning C4244: '=' : conversion de 'const float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(860): warning C4244: '=' : conversion de 'const float' en 'int', perte possible de données
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(889): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(911): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(915): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(934): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1003): warning C4244: '+=' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1005): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1006): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1007): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1025): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1026): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1027): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1029): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1030): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1099): warning C4244: '+=' : conversion de 'float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1142): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1150): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1356): warning C4244: 'argument' : conversion de 'const int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1357): warning C4244: 'argument' : conversion de 'const int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1359): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1370): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1376): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1384): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1387): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1396): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1402): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1406): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(906): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(928): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(932): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(951): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1020): warning C4244: '+=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1022): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1023): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1024): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1042): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1043): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1044): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1046): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1047): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1116): warning C4244: '+=' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1159): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1167): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1373): warning C4244: 'argument' : conversion de 'const int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1374): warning C4244: 'argument' : conversion de 'const int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1376): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1387): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1393): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1401): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1404): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1413): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1419): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markerdetector.cpp(1423): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
   ArucoDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.dll
   ArucoDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.pdb (Full PDB)

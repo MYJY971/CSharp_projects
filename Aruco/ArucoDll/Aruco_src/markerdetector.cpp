@@ -535,7 +535,7 @@ void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
 	int i, total = (int)all_contours.size();
 	//~~~~~~~~~~~~~~~~~~ OK
 	
-	//_contours.create(total, 1, 0, -1, true);
+	_contours.create(total, 1, 0, -1, true);
 	//~~~~~~~~~~~~~~~~~~ NOT OK
 	/*
 

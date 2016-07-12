@@ -17,3 +17,4 @@ C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco_v2\obj\Debug\WrapperAruco_v2.P
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco_v2\obj\Debug\WrapperAruco_v2.csproj.GenerateResource.Cache
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco_v2\obj\Debug\WrapperAruco_v2.exe
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco_v2\obj\Debug\WrapperAruco_v2.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco_v2\obj\Debug\WrapperAruco_v2.csprojResolveAssemblyReference.cache

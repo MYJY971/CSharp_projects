@@ -43,7 +43,10 @@ namespace WrapperAruco_v2
         bool _sizeChanged = false;
         float _factorSize = 1f;
 
-        private Aruco.Net.BoardDetector board;
+        private BoardDetector _boardDetector;
+        private Board _board;
+        private BoardConfiguration _boardConfig;
+        private IList<Marker> _detectedMarkersBoard;
 
         private Vector3 _eye = new Vector3(-10.0f, 0.0f, 0.0f);
         private Vector3 _target = Vector3.Zero;
@@ -75,7 +78,13 @@ namespace WrapperAruco_v2
             _detector.MaxSize = 0.5f;
             _detector.CornerRefinement = CornerRefinementMethod.Lines;
 
+            _boardDetector = new BoardDetector();
+            _boardConfig = new BoardConfiguration();
+
+            Marker m;
+            
             _markerSize = 4f;
+
 
             try
             {
@@ -139,12 +148,16 @@ namespace WrapperAruco_v2
 
                 _frame = _cameraCapture.QueryFrame();
 
-                //IList<Marker> detectedMarkers;
-                _detectedMarkers = _detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
-                foreach (var marker in _detectedMarkers)
-                {
-                    label1.Text = "" + marker.Id;
-                }
+                    //IList<Marker> detectedMarkers;
+
+                     _detectedMarkers = _detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
+                     foreach (var marker in _detectedMarkers)
+                     {
+                         label1.Text = "" + marker.Id;
+                     }
+
+                    //_board = _boardDetector.Detect(_detectedMarkers, _boardConfig, _cameraMatrix, _distortion, _markerSize);
+
 
                 //label1.Text = "nb marqueurs: " + _detectedMarkers.Count;
 
@@ -349,6 +362,8 @@ namespace WrapperAruco_v2
                     GL.PopMatrix();
 
                 }
+
+
 
 
             }
