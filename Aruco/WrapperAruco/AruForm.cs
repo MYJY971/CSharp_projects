@@ -32,7 +32,7 @@ namespace WrapperAruco
         private float _markerSize;
         private Mat _cameraMatrix;
         private Mat _distortion;
-        private MarkerDetector detector;
+        private MarkerDetector _detector;
         private IList<Marker> _detectedMarkers;
         private bool _initContextGLisOk;
         Matrix4 _defaultProjection, _lookatMatrix;
@@ -67,13 +67,13 @@ namespace WrapperAruco
             _cameraMatrix = new Mat(3, 3, Depth.F32, 1);
             _distortion = new Mat(1, 4, Depth.F32, 1);
 
-            detector = new MarkerDetector();
-            detector.ThresholdMethod = ThresholdMethod.AdaptiveThreshold;
-            detector.Param1 = 7.0;
-            detector.Param2 = 7.0;
-            detector.MinSize = 0.04f;
-            detector.MaxSize = 0.5f;
-            detector.CornerRefinement = CornerRefinementMethod.Lines;
+            _detector = new MarkerDetector();
+            _detector.ThresholdMethod = ThresholdMethod.AdaptiveThreshold;
+            _detector.Param1 = 7.0;
+            _detector.Param2 = 7.0;
+            _detector.MinSize = 0.04f;
+            _detector.MaxSize = 0.5f;
+            _detector.CornerRefinement = CornerRefinementMethod.Lines;
 
             _markerSize = 4f;
 
@@ -131,48 +131,56 @@ namespace WrapperAruco
         {
             while (glControl1.IsIdle)
             {
-                try
+                  try
+                   {
+                   
+
+                //_cameraCapture = OpenCV.Net.Capture.CreateCameraCapture(0);
+
+                _frame = _cameraCapture.QueryFrame();
+
+                //IList<Marker> detectedMarkers;
+                _detectedMarkers = _detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
+                foreach (var marker in _detectedMarkers)
                 {
+                    label1.Text = "" + marker.Id;
+                }
 
-                    
-                    _cameraCapture = OpenCV.Net.Capture.CreateCameraCapture(0);
-                    
-                    _frame = _cameraCapture.QueryFrame();
-
-                    //IList<Marker> detectedMarkers;
-                    _detectedMarkers = detector.Detect(_frame, _cameraMatrix, _distortion, _markerSize);
-                    foreach (var marker in _detectedMarkers)
-                    {
-                        label1.Text = "" + marker.Id;
-                    }
-
-                    //label1.Text = "nb marqueurs: " + _detectedMarkers.Count;
+                //label1.Text = "nb marqueurs: " + _detectedMarkers.Count;
 
 
-                    System.Drawing.Size sizeFrame = new System.Drawing.Size(_frame.Width, _frame.Height);
+                System.Drawing.Size sizeFrame = new System.Drawing.Size(_frame.Width, _frame.Height);
 
-                    _emguFrame = new Emgu.CV.Mat(sizeFrame, DepthType.Cv8U, _frame.Channels, _frame.ImageData, _frame.WidthStep);
-                    
+                _emguFrame = new Emgu.CV.Mat(sizeFrame, DepthType.Cv8U, _frame.Channels, _frame.ImageData, _frame.WidthStep);
 
-                    if (!_cameraOn)
-                        _cameraOn = true;
-                    //imageVideo.Image = _emguFrame;
 
-                    //_angle += 10;
-                    _backgroundImage = _frame;
-                    
-                    /*
-                     cvSize size = new cvSize(panelVideo.Width, panelVideo.Height);
-                     IplImage frameResized = new IplImage(size, OpenCV.Net.IplDepth.U8, 3);
-                     OpenCV.Net.CV.Resize(_backgroundImage, frameResized);
-                    */
+                if (!_cameraOn)
+                    _cameraOn = true;
+                //imageVideo.Image = _emguFrame;
 
-                    Render();
+                //_angle += 10;
+                _backgroundImage = _frame;
+
+                /*
+                 cvSize size = new cvSize(panelVideo.Width, panelVideo.Height);
+                 IplImage frameResized = new IplImage(size, OpenCV.Net.IplDepth.U8, 3);
+                 OpenCV.Net.CV.Resize(_backgroundImage, frameResized);
+                */
+
+                Render();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("oh non!"+ex.Message);
-                    return;
+                    try
+                    {
+                        _cameraCapture = OpenCV.Net.Capture.CreateCameraCapture(0);
+                    }
+                    catch (Exception ex2)
+                    {
+                        MessageBox.Show(ex2.Message);
+
+                        return;
+                    }
                 }
             }
         }
@@ -291,7 +299,7 @@ namespace WrapperAruco
                 GL.LoadIdentity();
                 float fact = _factorSize;
                 GL.Disable(EnableCap.Texture2D);
-                GL.PixelZoom(1.0f*fact, -1.0f*fact);
+                GL.PixelZoom(1.0f * fact, -1.0f * fact);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
 
                 cvSize s = new cvSize(w, h);
@@ -317,7 +325,7 @@ namespace WrapperAruco
                 //now, for each marker,
                 double[] modelview_matrix = new double[16];
 
-                
+
                 for (int m = 0; m < _detectedMarkers.Count; m++)
                 {
                     modelview_matrix = _detectedMarkers.ElementAt(m).GetGLModelViewMatrix();
@@ -341,7 +349,7 @@ namespace WrapperAruco
                     GL.PopMatrix();
 
                 }
-                
+
 
             }
 
@@ -791,7 +799,7 @@ namespace WrapperAruco
                 factor = 1.0f;
             }
 
-            sSize newSize =  new sSize((int)(frameSize.Width * factor), (int)(frameSize.Height * factor));
+            sSize newSize = new sSize((int)(frameSize.Width * factor), (int)(frameSize.Height * factor));
 
             CenterImage(newSize);
 
@@ -802,12 +810,12 @@ namespace WrapperAruco
             float diffW, diffH;
             sSize sizePan = panelVideo.Size;
 
-            diffW = sizePan.Width - size.Width ;
+            diffW = sizePan.Width - size.Width;
             diffH = sizePan.Height - size.Height;
 
-            int x=0, y=0;
+            int x = 0, y = 0;
 
-            if (diffW > 0 )
+            if (diffW > 0)
             {
                 x = (int)diffW / 2;
             }
@@ -822,17 +830,17 @@ namespace WrapperAruco
         private void MultMatGL(double[] mat, double f)
         {
             //int i;
-           
-            for(int i=0; i< mat.Count(); i++)
+
+            for (int i = 0; i < mat.Count(); i++)
             {
                 mat[i] = mat[i] * f;
             }
-            
+
         }
 
         private double[] AddMatGL(double[] mat1, double[] mat2)
         {
-            for(int i=0; i<mat1.Count(); i++)
+            for (int i = 0; i < mat1.Count(); i++)
             {
                 mat1[i] = mat1[i] + mat2[2];
             }
@@ -843,7 +851,7 @@ namespace WrapperAruco
         {
             for (int i = 0; i < mat.Count(); i++)
             {
-                if(mat[i] != 0)
+                if (mat[i] != 0)
                 {
                     mat[i] = mat[i] / q;
                 }
