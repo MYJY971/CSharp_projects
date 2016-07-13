@@ -537,7 +537,7 @@ void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
 	
 	_contours.create(total, 1, 0, -1, true);
 	//~~~~~~~~~~~~~~~~~~ NOT OK
-	/*
+	
 
 	SeqIterator<CvSeq*> it = all_contours.begin();
 
@@ -569,7 +569,7 @@ void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
 			hierarchy[i] = Vec4i(h_next, h_prev, v_next, v_prev);
 		}
 	}
-	*/
+	
 }
 
 void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,

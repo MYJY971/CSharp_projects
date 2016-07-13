@@ -107,6 +107,9 @@
     <ClInclude Include="OpenCV\filterengine.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="MYcv.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Aruco_src\CMakeLists.txt" />
