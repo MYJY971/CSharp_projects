@@ -1,0 +1,13 @@
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\MY_Aruco.exe.config
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\MY_Aruco.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\MY_Aruco.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\OpenTK.GLControl.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\OpenTK.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\obj\Debug\MY_Aruco.csprojResolveAssemblyReference.cache
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\obj\Debug\MY_Aruco.AruForm.resources
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\obj\Debug\MY_Aruco.Properties.Resources.resources
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\obj\Debug\MY_Aruco.csproj.GenerateResource.Cache
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\obj\Debug\MY_Aruco.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\obj\Debug\MY_Aruco.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\Emgu.CV.World.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco\bin\Debug\Emgu.CV.World.xml

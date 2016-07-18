@@ -54,6 +54,7 @@ public:
 
     enum ThresholdMethods { FIXED_THRES, ADPT_THRES, CANNY };
 
+
     /**Operating params
      */
     struct Params{

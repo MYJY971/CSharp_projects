@@ -14,6 +14,7 @@ namespace ArucoDll
 {
 	//extern "C" { __declspec(dllexport) double Add(double a, double b); }
 	DLL_EXPORT double Add(double a, double b);
-	DLL_EXPORT double TestAR(Mat image, char *path_CamPara);
+	DLL_EXPORT double TestARCPP(Mat image, char *path_CamPara);
+	DLL_EXPORT int TestAR(char image[], int imageWidth, int imageHeight, char * path_CamPara);
 
 }
