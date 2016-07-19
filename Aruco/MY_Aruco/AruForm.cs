@@ -21,12 +21,13 @@ using Emgu.CV.Structure;
 
 //DllImport
 using System.Runtime.InteropServices;
+using TexLib;
 
 namespace MY_Aruco
 {
     public partial class AruForm : Form
     {
-        private Matrix4 _defaultProjection, _lookatMatrix;
+        private Matrix4 _defaultProjection, _defaultlookatMatrix;
         private Capture _cameraCapture;
         Mat _frame;
         private bool _cameraOn = false;
@@ -38,12 +39,27 @@ namespace MY_Aruco
         private float _factorSize;
         private string _pathCamPara;
         int _nbMarker;
-
+        double[] _modelViewMatrix;
+        float _markerSize;
+        private int _objectTextureId;
 
         //private Mat _backgroundImage;
 
         [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern int TestAR(byte[] image, int width, int height, string path);
+
+        [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetGLProjection(string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+                                                  double gnear, double gfar, double[] proj_matrix);
+
+        [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DetectMarkers (byte[] image, int imageWidth, int imageHeight, string path, float markerSize, out int nbDetectedMarkers, double[] modelview_matrix);
+
+        [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void PerformARMarkers(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix,float markerSize, out int nbDetectedMarkers);
+
+
 
         public AruForm()
         {
@@ -51,6 +67,8 @@ namespace MY_Aruco
             try
             {
                 _pathCamPara = "Data\\intrinsics.yml";
+                _markerSize = 0.05f;
+                
             }
             catch (Exception e)
             {
@@ -61,6 +79,7 @@ namespace MY_Aruco
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+            _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
             Run();
             SetupViewport();
         }
@@ -85,13 +104,17 @@ namespace MY_Aruco
             while (glControl1.IsIdle)
             {
                 _frame = _cameraCapture.QueryFrame();
-                Image<Bgr, byte> _imageForARCompute = new Image<Bgr, byte>(_frame.Width, _frame.Height);
+                /*Image<Bgr, byte> _imageForARCompute = new Image<Bgr, byte>(_frame.Width, _frame.Height);
                 CvInvoke.Resize(_frame, _imageForARCompute, _frame.Size);
                 byte[] byteImageForARCompute = _imageForARCompute.Bytes;
 
-                _nbMarker = TestAR(byteImageForARCompute, _frame.Width, _frame.Height, _pathCamPara);
+                //_nbMarker = TestAR(byteImageForARCompute, _frame.Width, _frame.Height, _pathCamPara);
+                _modelViewMatrix = new double[16];
+                DetectMarkers(byteImageForARCompute, _frame.Width, _frame.Height, _pathCamPara , _markerSize ,out _nbMarker, _modelViewMatrix);
 
-                label1.Text = "Nb marqueurs :" + _nbMarker;
+                label1.Text = "Nb marqueurs :" + _nbMarker;*/
+
+                
 
                 if (!_cameraOn)
                     _cameraOn = true;
@@ -187,7 +210,65 @@ namespace MY_Aruco
 
                 GL.Enable(EnableCap.Texture2D);
 
+                //Scene 3D
+                Image<Bgr, byte> _imageForARCompute = new Image<Bgr, byte>(_frame.Width, _frame.Height);
+                CvInvoke.Resize(_frame, _imageForARCompute, _frame.Size);
+                byte[] byteImageForARCompute = _imageForARCompute.Bytes;
 
+                double[] projMatrix = new double[16];
+                double[] lookatMatrix = new double[16];
+                PerformARMarkers(byteImageForARCompute, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize,out _nbMarker);
+
+                GL.MatrixMode(MatrixMode.Projection);
+                //GetGLProjection(_pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix);
+                GL.LoadIdentity();
+                GL.MultMatrix(projMatrix);
+
+                //now, for each marker,
+                //double[] modelview_matrix = new double[16];
+
+
+                /*for (int m = 0; m < _detectedMarkers.Count; m++)
+                {
+                    modelview_matrix = _detectedMarkers.ElementAt(m).GetGLModelViewMatrix();
+                    GL.MatrixMode(MatrixMode.Modelview);
+                    GL.LoadIdentity();
+                    GL.LoadMatrix(modelview_matrix);
+
+                    //axis(TheMarkerSize);
+                    //DrawCube();
+                    GL.Rotate(-90, Vector3.UnitY);
+                    GL.Rotate(-90, Vector3.UnitX);
+                    //DrawTrihedral();
+                    DrawCube(_markerSize);
+                    GL.Rotate(90, Vector3.UnitX);
+                    GL.Rotate(90, Vector3.UnitY);
+
+                    GL.Translate(0, 0, _markerSize / 2);
+                    GL.PushMatrix();
+                    //glutWireCube(TheMarkerSize);
+
+                    GL.PopMatrix();
+
+                }*/
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                GL.LoadMatrix(lookatMatrix);
+
+                //axis(TheMarkerSize);
+                //DrawCube();
+                /*GL.Rotate(-90, Vector3.UnitY);
+                GL.Rotate(-90, Vector3.UnitX);*/
+                //DrawTrihedral();
+                DrawCube(_markerSize);
+                GL.Rotate(90, Vector3.UnitX);
+                GL.Rotate(90, Vector3.UnitY);
+
+                GL.Translate(0, 0, _markerSize / 2);
+                GL.PushMatrix();
+                //glutWireCube(TheMarkerSize);
+
+                GL.PopMatrix();
 
             }
 
@@ -201,8 +282,8 @@ namespace MY_Aruco
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                _lookatMatrix = Matrix4.LookAt(_eye, _target, _up);
-                GL.LoadMatrix(ref _lookatMatrix);
+                _defaultlookatMatrix = Matrix4.LookAt(_eye, _target, _up);
+                GL.LoadMatrix(ref _defaultlookatMatrix);
 
                 DrawScene();
             }
@@ -366,6 +447,81 @@ namespace MY_Aruco
             GL.Vertex3(-l_flecheH, 0.0f, l_lenghAxis - l_flecheW);
             GL.End();
         }
+
+        private void DrawCube(float size)
+        {
+            float[] l_couleur = new float[4];
+            float l_shin;
+
+            // axe X
+            //GL.Color4(1.0f, 0.0f, 0.0f, 0.5f);
+            //l_couleur[0] = 1.0f; l_couleur[1] = 0.0f; l_couleur[2] = 0.0f; l_couleur[3] = 1.0f;
+            ///*
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new Color4(0.3f, 0.3f, 0.3f, 1.0f));
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 128f);
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new Color4(0.0f, 0.0f, 0.0f, 1.0f)/*@l_couleur*/);
+
+            GL.Begin(BeginMode.Quads);
+            //GL.Color3(1.0f, 0.0f, 0.0f);
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, _objectTextureId);
+            // Front Face
+            //GL.Color3(1.0f, 0.0f, 0.0f);
+            GL.Normal3(0.0f, 0.0f, 1.0f);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, -size / 2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(-size / 2, -size / 2, size);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(size / 2, -size / 2, 0.0);
+
+            // Back Face
+            //GL.Color3(0.0f, 1.0f, 0.0f);
+            GL.Normal3(0.0f, 0.0f, -1.0f);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, size / 2, 0);
+            GL.TexCoord2(1, 1); GL.Vertex3(-size / 2, size / 2, size);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, size / 2, size);
+            GL.TexCoord2(0, 0); GL.Vertex3(size / 2, size / 2, 0.0);
+
+            // Top Face
+            //GL.Color3(1.0f, 1.0f, 0.0f);
+            GL.Normal3(0.0f, 1.0f, 0.0f);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, -size / 2, size);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, size / 2, size);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, size / 2, size);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
+
+            // Bottom Face
+            //GL.Color3(1f, 0.4f, 0f);
+            GL.Normal3(0.0f, -1.0f, 0.0f);
+            GL.TexCoord2(1, 1); GL.Vertex3(-size / 2, -size / 2, 0);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, size / 2, 0);
+            GL.TexCoord2(0, 0); GL.Vertex3(size / 2, size / 2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, -size / 2, 0);
+
+
+            // Right face
+            //GL.Color3(1f, 0f, 1f);
+            GL.Normal3(1.0f, 0.0f, 0.0f);
+            GL.TexCoord2(1, 0); GL.Vertex3(size / 2, -size / 2, 0);
+            GL.TexCoord2(1, 1); GL.Vertex3(size / 2, -size / 2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(size / 2, size / 2, size);
+            GL.TexCoord2(0, 0); GL.Vertex3(size / 2, -size / 2, size);
+
+
+            // Left Face
+            //GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Normal3(-1.0f, 0.0f, 0.0f);
+            GL.TexCoord2(0, 0); GL.Vertex3(-size / 2, -size / 2, 0);
+            GL.TexCoord2(1, 0); GL.Vertex3(-size / 2, -size / 2, size);
+            GL.TexCoord2(1, 1); GL.Vertex3(-size / 2, size / 2, size);
+            GL.TexCoord2(0, 1); GL.Vertex3(-size / 2, -size / 2, size);
+
+            GL.Disable(EnableCap.Texture2D);
+            GL.Color3(1.0f, 1.0f, 1.0f);
+
+            GL.End();
+        }
+
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {

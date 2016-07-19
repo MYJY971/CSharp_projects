@@ -89,7 +89,90 @@ namespace ArucoDll
 		return theMarkers.size();
 	}
 
-	
+	DLL_EXPORT void DetectMarkers(char image[], int imageWidth, int imageHeight, char * path_CamPara, float markerSize, int &nbDetectedMarkers, double modelview_matrix[16])
+	{
+		MarkerDetector mDetector;
+		vector<Marker> theMarkers;
+		Mat theInputImage, theUndInputImage;
+		theInputImage = Mat(imageHeight, imageWidth, CV_8UC3, image);
+
+		CameraParameters theCameraParameters;
+		theCameraParameters.readFromXMLFile(path_CamPara);
+		theCameraParameters.resize(theInputImage.size());
+
+		float theMarkerSize = markerSize;
+
+		//image captured
+		theUndInputImage.create(theInputImage.size(), CV_8UC3);
+		//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
+		cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
+		//remove distortion in image
+		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
+		//detect markers
+		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+
+		for (unsigned int i = 0; i < theMarkers.size(); i++)
+		{
+			theMarkers[i].glGetModelViewMatrix(modelview_matrix);
+			break;
+		}
+		/*if(theMarkers.size()>0)
+		theMarkers[0].glGetModelViewMatrix(modelview_matrix);*/
+
+		nbDetectedMarkers = theMarkers.size();
+		//return theMarkers.size();
+	}
+
+	DLL_EXPORT void GetGLProjection(char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+		double gnear, double gfar, double proj_matrix[16])
+	{
+		Size inputImageSize = Size(imageWidth, imageHeight);
+		Size glSize = Size(glWidth, glHeight);
+
+
+		CameraParameters theCameraParameters;
+		theCameraParameters.readFromXMLFile(path_CamPara);
+		theCameraParameters.resize(inputImageSize);
+
+		theCameraParameters.glGetProjectionMatrix(inputImageSize, glSize, proj_matrix, gnear, gfar);
+	}
+
+	DLL_EXPORT void PerformARMarkers(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+		double gnear, double gfar, double proj_matrix[16], double modelview_matrix[16],
+		float markerSize, int &nbDetectedMarkers)
+	{
+		MarkerDetector mDetector;
+		vector<Marker> theMarkers;
+		Mat theInputImage, theUndInputImage;
+		theInputImage = Mat(imageHeight, imageWidth, CV_8UC3, image);
+
+		CameraParameters theCameraParameters;
+		theCameraParameters.readFromXMLFile(path_CamPara);
+		theCameraParameters.resize(theInputImage.size());
+
+		theCameraParameters.glGetProjectionMatrix(theInputImage.size(), Size(glWidth,glHeight), proj_matrix, gnear, gfar);
+
+		float theMarkerSize = markerSize;
+
+		//image captured
+		theUndInputImage.create(theInputImage.size(), CV_8UC3);
+		//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
+		cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
+		//remove distortion in image
+		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
+		//detect markers
+		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+
+		for (unsigned int i = 0; i < theMarkers.size(); i++)
+		{
+			theMarkers[i].glGetModelViewMatrix(modelview_matrix);
+			break;
+		}
+		/*if(theMarkers.size()>0)
+		theMarkers[0].glGetModelViewMatrix(modelview_matrix);*/
+
+		nbDetectedMarkers = theMarkers.size();
+	}
 
 
 }
