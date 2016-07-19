@@ -44,7 +44,7 @@
             this.panelImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelImage.Location = new System.Drawing.Point(0, 0);
             this.panelImage.Name = "panelImage";
-            this.panelImage.Size = new System.Drawing.Size(487, 417);
+            this.panelImage.Size = new System.Drawing.Size(487, 317);
             this.panelImage.TabIndex = 0;
             // 
             // glControl1
@@ -92,8 +92,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(487, 417);
-            this.Controls.Add(this.panelInfo);
             this.Controls.Add(this.panelImage);
+            this.Controls.Add(this.panelInfo);
             this.Name = "AruForm";
             this.Text = "MY-Aruco";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
