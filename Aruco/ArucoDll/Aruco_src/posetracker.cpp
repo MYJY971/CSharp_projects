@@ -173,13 +173,13 @@ bool MarkerMapPoseTracker::estimatePose(const  vector<Marker> &v_m){
             }
         }
 
-#ifdef OPENCV_VERSION_3
+//#ifdef OPENCV_VERSION_3
         cv::solvePnP(p3d,p2d,_cam_params.CameraMatrix,_cam_params.Distorsion,_rvec,_tvec,true);
 
-#else //SolvePnP does not work properly in opencv 2
-        __aruco_solve_pnp(p3d,p2d,_cam_params.CameraMatrix,_cam_params.Distorsion,_rvec,_tvec);
+//#else //SolvePnP does not work properly in opencv 2
+//        __aruco_solve_pnp(p3d,p2d,_cam_params.CameraMatrix,_cam_params.Distorsion,_rvec,_tvec);
 
-#endif
+//#endif
 
         return true;
     }

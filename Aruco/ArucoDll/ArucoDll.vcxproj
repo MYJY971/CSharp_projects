@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ARUCODLL_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Aruco_src;..\..\..\Libraries\OpenCV\opencv-3.0.0\build\include\opencv;..\..\..\Libraries\OpenCV\opencv-3.0.0\build\include;C:\Stage\Yanis\Libraries\OpenCV\opencv-3.0.0\sources;..\..\..\Libraries\Aruco\aruco-2.0.7\3rdparty\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Aruco_src;C:\Stage\Yanis\Libraries\OpenCV\opencv-3.0.0\build\include\opencv;C:\Stage\Yanis\Libraries\OpenCV\opencv-3.0.0\build\include;C:\Stage\Yanis\Libraries\OpenCV\opencv-3.0.0\sources;..\..\..\Libraries\Aruco\aruco-2.0.7\3rdparty\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

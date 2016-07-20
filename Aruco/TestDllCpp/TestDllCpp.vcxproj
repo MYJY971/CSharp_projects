@@ -87,7 +87,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;OPENCV_VERSION_3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Stage\Yanis\Libraries\Aruco\aruco-2.0.7\src;C:\Stage\Yanis\Libraries\OpenCV\opencv-3.0.0\build\include\opencv;C:\Stage\Yanis\Libraries\OpenCV\opencv-3.0.0\build\include;C:\Stage\Yanis\CSharp_projects\Aruco\ArucoDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

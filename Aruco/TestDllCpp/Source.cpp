@@ -19,9 +19,13 @@ int main(int argc, char **argv)
 	if (vreader.isOpened()) vreader >> InImage;
 
 	char* path = "C:\\Stage\\Yanis\\Libraries\\Aruco\\aruco-test-data-2.0\\1_single\\intrinsics.yml";
-	
+	char* pathMap = "C:\\Stage\\Yanis\\Libraries\\Aruco\\aruco-test-data-2.0\\2_markermap\\map4.yml";
+	int nbM;
 	double result = 0;
-	result = TestARCPP(InImage, path);
+	double projMat[16];
+	double lookat[16];
+	TestARCpp2(InImage, pathMap, path, 640, 480, 0.1, 100, projMat, lookat, 0.5, nbM);
+	//result = TestARCPP(InImage, path);
 
 	/*try {
 		result = TestAR(InImage, path);
@@ -31,7 +35,7 @@ int main(int argc, char **argv)
 		cout << "ERROR" << endl;
 	}*/
 
-    cout << "SUCESS -->" << result << endl;
+    //cout << "SUCESS -->" << result << endl;
 	//cout << TestAR(InImage, path) << endl;
 	//system("PAUSE");
 	return 0;
