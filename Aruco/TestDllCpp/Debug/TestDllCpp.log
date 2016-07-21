@@ -49,5 +49,8 @@ c:\stage\yanis\libraries\aruco\aruco-2.0.7\src\markermap.h(129): warning C4290: 
 c:\stage\yanis\libraries\aruco\aruco-2.0.7\src\markermap.h(154): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
 c:\stage\yanis\libraries\aruco\aruco-2.0.7\src\markermap.h(157): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
 c:\stage\yanis\libraries\aruco\aruco-2.0.7\src\posetracker.h(69): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\testdllcpp\source.cpp(26): warning C4101: 'lookat' : variable locale non référencée
+c:\stage\yanis\csharp_projects\aruco\testdllcpp\source.cpp(25): warning C4101: 'projMat' : variable locale non référencée
+c:\stage\yanis\csharp_projects\aruco\testdllcpp\source.cpp(23): warning C4101: 'nbM' : variable locale non référencée
   TestDllCpp.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\TestDllCpp.exe
   TestDllCpp.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\TestDllCpp.pdb (Full PDB)

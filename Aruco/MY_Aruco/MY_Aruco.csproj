@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CjClutter.ObjLoader.Loader">
+      <HintPath>..\..\..\EXISTANT\ObjLoader-master\source\CjClutter.ObjLoader.Loader\bin\Debug\CjClutter.ObjLoader.Loader.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV.World">
       <HintPath>..\..\..\Libraries\Emgu\emgucv-windesktop 3.1.0.2282\bin\Emgu.CV.World.dll</HintPath>
     </Reference>

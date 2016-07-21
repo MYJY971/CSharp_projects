@@ -31,8 +31,11 @@
             this.panelImage = new System.Windows.Forms.Panel();
             this.glControl1 = new OpenTK.GLControl();
             this.panelInfo = new System.Windows.Forms.Panel();
+            this.buttonStop = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.buttonFullSize = new System.Windows.Forms.Button();
+            this.buttonAdaptedSize = new System.Windows.Forms.Button();
             this.panelImage.SuspendLayout();
             this.panelInfo.SuspendLayout();
             this.SuspendLayout();
@@ -50,10 +53,9 @@
             // glControl1
             // 
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl1.Location = new System.Drawing.Point(0, 0);
+            this.glControl1.Location = new System.Drawing.Point(143, 119);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(487, 317);
+            this.glControl1.Size = new System.Drawing.Size(172, 107);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
@@ -62,6 +64,9 @@
             // panelInfo
             // 
             this.panelInfo.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.panelInfo.Controls.Add(this.buttonAdaptedSize);
+            this.panelInfo.Controls.Add(this.buttonFullSize);
+            this.panelInfo.Controls.Add(this.buttonStop);
             this.panelInfo.Controls.Add(this.label2);
             this.panelInfo.Controls.Add(this.label1);
             this.panelInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -69,6 +74,17 @@
             this.panelInfo.Name = "panelInfo";
             this.panelInfo.Size = new System.Drawing.Size(487, 100);
             this.panelInfo.TabIndex = 1;
+            // 
+            // buttonStop
+            // 
+            this.buttonStop.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonStop.Location = new System.Drawing.Point(412, 74);
+            this.buttonStop.Name = "buttonStop";
+            this.buttonStop.Size = new System.Drawing.Size(75, 23);
+            this.buttonStop.TabIndex = 2;
+            this.buttonStop.Text = "Stop";
+            this.buttonStop.UseVisualStyleBackColor = false;
+            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
             // label2
             // 
@@ -87,6 +103,26 @@
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "label1";
+            // 
+            // buttonFullSize
+            // 
+            this.buttonFullSize.Location = new System.Drawing.Point(222, 36);
+            this.buttonFullSize.Name = "buttonFullSize";
+            this.buttonFullSize.Size = new System.Drawing.Size(75, 23);
+            this.buttonFullSize.TabIndex = 3;
+            this.buttonFullSize.Text = "Full";
+            this.buttonFullSize.UseVisualStyleBackColor = true;
+            this.buttonFullSize.Click += new System.EventHandler(this.buttonFullSize_Click);
+            // 
+            // buttonAdaptedSize
+            // 
+            this.buttonAdaptedSize.Location = new System.Drawing.Point(303, 36);
+            this.buttonAdaptedSize.Name = "buttonAdaptedSize";
+            this.buttonAdaptedSize.Size = new System.Drawing.Size(75, 23);
+            this.buttonAdaptedSize.TabIndex = 4;
+            this.buttonAdaptedSize.Text = "Adapted";
+            this.buttonAdaptedSize.UseVisualStyleBackColor = true;
+            this.buttonAdaptedSize.Click += new System.EventHandler(this.buttonAdaptedSize_Click);
             // 
             // AruForm
             // 
@@ -112,6 +148,9 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.Button buttonAdaptedSize;
+        private System.Windows.Forms.Button buttonFullSize;
     }
 }
 

@@ -22,6 +22,7 @@ using Emgu.CV.Structure;
 //DllImport
 using System.Runtime.InteropServices;
 using TexLib;
+using ObjLoader.Loader.Loaders;
 
 namespace MY_Aruco
 {
@@ -36,26 +37,32 @@ namespace MY_Aruco
         private Vector3 _target = Vector3.Zero;
         private Vector3 _up = new Vector3(0.0f, 0.0f, 1.0f);
         private bool _sizeChanged;
-        private float _factorSize;
+        private float _factorSize = 1f;
         private string _pathCamPara, _pathMapPara;
         int _nbMarker = 0;
         double[] _modelViewMatrix;
         float _markerSize;
         private int _objectTextureId;
         bool _changeResolution = false;
+        private int _xCenter, _yCenter;
+        private Size _sizeGL, _sizeGLAdapted;
 
         private Mat _backgroundImage;
         private Mat _frameComputed, _frameResized;
+        private bool _stop = false;
+
+        bool _isFullSize;
+        bool _isAdaptedSize;
 
         [DllImport(/*"..\\..\\..\\Debug\\*/"ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void PerformARMarkers(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
-        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix,float markerSize, out int nbDetectedMarkers);
-
-        [DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void PerformAR(byte[] image,string path_MapPara, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
 
+        [DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void PerformAR(byte[] image, string path_MapPara, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
 
+        private LoadResult _loadObj;
 
         public AruForm()
         {
@@ -63,9 +70,11 @@ namespace MY_Aruco
             try
             {
                 _pathCamPara = "Data\\intrinsics.yml";
-                _pathMapPara = "Data\\map4b.yml";
-                _markerSize = 0.05f;
-                
+                _pathMapPara = "Data\\map4.yml";
+                _markerSize = 0.2f;
+                _isAdaptedSize = true;
+                _isFullSize = false;
+
             }
             catch (Exception e)
             {
@@ -77,6 +86,11 @@ namespace MY_Aruco
         private void glControl1_Load(object sender, EventArgs e)
         {
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
+            var objLoaderFactory = new ObjLoaderFactory();
+            var objLoader = objLoaderFactory.Create();
+            var fileStream = new System.IO.FileStream("Data\\Pokeball.obj", System.IO.FileMode.Open);
+            _loadObj = objLoader.Load(fileStream);
+
             Run();
             SetupViewport();
         }
@@ -87,8 +101,8 @@ namespace MY_Aruco
             try
             {
                 _cameraCapture = new Capture();
-                _cameraCapture.SetCaptureProperty(CapProp.FrameWidth, 5120);
-                _cameraCapture.SetCaptureProperty(CapProp.FrameHeight, 2160);
+                _cameraCapture.SetCaptureProperty(CapProp.FrameWidth, 1280/*5120*/);
+                _cameraCapture.SetCaptureProperty(CapProp.FrameHeight, 720 /*2160*/);
             }
             catch (Exception e)
             {
@@ -101,34 +115,22 @@ namespace MY_Aruco
 
         private void ProcessFrame(object sender, EventArgs e)
         {
-            if(_nbMarker>0)
-            {
-                _changeResolution = true;
-                _cameraCapture.SetCaptureProperty(CapProp.FrameWidth, 1280);
-                _cameraCapture.SetCaptureProperty(CapProp.FrameHeight, 920);
-            }
-            else
-            {
-                _changeResolution = false;
-                _cameraCapture.SetCaptureProperty(CapProp.FrameWidth, 5120);
-                _cameraCapture.SetCaptureProperty(CapProp.FrameHeight, 2160);
-            }
 
-            
             while (glControl1.IsIdle)
             {
                 _frame = _cameraCapture.QueryFrame();
-                
+
                 if (!_cameraOn)
                     _cameraOn = true;
                 _backgroundImage = _frame;
 
                 _frameComputed = _frame;
                 _frameResized = _frame;
-
-                CvInvoke.Resize(_frame, _frameResized, new Size(640, 480));
+                CvInvoke.Resize(_frameResized, _frameComputed, new Size(640, 480));
+                //CvInvoke.Resize(_frame, _frameResized, new Size(640, 480));
                 Render();
             }
+
         }
 
 
@@ -180,16 +182,25 @@ namespace MY_Aruco
             if (_cameraOn)
             {
 
-                /*if (!_sizeChanged)
+                if (_isAdaptedSize)
                 {
-                    //glControl1.Size = new sSize(_backgroundImage.Width, _backgroundImage.Height);
-                    //glControl1.Size = panelVideo.Size;
-                    Size frameSize = new Size(_frame.Width, _frame.Height);
-                    AdaptSize(frameSize, out _factorSize);
-                    label2.Text = "" + _frame.Width + " x " + _frame.Height;
-                    _sizeChanged = true;
-                    //glControl1.SetBounds(0, 10, _backgroundImage.Width, _backgroundImage.Height);
-                }*/
+                    if (!_sizeChanged)
+                    {
+
+                        //Size frameSize = new Size(_frame.Width, _frame.Height);
+                        AdaptSize(_frame.Size, out _factorSize);
+                        _sizeChanged = true;
+
+                    }
+
+                }
+                else
+                {
+
+                    glControl1.Size=panelImage.Size;
+                    glControl1.SetBounds(0, 0, glControl1.Width, glControl1.Height);
+                }
+
                 label2.Text = "" + _frame.Width + " x " + _frame.Height;
                 int w = glControl1.Width;
                 int h = glControl1.Height;
@@ -205,61 +216,72 @@ namespace MY_Aruco
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                float fact = 1f;//_factorSize;
-                GL.Disable(EnableCap.Texture2D);
-                GL.PixelZoom(1.0f * fact, -1.0f * fact);
-                GL.RasterPos3(0f, h - 0.5f, -1.0f);
 
-                //cvSize s = new cvSize(w, h);
-                CvInvoke.Resize(_frame, _frameComputed, new Size(640, 480));
+
+                
+                GL.Disable(EnableCap.Texture2D);
+
+                
                 Image<Bgr, byte> _imageForARCompute = new Image<Bgr, byte>(_frameComputed.Width, _frameComputed.Height);
                 CvInvoke.Resize(_frameComputed, _imageForARCompute, _frameComputed.Size);
                 byte[] byteImageForARCompute = _imageForARCompute.Bytes;
 
                 double[] projMatrix = new double[16];
-                double[] lookatMatrix = new double[16];
-                PerformARMarkers(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
-
-                if(_nbMarker>0)
-                    CvInvoke.Resize(_frame, _backgroundImage, glControl1.Size);
+                double[] modelviewMatrix = new double[16];
+                PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker);
+                //PerformAR(byteImageForARCompute, _pathMapPara, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
+                GL.RasterPos3(0f, h - 0.5f, -1.0f);
+                if (_isAdaptedSize)
+                {
+                    GL.PixelZoom(1.0f * _factorSize, -1.0f * _factorSize);
+                    _backgroundImage = _frame;
+                    GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.DataPointer);
+                }
                 else
-                    CvInvoke.Resize(_frame, _backgroundImage, glControl1.Size);
-
-                GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.DataPointer);
-
-                GL.Enable(EnableCap.Texture2D);
+                {
+                   
+                    GL.PixelZoom(1.0f, -1.0f);
+                    CvInvoke.Resize(_frameResized, _backgroundImage, glControl1.Size);
+                    GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.DataPointer);
+                    _sizeChanged = false;
+                }
+                
 
                 //Scene 3D
-                
+
                 //PerformARMarkers(byteImageForARCompute, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize,out _nbMarker);
                 //PerformAR(byteImageForARCompute, _pathMapPara, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
 
                 label1.Text = "nb:" + _nbMarker;
 
                 GL.MatrixMode(MatrixMode.Projection);
-                
+
                 GL.LoadIdentity();
                 GL.MultMatrix(projMatrix);
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                GL.LoadMatrix(lookatMatrix);
+                GL.LoadMatrix(modelviewMatrix);
 
                 //axis(TheMarkerSize);
                 //DrawCube();
-                /*GL.Rotate(-90, Vector3.UnitY);
-                GL.Rotate(-90, Vector3.UnitX);*/
-                //DrawTrihedral();
+                GL.Translate(0,0, _markerSize+0.0001f);
+                DrawTrihedral(_markerSize/2);
+                GL.Translate(0, 0, -(_markerSize + 0.0001f));
+                GL.Enable(EnableCap.Texture2D);
                 DrawCube(_markerSize);
-                GL.Rotate(90, Vector3.UnitX);
-                GL.Rotate(90, Vector3.UnitY);
 
-                //GL.Translate(0, 0, _markerSize / 2);
                 GL.PushMatrix();
 
                 //glutWireCube(TheMarkerSize);
 
                 GL.PopMatrix();
+
+
+
+                // CvInvoke.Resize(_frame, _backgroundImage, glControl1.Size);
+
+
 
             }
 
@@ -291,7 +313,7 @@ namespace MY_Aruco
 
         private void DrawScene()
         {
-            DrawTrihedral();
+            DrawTrihedral(10);
 
             //GL.Rotate(45f, Vector3.UnitZ);
             DrawCube();
@@ -364,14 +386,15 @@ namespace MY_Aruco
             GL.End();
         }
 
-        private void DrawTrihedral()
+        private void DrawTrihedral(float size)
         {
             //DrawTrihedral ///////////////////////
 
+            GL.LineWidth(2);
             float[] l_couleur = new float[4];
             float l_shin;
-            float l_lenghAxis = 1.0f;
-            float l_flecheW = 0.5f; float l_flecheH = 0.5f;
+            float l_lenghAxis = size;
+            float l_flecheW = size/5; float l_flecheH = size / 5;
 
             // axe X
             GL.Color4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -437,6 +460,7 @@ namespace MY_Aruco
             GL.Vertex3(0.0f, 0.0f, l_lenghAxis);
             GL.Vertex3(-l_flecheH, 0.0f, l_lenghAxis - l_flecheW);
             GL.End();
+            GL.Color3(1.0f, 1.0f, 1.0f);
         }
 
         private void DrawCube(float size)
@@ -519,6 +543,22 @@ namespace MY_Aruco
             Render();
         }
 
+        private void buttonFullSize_Click(object sender, EventArgs e)
+        {
+            _isAdaptedSize = false;
+        }
+
+        private void buttonAdaptedSize_Click(object sender, EventArgs e)
+        {
+            _isAdaptedSize = true;
+        }
+
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
         private void SetupViewport()
         {
             int w = glControl1.Width;
@@ -539,6 +579,22 @@ namespace MY_Aruco
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
         }
+
+
+        private void DrawMesh()
+        {
+            GL.Begin(BeginMode.Points);
+            for(int i=0; i < _loadObj.Vertices.Count; i++)
+            {
+                var vertex = _loadObj.Vertices[i];
+                var normal = _loadObj.Normals[i];
+
+                GL.Normal3(normal);
+            }
+            GL.End();
+
+        }
+
 
         /// <summary>
         /// 
@@ -570,21 +626,23 @@ namespace MY_Aruco
                 factor = 1.0f;
             }
 
-            Size newSize = new Size((int)(frameSize.Width * factor), (int)(frameSize.Height * factor));
+            Size sizeGL = new Size((int)(frameSize.Width * factor), (int)(frameSize.Height * factor));
 
-            CenterImage(newSize);
+            CenterImage(sizeGL);
 
         }
 
         private void CenterImage(Size size)
         {
             float diffW, diffH;
+            int x, y;
             Size sizePan = panelImage.Size;
 
             diffW = sizePan.Width - size.Width;
             diffH = sizePan.Height - size.Height;
 
-            int x = 0, y = 0;
+            x = 0;
+            y = 0;
 
             if (diffW > 0)
             {

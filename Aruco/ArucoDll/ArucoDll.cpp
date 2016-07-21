@@ -93,7 +93,7 @@ namespace ArucoDll
 
 
 
-	DLL_EXPORT void PerformARMarkers(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+	DLL_EXPORT void PerformARMarker(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
 		double gnear, double gfar, double proj_matrix[16], double modelview_matrix[16],
 		float markerSize, int &nbDetectedMarkers)
 	{
@@ -109,6 +109,8 @@ namespace ArucoDll
 		theCameraParameters.glGetProjectionMatrix(theInputImage.size(), Size(glWidth,glHeight), proj_matrix, gnear, gfar);
 
 		float theMarkerSize = markerSize;
+
+		mDetector.setThresholdParams(12, 13);
 
 		//image captured
 		theUndInputImage.create(theInputImage.size(), CV_8UC3);
@@ -241,7 +243,8 @@ namespace ArucoDll
 
 		theCameraParams.glGetProjectionMatrix(theInputImage.size(), Size(glWidth, glHeight), proj_matrix, gnear, gfar);
 		if (!mmPoseTracker.getRTMatrix().empty()) {
-			__glGetModelViewMatrix(modelview_matrix, mmPoseTracker.getRvec(), mmPoseTracker.getTvec());
+			//__glGetModelViewMatrix(modelview_matrix, mmPoseTracker.getRvec(), mmPoseTracker.getTvec());
+			theMarkers[0].glGetModelViewMatrix(modelview_matrix);
 		}
 
 		nbDetectedMarkers = theMarkers.size();
