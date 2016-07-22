@@ -1,0 +1,7 @@
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\bin\Debug\TestLoadOBJ.exe.config
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\bin\Debug\TestLoadOBJ.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\bin\Debug\TestLoadOBJ.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\bin\Debug\OpenTK.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\obj\Debug\TestLoadOBJ.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\obj\Debug\TestLoadOBJ.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\TestLoadOBJ\obj\Debug\TestLoadOBJ.csprojResolveAssemblyReference.cache

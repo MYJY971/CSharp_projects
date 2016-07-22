@@ -54,6 +54,10 @@ namespace MY_Aruco
         bool _isFullSize;
         bool _isAdaptedSize;
 
+
+        List<Mesh> objects = new List<Mesh>();
+        Mesh obj;
+
         [DllImport(/*"..\\..\\..\\Debug\\*/"ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
@@ -75,6 +79,11 @@ namespace MY_Aruco
                 _isAdaptedSize = true;
                 _isFullSize = false;
 
+                // OBJ models from files
+                MeshOBJ obj1 = MeshOBJ.LoadFromFile("Data\\Pokeball.obj");
+                //obj1.TextureID = textures["opentksquare.png"];
+                objects.Add(obj1);
+                obj = obj1;
             }
             catch (Exception e)
             {
@@ -266,11 +275,12 @@ namespace MY_Aruco
                 //axis(TheMarkerSize);
                 //DrawCube();
                 GL.Translate(0,0, _markerSize+0.0001f);
-                DrawTrihedral(_markerSize/2);
+                //DrawTrihedral(_markerSize/2);
                 GL.Translate(0, 0, -(_markerSize + 0.0001f));
-                GL.Enable(EnableCap.Texture2D);
-                DrawCube(_markerSize);
-
+                //GL.Enable(EnableCap.Texture2D);
+                //DrawCube(_markerSize);
+                GL.DrawElements(BeginMode.Triangles, obj.IndiceCount, DrawElementsType.UnsignedInt, 0);
+                GL.Flush();
                 GL.PushMatrix();
 
                 //glutWireCube(TheMarkerSize);
@@ -583,15 +593,7 @@ namespace MY_Aruco
 
         private void DrawMesh()
         {
-            GL.Begin(BeginMode.Points);
-            for(int i=0; i < _loadObj.Vertices.Count; i++)
-            {
-                var vertex = _loadObj.Vertices[i];
-                var normal = _loadObj.Normals[i];
 
-                GL.Normal3(normal);
-            }
-            GL.End();
 
         }
 

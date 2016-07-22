@@ -65,6 +65,8 @@
     <Compile Include="AruForm.Designer.cs">
       <DependentUpon>AruForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Mesh.cs" />
+    <Compile Include="MeshOBJ.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TexLib.cs" />
