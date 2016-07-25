@@ -307,11 +307,6 @@ namespace MY_Aruco
             //Refresh();
         }
 
-        private void AdaptSize(Size frameSize, out object _factorSize)
-        {
-            throw new NotImplementedException();
-        }
-
         private void DrawScene()
         {
 

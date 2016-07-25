@@ -41,27 +41,39 @@ namespace ArucoDll
 
 	DLL_EXPORT double TestARCPP(Mat image, char * path_CamPara)
 	{
-		MarkerDetector mDetector;
-		vector<Marker> theMarkers;
-		Mat theInputImage, theUndInputImage;
-		theInputImage = image;//Mat(imageHeight, imageWidth, CV_8UC3, image);
+		try
+		{
+			MarkerDetector mDetector;
+			vector<Marker> theMarkers;
+			Mat theInputImage, theUndInputImage;
+			theInputImage = image;//Mat(imageHeight, imageWidth, CV_8UC3, image);
 
-		CameraParameters theCameraParameters;
-		theCameraParameters.readFromXMLFile(path_CamPara);
-		theCameraParameters.resize(theInputImage.size());
+			CameraParameters theCameraParameters;
+			theCameraParameters.readFromXMLFile(path_CamPara);
+			theCameraParameters.resize(theInputImage.size());
 
-		float theMarkerSize = 0.05f;
+			float theMarkerSize = 0.05f;
 
-		//image captured
-		theUndInputImage.create(theInputImage.size(), CV_8UC3);
-		//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
-		cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
-		//remove distortion in image
-		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
-		//detect markers
-		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+			//image captured
+			theUndInputImage.create(theInputImage.size(), CV_8UC3);
+			//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
+			cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
+			//remove distortion in image
+			cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
+			//detect markers
+			mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
 
-		return double(theMarkers.size());
+
+			double res = (double)theMarkers.size();
+			return res;
+
+
+		}
+		catch (const std::exception&)
+		{
+			return 0;
+		}
+		
 	}
 
 	DLL_EXPORT int TestAR(char image[],int imageWidth,int imageHeight, char * path_CamPara)
@@ -84,7 +96,7 @@ namespace ArucoDll
 		//remove distortion in image
 		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 		//detect markers
-		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+		//mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
 
 		return theMarkers.size();
 	}

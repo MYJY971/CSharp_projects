@@ -1,0 +1,14 @@
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\MY_Aruco_v2.exe.config
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\MY_Aruco_v2.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\MY_Aruco_v2.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\CjClutter.ObjLoader.Loader.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\Emgu.CV.World.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\OpenTK.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\OpenTK.GLControl.dll
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\CjClutter.ObjLoader.Loader.pdb
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\bin\Debug\Emgu.CV.World.xml
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\obj\Debug\MY_Aruco_v2.AruForm.resources
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\obj\Debug\MY_Aruco_v2.Properties.Resources.resources
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\obj\Debug\MY_Aruco_v2.csproj.GenerateResource.Cache
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\obj\Debug\MY_Aruco_v2.exe
+C:\Stage\Yanis\CSharp_projects\Aruco\MY_Aruco_v2\obj\Debug\MY_Aruco_v2.pdb
