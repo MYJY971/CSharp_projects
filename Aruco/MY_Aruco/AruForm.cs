@@ -22,7 +22,7 @@ using Emgu.CV.Structure;
 //DllImport
 using System.Runtime.InteropServices;
 using TexLib;
-using ObjLoader.Loader.Loaders;
+//using ObjLoader.Loader.Loaders;
 
 namespace MY_Aruco
 {
@@ -55,9 +55,6 @@ namespace MY_Aruco
         bool _isAdaptedSize;
 
 
-        List<Mesh> objects = new List<Mesh>();
-        Mesh obj;
-
         [DllImport(/*"..\\..\\..\\Debug\\*/"ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
@@ -66,24 +63,26 @@ namespace MY_Aruco
         public static extern void PerformAR(byte[] image, string path_MapPara, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
 
-        private LoadResult _loadObj;
+        /*Mesh _mesh;
+        String _pathMesh;*/
 
         public AruForm()
         {
             InitializeComponent();
             try
             {
-                _pathCamPara = "Data\\intrinsics.yml";
-                _pathMapPara = "Data\\map4.yml";
-                _markerSize = 0.2f;
+                _pathCamPara = "DATA\\intrinsics.yml";
+                _pathMapPara = "DATA\\map4.yml";
+                
+                _markerSize = 2f;//0.2f;
                 _isAdaptedSize = true;
                 _isFullSize = false;
 
+                
+
+
                 // OBJ models from files
-                MeshOBJ obj1 = MeshOBJ.LoadFromFile("Data\\Pokeball.obj");
-                //obj1.TextureID = textures["opentksquare.png"];
-                objects.Add(obj1);
-                obj = obj1;
+                
             }
             catch (Exception e)
             {
@@ -95,11 +94,10 @@ namespace MY_Aruco
         private void glControl1_Load(object sender, EventArgs e)
         {
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
-            var objLoaderFactory = new ObjLoaderFactory();
-            var objLoader = objLoaderFactory.Create();
-            var fileStream = new System.IO.FileStream("Data\\Pokeball.obj", System.IO.FileMode.Open);
-            _loadObj = objLoader.Load(fileStream);
+            /*_pathMesh = "DATA\\sphere.obj";
 
+            _mesh = new Mesh();
+            _mesh.Load(_pathMesh);*/
             Run();
             SetupViewport();
         }
@@ -272,15 +270,8 @@ namespace MY_Aruco
                 GL.LoadIdentity();
                 GL.LoadMatrix(modelviewMatrix);
 
-                //axis(TheMarkerSize);
-                //DrawCube();
-                GL.Translate(0,0, _markerSize+0.0001f);
-                //DrawTrihedral(_markerSize/2);
-                GL.Translate(0, 0, -(_markerSize + 0.0001f));
-                //GL.Enable(EnableCap.Texture2D);
-                //DrawCube(_markerSize);
-                GL.DrawElements(BeginMode.Triangles, obj.IndiceCount, DrawElementsType.UnsignedInt, 0);
-                GL.Flush();
+                DrawScene();
+
                 GL.PushMatrix();
 
                 //glutWireCube(TheMarkerSize);
@@ -323,10 +314,30 @@ namespace MY_Aruco
 
         private void DrawScene()
         {
-            DrawTrihedral(10);
 
-            //GL.Rotate(45f, Vector3.UnitZ);
-            DrawCube();
+            GL.Translate(0, 0, _markerSize + 0.0001f);
+            DrawTrihedral(_markerSize/2);
+            GL.Translate(0, 0, -(_markerSize + 0.0001f));
+            GL.Enable(EnableCap.Texture2D);
+            DrawCube(_markerSize);
+            GL.Disable(EnableCap.Texture2D);
+            //int indiceat = 0;
+
+            GL.Begin(BeginMode.Polygon);
+            GL.Color3(1.0f, 0.0f, 0.0f);
+
+            /*foreach(Vector3d vertex in _mesh.GetVertices())
+            {
+                GL.Vertex3(vertex);
+            }
+            */
+            
+            
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.End();
+            //GL.DrawElements(BeginMode.Triangles,1, DrawElementsType.UnsignedInt, 0);
+            //GL.DrawElements(BeginMode.Triangles, obj.IndiceCount, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
+            GL.Flush();
         }
 
         private void DrawCube()

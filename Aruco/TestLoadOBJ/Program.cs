@@ -6,30 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK;
+using MY_Aruco;
 
 namespace TestLoadOBJ
 {
     class Program
     {
+
+        
         static void Main(string[] args)
         {
             StreamReader file;
+            List<Vector3d> vertices = new List<Vector3d>();
 
             file = new StreamReader("sphere.obj");
 
-            string line;
+            Mesh mesh1 = new Mesh();
+            mesh1.Load("sphere.obj");
 
-            while(/*!file.EndOfStream*/(line = file.ReadLine()) != null)
-            {
-                if(line.StartsWith("v"))
-                { 
+            vertices = mesh1.GetVertices();
 
-                }
-                else
-                    Console.WriteLine(line.First());
-            }
 
-            file.Close();
         }
     }
 }
