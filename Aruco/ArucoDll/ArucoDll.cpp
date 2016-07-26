@@ -62,8 +62,7 @@ namespace ArucoDll
 			cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 			//detect markers
 			mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
-
-
+			
 			double res = (double)theMarkers.size();
 			return res;
 
@@ -97,7 +96,7 @@ namespace ArucoDll
 		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 		//detect markers
 		//mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
-
+		(byte)mDetector.getThresholdedImage().data;
 		return theMarkers.size();
 	}
 
@@ -107,7 +106,7 @@ namespace ArucoDll
 
 	DLL_EXPORT void PerformARMarker(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
 		double gnear, double gfar, double proj_matrix[16], double modelview_matrix[16],
-		float markerSize, int &nbDetectedMarkers)
+		float markerSize, int &nbDetectedMarkers, int tresh1, int tresh2)
 	{
 		MarkerDetector mDetector;
 		vector<Marker> theMarkers;
@@ -122,7 +121,8 @@ namespace ArucoDll
 
 		float theMarkerSize = markerSize;
 
-		mDetector.setThresholdParams(12, 13);
+		//tresh1 : dilatation, tresh2 : erosion (couleur de réference : blanc)
+		mDetector.setThresholdParams(tresh1, tresh2);
 
 		//image captured
 		theUndInputImage.create(theInputImage.size(), CV_8UC3);
@@ -142,6 +142,7 @@ namespace ArucoDll
 		theMarkers[0].glGetModelViewMatrix(modelview_matrix);*/
 
 		nbDetectedMarkers = theMarkers.size();
+		
 	}
 
 	///////

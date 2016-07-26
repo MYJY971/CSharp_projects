@@ -53,11 +53,14 @@ namespace MY_Aruco_v2
 
         bool _isFullSize;
         bool _isAdaptedSize;
+        bool _segmented;
 
+        byte[] _imageSegmented;
+        private int _tresh1, _tresh2;
 
-        [DllImport(/*"..\\..\\..\\Debug\\*/"ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
-        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
+        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
 
         [DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformAR(byte[] image, string path_MapPara, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
@@ -74,14 +77,15 @@ namespace MY_Aruco_v2
                 _pathCamPara = "DATA\\intrinsics.yml";
                 _pathMapPara = "DATA\\map4.yml";
                 
-                _markerSize = 2f;//0.2f;
+
+                _markerSize = 1.09f;//0.2f;
                 _isAdaptedSize = true;
                 _isFullSize = false;
 
-                
+                _tresh1 = 12;
+                _tresh2 = 13;
 
-
-                // OBJ models from files
+                _segmented = false;
                 
             }
             catch (Exception e)
@@ -94,10 +98,6 @@ namespace MY_Aruco_v2
         private void glControl1_Load(object sender, EventArgs e)
         {
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
-            /*_pathMesh = "DATA\\sphere.obj";
-
-            _mesh = new Mesh();
-            _mesh.Load(_pathMesh);*/
             Run();
             SetupViewport();
         }
@@ -140,6 +140,26 @@ namespace MY_Aruco_v2
 
         }
 
+        private void SetupViewport()
+        {
+            int w = glControl1.Width;
+            int h = glControl1.Height;
+
+            if (h == 0)                                                  // Prevent A Divide By Zero...
+                h = 1;                                                   // By Making Height Equal To One
+
+            _defaultProjection = Matrix4.CreatePerspectiveFieldOfView((float)System.Math.PI / 4, (float)w / (float)h, 0.1f, 100.0f);
+
+
+            GL.Viewport(0, 0, w, h);              // Use all of the glControl painting area
+            GL.MatrixMode(MatrixMode.Projection);                               // Select The Projection Matrix
+            GL.LoadIdentity();                                                  // Reset The Projection Matrix
+
+            GL.Ortho(0, w, 0, h, 0, 1);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+        }
 
         protected void InitGLContext()
         {
@@ -176,14 +196,12 @@ namespace MY_Aruco_v2
 
         }
 
+
         private void Render()
         {
             if (!_initContextGLisOk)
                 InitGLContext();
-
-
-
-
+            
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             if (_cameraOn)
@@ -235,14 +253,27 @@ namespace MY_Aruco_v2
 
                 double[] projMatrix = new double[16];
                 double[] modelviewMatrix = new double[16];
-                PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker);
+                PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
+
+                      
+
                 //PerformAR(byteImageForARCompute, _pathMapPara, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
-                if (_isAdaptedSize)
+                if (!_isFullSize)
                 {
                     GL.PixelZoom(1.0f * _factorSize, -1.0f * _factorSize);
                     _backgroundImage = _frame;
-                    GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.DataPointer);
+                    if (_segmented)
+                    {
+                        Image<Bgr, Byte> im = _backgroundImage.ToImage<Bgr, Byte>();
+                        Image<Gray, Byte> grayIm = im.Convert<Gray, Byte>();//new Image<Gray, byte>(im.Bitmap);
+                        Mat grayB = grayIm.Mat;
+                        GL.DrawPixels(grayIm.Width, grayIm.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, grayIm.Data);
+                    }
+                    else
+                    {
+                        GL.DrawPixels(_backgroundImage.Width, _backgroundImage.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, _backgroundImage.DataPointer);
+                    }
                 }
                 else
                 {
@@ -307,6 +338,8 @@ namespace MY_Aruco_v2
             //Refresh();
         }
 
+        #region Draw Methodes
+
         private void DrawScene()
         {
 
@@ -314,7 +347,7 @@ namespace MY_Aruco_v2
             DrawTrihedral(_markerSize/2);
             GL.Translate(0, 0, -(_markerSize + 0.0001f));
             GL.Enable(EnableCap.Texture2D);
-            DrawCube(_markerSize);
+            DrawCube(1f/*_markerSize*/);
             GL.Disable(EnableCap.Texture2D);
             //int indiceat = 0;
 
@@ -335,15 +368,12 @@ namespace MY_Aruco_v2
             GL.Flush();
         }
 
+        /// <summary>
+        /// Cube 3D
+        /// </summary>
         private void DrawCube()
         {
-            float[] l_couleur = new float[4];
-            float l_shin;
-            //GL.Rotate(_angle, Vector3.UnitZ);
-            // axe X
-            //GL.Color4(1.0f, 0.0f, 0.0f, 0.5f);
-            //l_couleur[0] = 1.0f; l_couleur[1] = 0.0f; l_couleur[2] = 0.0f; l_couleur[3] = 1.0f;
-            ///*
+
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new Color4(0.3f, 0.3f, 0.3f, 1.0f));
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 128f);
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new Color4(0.0f, 0.0f, 0.0f, 1.0f)/*@l_couleur*/);
@@ -402,6 +432,10 @@ namespace MY_Aruco_v2
             GL.End();
         }
 
+        /// <summary>
+        /// Trihèdre 
+        /// </summary>
+        /// <param name="size"></param>
         private void DrawTrihedral(float size)
         {
             //DrawTrihedral ///////////////////////
@@ -479,6 +513,10 @@ namespace MY_Aruco_v2
             GL.Color3(1.0f, 1.0f, 1.0f);
         }
 
+        /// <summary>
+        /// Cube 3D
+        /// </summary>
+        /// <param name="size"></param>
         private void DrawCube(float size)
         {
             float[] l_couleur = new float[4];
@@ -553,55 +591,61 @@ namespace MY_Aruco_v2
             GL.End();
         }
 
+        #endregion
 
+
+        #region Listeners
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             Render();
         }
 
+        private void buttonTresh1P_Click(object sender, EventArgs e)
+        {
+            _tresh1++;
+        }
+
+        private void buttonTresh1M_Click(object sender, EventArgs e)
+        {
+            _tresh1--;
+        }
+
+        private void buttonSegmented_Click(object sender, EventArgs e)
+        {
+            _isAdaptedSize = true;
+            _isFullSize = false;
+
+            _segmented = true;
+        }
+
+        private void buttonTresh2P_Click(object sender, EventArgs e)
+        {
+            _tresh2++;
+
+        }
+
+        private void buttonTresh2M_Click(object sender, EventArgs e)
+        {
+            _tresh2--;
+        }
+
         private void buttonFullSize_Click(object sender, EventArgs e)
         {
             _isAdaptedSize = false;
+            _isFullSize = true;
+            _segmented = false;
         }
 
         private void buttonAdaptedSize_Click(object sender, EventArgs e)
         {
             _isAdaptedSize = true;
+            _isFullSize = false;
+            _segmented = false;
         }
+        #endregion
 
-        private void buttonStop_Click(object sender, EventArgs e)
-        {
+        
 
-        }
-
-
-        private void SetupViewport()
-        {
-            int w = glControl1.Width;
-            int h = glControl1.Height;
-
-            if (h == 0)                                                  // Prevent A Divide By Zero...
-                h = 1;                                                   // By Making Height Equal To One
-
-            _defaultProjection = Matrix4.CreatePerspectiveFieldOfView((float)System.Math.PI / 4, (float)w / (float)h, 0.1f, 100.0f);
-
-
-            GL.Viewport(0, 0, w, h);              // Use all of the glControl painting area
-            GL.MatrixMode(MatrixMode.Projection);                               // Select The Projection Matrix
-            GL.LoadIdentity();                                                  // Reset The Projection Matrix
-
-            GL.Ortho(0, w, 0, h, 0, 1);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-        }
-
-
-        private void DrawMesh()
-        {
-
-
-        }
 
 
         /// <summary>
