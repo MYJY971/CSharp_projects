@@ -22,6 +22,7 @@ using Emgu.CV.Structure;
 //DllImport
 using System.Runtime.InteropServices;
 using TexLib;
+using System.IO;
 //using ObjLoader.Loader.Loaders;
 
 namespace MY_Aruco_v2
@@ -69,6 +70,25 @@ namespace MY_Aruco_v2
         /*Mesh _mesh;
         String _pathMesh;*/
 
+        ///////GLSL
+
+        int _pgmID;
+
+        int _vsID;
+        int _fsID;
+
+        int _vCol;
+        int _vPos;
+        int _mView;
+
+        int _vbo_position;
+        int _vbo_color;
+        int _vbo_mview;
+
+        Vector3[] _vertData;
+        Vector3[] _colData;
+        Matrix4[] _mViewData;
+
         public AruForm()
         {
             InitializeComponent();
@@ -97,9 +117,39 @@ namespace MY_Aruco_v2
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+            _pgmID = GL.CreateProgram();
+
+            loadShader("vs.glsl", ShaderType.VertexShader, _pgmID, out _vsID);
+            loadShader("fs.glsl", ShaderType.FragmentShader, _pgmID, out _fsID);
+
+            GL.LinkProgram(_pgmID);
+            Console.WriteLine(GL.GetProgramInfoLog(_pgmID));
+
+            _vPos = GL.GetAttribLocation(_pgmID, "vPosition");
+            _vCol = GL.GetAttribLocation(_pgmID, "vColor");
+            _mView = GL.GetUniformLocation(_pgmID, "modelView");
+
+
+            GL.GenBuffers(1, out _vbo_position);
+            GL.GenBuffers(1, out _vbo_color);
+            GL.GenBuffers(1, out _vbo_mview);
+
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
             Run();
             SetupViewport();
+        }
+
+        void loadShader(String filename, ShaderType type, int program, out int address)
+        {
+
+            address = GL.CreateShader(type);
+            using (StreamReader sr = new StreamReader(filename))
+            {
+                GL.ShaderSource(address, sr.ReadToEnd());
+            }
+            GL.CompileShader(address);
+            GL.AttachShader(program, address);
+            Console.WriteLine(GL.GetShaderInfoLog(address));
         }
 
         private void Run()
@@ -107,6 +157,20 @@ namespace MY_Aruco_v2
 
             try
             {
+                _vertData = new Vector3[] { new Vector3(-0.8f, -0.8f, 0f),
+                new Vector3( 0.8f, -0.8f, 0f),
+                new Vector3( 0f,  0.8f, 0f)};
+
+
+                _colData = new Vector3[] { new Vector3(1f, 0f, 0f),
+                new Vector3( 0f, 0f, 1f),
+                new Vector3( 0f,  1f, 0f)};
+
+
+                _mViewData = new Matrix4[]{
+                Matrix4.Identity };
+
+
                 _cameraCapture = new Capture();
                 _cameraCapture.SetCaptureProperty(CapProp.FrameWidth, 1280/*5120*/);
                 _cameraCapture.SetCaptureProperty(CapProp.FrameHeight, 720 /*2160*/);
@@ -127,8 +191,8 @@ namespace MY_Aruco_v2
             {
                 _frame = _cameraCapture.QueryFrame();
 
-                if (!_cameraOn)
-                    _cameraOn = true;
+                //if (!_cameraOn)
+                //    _cameraOn = true;
                 _backgroundImage = _frame;
 
                 _frameComputed = _frame;
@@ -191,6 +255,22 @@ namespace MY_Aruco_v2
             GL.Enable(EnableCap.Light0);
             GL.Enable(EnableCap.ColorMaterial);
             //GL.Enable(EnableCap.CullFace);
+
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo_position);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(_vertData.Length * Vector3.SizeInBytes), _vertData, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(_vPos, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo_color);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(_colData.Length * Vector3.SizeInBytes), _colData, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(_vCol, 3, VertexAttribPointerType.Float, true, 0, 0);
+
+            GL.UniformMatrix4(_mView, false, ref _mViewData[0]);
+
+            GL.UseProgram(_pgmID);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
 
             _initContextGLisOk = true;
 
@@ -265,10 +345,8 @@ namespace MY_Aruco_v2
                     _backgroundImage = _frame;
                     if (_segmented)
                     {
-                        Image<Bgr, Byte> im = _backgroundImage.ToImage<Bgr, Byte>();
-                        Image<Gray, Byte> grayIm = im.Convert<Gray, Byte>();//new Image<Gray, byte>(im.Bitmap);
-                        Mat grayB = grayIm.Mat;
-                        GL.DrawPixels(grayIm.Width, grayIm.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, grayIm.Data);
+                        
+                      
                     }
                     else
                     {
@@ -327,10 +405,10 @@ namespace MY_Aruco_v2
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                _defaultlookatMatrix = Matrix4.LookAt(_eye, _target, _up);
+                _defaultlookatMatrix = Matrix4.LookAt(Vector3.Zero, Vector3.UnitZ, Vector3.UnitY);//Matrix4.LookAt(_eye, _target, _up);
                 GL.LoadMatrix(ref _defaultlookatMatrix);
 
-                DrawScene();
+                Draw3DScene();
             }
 
 
@@ -591,6 +669,27 @@ namespace MY_Aruco_v2
             GL.End();
         }
 
+
+        private void Draw3DScene()
+        {
+            GL.Disable(EnableCap.Texture2D);
+            DrawTriangle1();
+
+        }
+
+        private void DrawTriangle1()
+        {
+            GL.Begin(BeginMode.Triangles);
+            GL.Color3(1.0f, 0.0f, 0.0f);
+            GL.Vertex3(-1.0f, -1.0f, 4.0f);
+
+            GL.Color3(0.0f, 1.0f, 0.0f);
+            GL.Vertex3(1.0f, -1.0f, 4.0f);
+
+            GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Vertex3(0.0f, 1.0f, 4.0f);
+            GL.End();
+        }
         #endregion
 
 

@@ -1,4 +1,5 @@
 #include "ArucoDll.h"
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace std;
 using namespace cv;
@@ -61,9 +62,11 @@ namespace ArucoDll
 			//remove distortion in image
 			cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 			//detect markers
-			mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+			//mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
 			
-			double res = (double)theMarkers.size();
+			double res = 0;// (double)theMarkers.size();
+			
+			//Mat treshIm = mDetector.getThresholdedImage();
 			return res;
 
 

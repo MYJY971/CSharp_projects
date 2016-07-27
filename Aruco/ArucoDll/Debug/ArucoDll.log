@@ -49,10 +49,12 @@ c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markermap.h(129): warnin
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markermap.h(154): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\markermap.h(157): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
 c:\stage\yanis\csharp_projects\aruco\arucodll\aruco_src\posetracker.h(69): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(151): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
-c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(236): warning C4305: '=' : troncation de 'double' à 'float'
-c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(240): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
-c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(308): warning C4305: '=' : troncation de 'double' à 'float'
-c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(312): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(102): warning C4302: 'cast de type' : troncation de 'uchar *const ' à 'byte'
+c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(154): warning C4290: Spécification d'exception C++ ignorée sauf pour indiquer qu'une fonction n'est pas __declspec(nothrow)
+c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(239): warning C4305: '=' : troncation de 'double' à 'float'
+c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(243): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(311): warning C4305: '=' : troncation de 'double' à 'float'
+c:\stage\yanis\csharp_projects\aruco\arucodll\arucodll.cpp(315): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+     CrÚation de la bibliothÞque C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.lib et de l'objet C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.exp
   ArucoDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.dll
   ArucoDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\ArucoDll.pdb (Full PDB)

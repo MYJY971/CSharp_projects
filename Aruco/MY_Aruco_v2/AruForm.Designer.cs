@@ -60,9 +60,9 @@
             // glControl1
             // 
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(143, 119);
+            this.glControl1.Location = new System.Drawing.Point(93, 39);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(172, 107);
+            this.glControl1.Size = new System.Drawing.Size(352, 247);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
