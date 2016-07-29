@@ -59,6 +59,10 @@ namespace MY_Aruco_v2
         byte[] _imageSegmented;
         private int _tresh1, _tresh2;
 
+        private bool _isDetected;
+
+        private double[] _modelViewMat;
+
         [DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
@@ -79,7 +83,7 @@ namespace MY_Aruco_v2
                 _pathMapPara = "DATA\\map4.yml";
                 
 
-                _markerSize = 1.09f;//0.2f;
+                _markerSize = /**/1.09f;/*0.2f;*/
                 _isAdaptedSize = true;
                 _isFullSize = false;
 
@@ -87,8 +91,11 @@ namespace MY_Aruco_v2
                 _tresh2 = 13;
 
                 _segmented = false;
-                
-            }
+                _isDetected = true;
+
+                _modelViewMatrix = new double[16];
+
+    }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
@@ -280,8 +287,6 @@ namespace MY_Aruco_v2
                 double[] modelviewMatrix = new double[16];
                 PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
 
-                      
-
                 //PerformAR(byteImageForARCompute, _pathMapPara, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
                 if (!_isFullSize)
@@ -322,8 +327,11 @@ namespace MY_Aruco_v2
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                GL.LoadMatrix(modelviewMatrix);
-
+                if (_nbMarker != 0)
+                {
+                    _modelViewMatrix = modelviewMatrix;
+                }
+                GL.LoadMatrix(_modelViewMatrix);
                 DrawScene();
 
                 GL.PushMatrix();
