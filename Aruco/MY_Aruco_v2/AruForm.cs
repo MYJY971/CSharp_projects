@@ -56,6 +56,8 @@ namespace MY_Aruco_v2
         bool _isAdaptedSize;
         bool _segmented;
 
+        private bool _ARactived = true;
+
         byte[] _imageSegmented;
         private int _tresh1, _tresh2;
 
@@ -63,16 +65,19 @@ namespace MY_Aruco_v2
 
         private double[] _modelViewMat;
 
-        [DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int PerformARMarkerTEST(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
 
-        [DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void PerformAR(byte[] image, string path_MapPara, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
-        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
+        //[DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        //double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
+
+        //[DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern void PerformAR(byte[] image, string path_MapPara, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        //double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers);
 
         Mesh _mesh;
-        String _pathMesh;
 
         public AruForm()
         {
@@ -83,7 +88,7 @@ namespace MY_Aruco_v2
                 _pathMapPara = "DATA\\map4.yml";
                 
 
-                _markerSize = /**/1.09f;/*0.2f;*/
+                _markerSize = /**/1.09f;/*0.2f;/**/
                 _isAdaptedSize = true;
                 _isFullSize = false;
 
@@ -107,27 +112,14 @@ namespace MY_Aruco_v2
         {
             _mesh = new Mesh();
             //_mesh.Load("DATA\\sphere.obj");
-            //_mesh.Load("DATA\\torus.obj");
-            _mesh.Load("DATA\\Caraïbes.obj");
+            _mesh.Load("DATA\\torus.obj");
+            //_mesh.Load("DATA\\Caraïbes.obj");
             //_mesh.Load("DATA\\Pokeball.obj");
 
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
             Run();
             SetupViewport();
         }
-
-        //void loadShader(String filename, ShaderType type, int program, out int address)
-        //{
-
-        //    address = GL.CreateShader(type);
-        //    using (StreamReader sr = new StreamReader(filename))
-        //    {
-        //        GL.ShaderSource(address, sr.ReadToEnd());
-        //    }
-        //    GL.CompileShader(address);
-        //    GL.AttachShader(program, address);
-        //    Console.WriteLine(GL.GetShaderInfoLog(address));
-        //}
 
         private void Run()
         {
@@ -159,7 +151,7 @@ namespace MY_Aruco_v2
 
                 _frame = _cameraCapture.QueryFrame();
 
-                if (!_cameraOn)
+                if (!_cameraOn && !_stop)
                     _cameraOn = true;
                 _backgroundImage = _frame;
 
@@ -285,8 +277,10 @@ namespace MY_Aruco_v2
 
                 double[] projMatrix = new double[16];
                 double[] modelviewMatrix = new double[16];
-                PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
-
+                int tmp=0;
+                if(_ARactived)
+                //PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
+                tmp=PerformARMarkerTEST(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
                 //PerformAR(byteImageForARCompute, _pathMapPara, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
                 if (!_isFullSize)
@@ -327,10 +321,11 @@ namespace MY_Aruco_v2
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                if (_nbMarker != 0)
-                {
+                ////Conserve la dernière position si aucun marker détécté
+                //if (_nbMarker != 0)
+                //{
                     _modelViewMatrix = modelviewMatrix;
-                }
+                //}
                 GL.LoadMatrix(_modelViewMatrix);
                 DrawScene();
 
@@ -342,7 +337,7 @@ namespace MY_Aruco_v2
 
 
 
-                // CvInvoke.Resize(_frame, _backgroundImage, glControl1.Size);
+                
 
 
 
@@ -381,7 +376,7 @@ namespace MY_Aruco_v2
             
             GL.Enable(EnableCap.Texture2D);
             DrawCube(_markerSize);
-            //GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Texture2D);
             //int indiceat = 0;
 
             GL.Translate(0, 0, _markerSize / 2);
@@ -667,6 +662,11 @@ namespace MY_Aruco_v2
             _isFullSize = false;
 
             _segmented = true;
+        }
+
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+            _ARactived = false;
         }
 
         private void buttonTresh2P_Click(object sender, EventArgs e)

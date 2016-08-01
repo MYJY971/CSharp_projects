@@ -666,7 +666,7 @@ namespace aruco {
 			
 			/*hierarchy2.clear();*/
 			/*contours2.clear();*/
-			approxCurve.clear();/**/
+			/*approxCurve.clear();*/
 
 		}
 
@@ -748,6 +748,8 @@ namespace aruco {
 
 		namedWindow ( "input" );
 		imshow ( "input",input );*/
+
+
 
 
 	}

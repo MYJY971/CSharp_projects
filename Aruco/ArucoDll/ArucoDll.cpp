@@ -4,32 +4,33 @@
 using namespace std;
 using namespace cv;
 using namespace aruco;
-/*
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
-	switch (fdwReason)
-	{
-	case DLL_PROCESS_ATTACH:
-		// attach to process
-		// return FALSE to fail DLL load
-		break;
 
-	case DLL_PROCESS_DETACH:
-		// detach from process
-		break;
+//
+//BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+//{
+//	switch (fdwReason)
+//	{
+//	case DLL_PROCESS_ATTACH:
+//		// attach to process
+//		// return FALSE to fail DLL load
+//		break;
+//
+//	case DLL_PROCESS_DETACH:
+//		// detach from process
+//		break;
+//
+//	case DLL_THREAD_ATTACH:
+//		// attach to thread
+//		break;
+//
+//	case DLL_THREAD_DETACH:
+//		// detach from thread
+//		break;
+//	}
+//	return TRUE; // succesful
+//}
+//
 
-	case DLL_THREAD_ATTACH:
-		// attach to thread
-		break;
-
-	case DLL_THREAD_DETACH:
-		// detach from thread
-		break;
-	}
-	return TRUE; // succesful
-}
-
-*/
 
 namespace ArucoDll
 {
@@ -40,8 +41,9 @@ namespace ArucoDll
 		return a + b;
 	}
 
-	DLL_EXPORT double TestARCPP(Mat image, char * path_CamPara)
+	DLL_EXPORT int TestARCPP(Mat image, char * path_CamPara)
 	{
+		_set_error_mode(_OUT_TO_STDERR);
 		try
 		{
 			MarkerDetector mDetector;
@@ -62,23 +64,24 @@ namespace ArucoDll
 			//remove distortion in image
 			cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 			//detect markers
-			//mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
-			
-			double res = 0;// (double)theMarkers.size();
-			
+			mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+
+			int res = theMarkers.size();
+
 			//Mat treshIm = mDetector.getThresholdedImage();
 			return res;
-
+			
 
 		}
 		catch (const std::exception&)
 		{
+			printf("OH NO !!! EXCEPTION ! >_<");
 			return 0;
 		}
-		
+
 	}
 
-	DLL_EXPORT int TestAR(char image[],int imageWidth,int imageHeight, char * path_CamPara)
+	DLL_EXPORT int TestAR(char image[], int imageWidth, int imageHeight, char * path_CamPara)
 	{
 		MarkerDetector mDetector;
 		vector<Marker> theMarkers;
@@ -103,7 +106,7 @@ namespace ArucoDll
 		return theMarkers.size();
 	}
 
-/////////
+	/////////
 
 
 
@@ -120,7 +123,7 @@ namespace ArucoDll
 		theCameraParameters.readFromXMLFile(path_CamPara);
 		theCameraParameters.resize(theInputImage.size());
 
-		theCameraParameters.glGetProjectionMatrix(theInputImage.size(), Size(glWidth,glHeight), proj_matrix, gnear, gfar);
+		theCameraParameters.glGetProjectionMatrix(theInputImage.size(), Size(glWidth, glHeight), proj_matrix, gnear, gfar);
 
 		float theMarkerSize = markerSize;
 
@@ -145,7 +148,59 @@ namespace ArucoDll
 		theMarkers[0].glGetModelViewMatrix(modelview_matrix);*/
 
 		nbDetectedMarkers = theMarkers.size();
-		
+
+	}
+
+	///
+	DLL_EXPORT int PerformARMarkerTEST(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+		double gnear, double gfar, double proj_matrix[16], double modelview_matrix[16],
+		float markerSize, int &nbDetectedMarkers, int tresh1, int tresh2)
+	{
+		_set_error_mode(_OUT_TO_STDERR);
+		try
+		{
+		MarkerDetector mDetector;
+		vector<Marker> theMarkers;
+		Mat theInputImage, theUndInputImage;
+		theInputImage = Mat(imageHeight, imageWidth, CV_8UC3, image);
+
+		CameraParameters theCameraParameters;
+		theCameraParameters.readFromXMLFile(path_CamPara);
+		theCameraParameters.resize(theInputImage.size());
+
+		theCameraParameters.glGetProjectionMatrix(theInputImage.size(), Size(glWidth, glHeight), proj_matrix, gnear, gfar);
+
+		float theMarkerSize = markerSize;
+
+		//tresh1 : dilatation, tresh2 : erosion (couleur de réference : blanc)
+		mDetector.setThresholdParams(tresh1, tresh2);
+
+		//image captured
+		theUndInputImage.create(theInputImage.size(), CV_8UC3);
+		//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
+		cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
+		//remove distortion in image
+		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
+		//detect markers
+		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+
+		for (unsigned int i = 0; i < theMarkers.size(); i++)
+		{
+			theMarkers[i].glGetModelViewMatrix(modelview_matrix);
+			break;
+		}
+
+
+		nbDetectedMarkers = theMarkers.size();
+
+		return nbDetectedMarkers;
+		}
+		catch (const std::exception&)
+		{
+			printf("OH NO !!! EXCEPTION ! >_<");
+			return 0;
+		}
+
 	}
 
 	///////
@@ -202,7 +257,7 @@ namespace ArucoDll
 	{
 		bool the3DInfoAvailable = false;
 		float theMarkerSize = -1;
-		
+
 		vector<Marker> theMarkers;
 		//board
 		Mat theInputImage, theUndInputImage, theResizedImage;
@@ -212,8 +267,8 @@ namespace ArucoDll
 		MarkerDetector theMarkerDetector;
 		MarkerMapPoseTracker mmPoseTracker;
 
-		
-		
+
+
 		theCameraParams.readFromXMLFile(path_CamPara);
 
 		//read board configuration
