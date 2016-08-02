@@ -90,10 +90,10 @@ namespace aruco {
 	/*
 	MODIF
 	*/
-	std::vector< cv::Vec4i > hierarchy2;
-	std::vector< std::vector< cv::Point > > contours2;
-	vector< Point > approxCurve;
-	
+	/*std::vector< cv::Vec4i > hierarchy2;
+	std::vector< std::vector< cv::Point > > contours2;*/
+	/*vector< Point > approxCurve;*/
+
 	/************************************
 	*
 	*
@@ -102,7 +102,7 @@ namespace aruco {
 	************************************/
 	void MarkerDetector::detect(const cv::Mat &input, std::vector< Marker > &detectedMarkers, CameraParameters camParams, float markerSizeMeters,
 		bool setYPerpendicular) throw(cv::Exception) {
-		if (camParams.CamSize != input.size() && camParams.isValid() && markerSizeMeters>0) {
+		if (camParams.CamSize != input.size() && camParams.isValid() && markerSizeMeters > 0) {
 			//must resize camera parameters if we want to compute properly marker poses
 			CameraParameters cp_aux = camParams;
 			cp_aux.resize(input.size());
@@ -132,7 +132,7 @@ namespace aruco {
 
 		imagePyramid.clear();
 		imagePyramid.push_back(grey);
-		while (imagePyramid.back().cols>120) {
+		while (imagePyramid.back().cols > 120) {
 			cv::Mat pyrd;
 			cv::pyrDown(imagePyramid.back(), pyrd);
 			imagePyramid.push_back(pyrd);
@@ -168,6 +168,7 @@ namespace aruco {
 		vector< MarkerCandidate > MarkerCanditates;
 		detectRectangles(thres_images, MarkerCanditates);
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BUG
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		float desiredarea = _params._markerWarpSize*_params._markerWarpSize;
 		/// identify the markers
@@ -186,7 +187,7 @@ namespace aruco {
 			//To reduce computing time, let us find in the image pyramid, the best configuration to save time
 			//indicates how much bigger observation is wrt to desired patch
 			int imgPyrIdx = 0;
-			for (size_t p = 1; p<imagePyramid.size(); p++) {
+			for (size_t p = 1; p < imagePyramid.size(); p++) {
 				if (MarkerCanditates[i].getArea() / pow(4, p) >= desiredarea) imgPyrIdx = p;
 				else break;
 			}
@@ -287,6 +288,8 @@ namespace aruco {
 		//    cerr << "Subpixel: " << 1000*(t5 - t4) / double(cv::getTickFrequency()) << endl;
 		//    cerr << "Filtering: " << 1000*(t6 - t5) / double(cv::getTickFrequency()) << endl;
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	struct   PointSet_2D :public std::vector<cv::Point2f>
 	{
 		// Must return the number of data points
@@ -601,7 +604,12 @@ namespace aruco {
 		int minSize = std::min(float(_params._minSize_pix), _params._minSize* std::max(thresImgv[0].cols, thresImgv[0].rows) * 4);
 		//         cv::Mat input;
 		//         cv::cvtColor ( thresImgv[0],input,CV_GRAY2BGR );
+		/*std::vector< cv::Vec4i > hierarchy2;
+		std::vector< std::vector< cv::Point > > contours2;*/
+
 #pragma omp parallel for
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		for (int img_idx = 0; img_idx < int(thresImgv.size()); img_idx++) {
 			//int img_idx = 0;
 			/*std::vector< cv::Vec4i > hierarchy2;
@@ -609,61 +617,58 @@ namespace aruco {
 			cv::Mat thres2;
 			thresImgv[img_idx].copyTo(thres2);
 
-			
+
 
 			cv::findContours(thres2, contours2, hierarchy2, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
 
-			/*int tess;
-			tess = 0;*/
-			//MYfindContours(thres2, contours2, hierarchy2, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
 
 			////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BUG
-			
+
 
 			/*vector< Point > approxCurve;*/
 			/// for each contour, analyze if it is a paralelepiped likely to be the marker
 			for (unsigned int i = 0; i < contours2.size(); i++) {
 
-			// check it is a possible element by first checking is has enough points
-			if (minSize < int(contours2[i].size()) && int(contours2[i].size()) < maxSize) {
-			// approximate to a poligon
-			approxPolyDP(contours2[i], approxCurve, double(contours2[i].size()) * 0.05, true);
-			// 				drawApproxCurve(copy,approxCurve,Scalar(0,0,255));
-			// check that the poligon has 4 points
-			if (approxCurve.size() == 4) {
+				// check it is a possible element by first checking is has enough points
+				if (minSize < int(contours2[i].size()) && int(contours2[i].size()) < maxSize) {
+					// approximate to a poligon
+					approxPolyDP(contours2[i], approxCurve, double(contours2[i].size()) * 0.05, true);
+					// 				drawApproxCurve(copy,approxCurve,Scalar(0,0,255));
+					// check that the poligon has 4 points
+					if (approxCurve.size() == 4) {
 
-			//drawContour ( input,contours2[i],Scalar ( 255,0,225 ) );
-			//namedWindow ( "input" );
-			//imshow ( "input",input );
-			//  	 	waitKey(0);
-			// and is convex
-			if (isContourConvex(Mat(approxCurve))) {
-			// 					      drawApproxCurve(input,approxCurve,Scalar(255,0,255));
-			// 						//ensure that the   distace between consecutive points is large enough
-			float minDist = 1e10;
-			for (int j = 0; j < 4; j++) {
-			float d = std::sqrt((float)(approxCurve[j].x - approxCurve[(j + 1) % 4].x) * (approxCurve[j].x - approxCurve[(j + 1) % 4].x) +
-			(approxCurve[j].y - approxCurve[(j + 1) % 4].y) * (approxCurve[j].y - approxCurve[(j + 1) % 4].y));
-			// 		norm(Mat(approxCurve[i]),Mat(approxCurve[(i+1)%4]));
-			if (d < minDist) minDist = d;
+						//drawContour ( input,contours2[i],Scalar ( 255,0,225 ) );
+						//namedWindow ( "input" );
+						//imshow ( "input",input );
+						//  	 	waitKey(0);
+						// and is convex
+						if (isContourConvex(Mat(approxCurve))) {
+							// 					      drawApproxCurve(input,approxCurve,Scalar(255,0,255));
+							// 						//ensure that the   distace between consecutive points is large enough
+							float minDist = 1e10;
+							for (int j = 0; j < 4; j++) {
+								float d = std::sqrt((float)(approxCurve[j].x - approxCurve[(j + 1) % 4].x) * (approxCurve[j].x - approxCurve[(j + 1) % 4].x) +
+									(approxCurve[j].y - approxCurve[(j + 1) % 4].y) * (approxCurve[j].y - approxCurve[(j + 1) % 4].y));
+								// 		norm(Mat(approxCurve[i]),Mat(approxCurve[(i+1)%4]));
+								if (d < minDist) minDist = d;
+							}
+							// check that distance is not very small
+							if (minDist > 10) {
+								// add the points
+								// 	      cout<<"ADDED"<<endl;
+								MarkerCanditatesV[omp_get_thread_num()].push_back(MarkerCandidate());
+								MarkerCanditatesV[omp_get_thread_num()].back().idx = i;
+								if (_params._cornerMethod == LINES)//save all contour points if you need lines refinement method
+									MarkerCanditatesV[omp_get_thread_num()].back().contour = contours2[i];
+								for (int j = 0; j < 4; j++)
+									MarkerCanditatesV[omp_get_thread_num()].back().push_back(Point2f(approxCurve[j].x, approxCurve[j].y));
+							}
+						}
+					}
+				}
 			}
-			// check that distance is not very small
-			if (minDist > 10) {
-			// add the points
-			// 	      cout<<"ADDED"<<endl;
-			MarkerCanditatesV[omp_get_thread_num()].push_back(MarkerCandidate());
-			MarkerCanditatesV[omp_get_thread_num()].back().idx = i;
-			if (_params._cornerMethod==LINES)//save all contour points if you need lines refinement method
-			MarkerCanditatesV[omp_get_thread_num()].back().contour = contours2[i];
-			for (int j = 0; j < 4; j++)
-			MarkerCanditatesV[omp_get_thread_num()].back().push_back(Point2f(approxCurve[j].x, approxCurve[j].y));
-			}
-			}
-			}
-			}
-			}
-			
-			
+
+
 			/*hierarchy2.clear();*/
 			/*contours2.clear();*/
 			/*approxCurve.clear();*/
@@ -736,10 +741,13 @@ namespace aruco {
 			if (!toRemove[i]) {
 				OutMarkerCanditates.push_back(MarkerCanditates[i]);
 				//                 OutMarkerCanditates.back().contour=contours2[ MarkerCanditates[i].idx];
-				if (swapped[i] && OutMarkerCanditates.back().contour.size()>1) // if the corners where swapped, it is required to reverse here the points so that they are in the same order
+				if (swapped[i] && OutMarkerCanditates.back().contour.size() > 1) // if the corners where swapped, it is required to reverse here the points so that they are in the same order
 					reverse(OutMarkerCanditates.back().contour.begin(), OutMarkerCanditates.back().contour.end()); //????
 			}
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
+
+
 
 		/*
 		for ( size_t i=0; i<OutMarkerCanditates.size(); i++ )
@@ -786,16 +794,16 @@ namespace aruco {
 			int wsize_2 = p1_2_values[i].first / 2;
 			outThresImages[i].create(grey.size(), grey.type());
 			//start moving accross the image
-			for (int y = wsize_2; y<grey.rows - wsize_2; y++) {
+			for (int y = wsize_2; y < grey.rows - wsize_2; y++) {
 				int *_y1 = intimg.ptr<int>(y - wsize_2);
 				int *_y2 = intimg.ptr<int>(y + wsize_2 + 1);
 				uchar *out = outThresImages[i].ptr<uchar>(y);
-				for (int x = wsize_2; x<grey.cols - wsize_2; x++) {
+				for (int x = wsize_2; x < grey.cols - wsize_2; x++) {
 					int x2 = x + wsize_2 + 1;
 					int x1 = x - wsize_2;
 					// int sum=intimg.at<int>(y2,x2)-intimg.at<int>(y2,x1)-intimg.at<int>(y1,x2)+intimg.at<int>(y1,x1);
 					float mean = float(_y2[x2] - _y2[x1] - _y1[x2] + _y1[x1])* inv_area;
-					if (mean - grey.at<uchar>(y, x)>p1_2_values[i].second)
+					if (mean - grey.at<uchar>(y, x) > p1_2_values[i].second)
 						out[x] = 255;
 					else
 						out[x] = 0;

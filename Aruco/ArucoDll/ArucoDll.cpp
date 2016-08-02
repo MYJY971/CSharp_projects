@@ -41,7 +41,7 @@ namespace ArucoDll
 		return a + b;
 	}
 
-	DLL_EXPORT int TestARCPP(Mat image, char * path_CamPara)
+	DLL_EXPORT int TestARCPP(Mat image, char * path_CamPara, int test)
 	{
 		_set_error_mode(_OUT_TO_STDERR);
 		try
@@ -64,12 +64,21 @@ namespace ArucoDll
 			//remove distortion in image
 			cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 			//detect markers
+			if (test == 1)
 			mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
 
+
+			
 			int res = theMarkers.size();
 
+			mDetector.~MarkerDetector();
+			image.~Mat();
+			theUndInputImage.~Mat();
+			theMarkers.~vector();
+			
+
 			//Mat treshIm = mDetector.getThresholdedImage();
-			return res;
+			return 1;//res;
 			
 
 		}

@@ -285,8 +285,12 @@ public:
 
 
 
-
-
+	/////////////////////////////
+	//AJOUT
+	/////////////////////////////
+	std::vector< cv::Vec4i > hierarchy2;
+	std::vector< std::vector< cv::Point > > contours2;
+	std::vector< cv::Point > approxCurve;
 
     ///-------------------------------------------------
     /// Methods you may not need

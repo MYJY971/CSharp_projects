@@ -66,8 +66,12 @@ namespace MY_Aruco_v2
         private double[] _modelViewMat;
 
         [DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int PerformARMarkerTEST(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
+
+        //[DllImport("..\\..\\..\\Debug\\ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern int PerformARMarkerTEST(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        //double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
 
         //[DllImport("ArucoDll.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         //public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
@@ -143,25 +147,30 @@ namespace MY_Aruco_v2
 
         private void ProcessFrame(object sender, EventArgs e)
         {
-
-            while (glControl1.IsIdle)
+            try
             {
+                while (glControl1.IsIdle)
+                {
 
-                //////////////////////////////////////////////////////
+                    //////////////////////////////////////////////////////
 
-                _frame = _cameraCapture.QueryFrame();
+                    _frame = _cameraCapture.QueryFrame();
 
-                if (!_cameraOn && !_stop)
-                    _cameraOn = true;
-                _backgroundImage = _frame;
+                    if (!_cameraOn && !_stop)
+                        _cameraOn = true;
+                    _backgroundImage = _frame;
 
-                _frameComputed = _frame;
-                _frameResized = _frame;
-                CvInvoke.Resize(_frameResized, _frameComputed, new Size(640, 480));
-                //CvInvoke.Resize(_frame, _frameResized, new Size(640, 480));
-                Render();
+                    _frameComputed = _frame;
+                    _frameResized = _frame;
+                    CvInvoke.Resize(_frameResized, _frameComputed, new Size(640, 480));
+                    //CvInvoke.Resize(_frame, _frameResized, new Size(640, 480));
+                    Render();
+                }
             }
-
+            catch(Exception ex)
+            {
+               // MessageBox.Show("Adieu!");
+            }
         }
 
         private void SetupViewport()
@@ -279,8 +288,8 @@ namespace MY_Aruco_v2
                 double[] modelviewMatrix = new double[16];
                 int tmp=0;
                 if(_ARactived)
-                //PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
-                tmp=PerformARMarkerTEST(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
+                //PerformARMarkerTEST(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height,glControl1.Width,glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
+                PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
                 //PerformAR(byteImageForARCompute, _pathMapPara, _pathCamPara, _frame.Width, _frame.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, lookatMatrix, _markerSize, out _nbMarker);
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
                 if (!_isFullSize)
@@ -667,6 +676,17 @@ namespace MY_Aruco_v2
         private void buttonStop_Click(object sender, EventArgs e)
         {
             _ARactived = false;
+
+            try
+            {
+                Application.ExitThread();
+                MessageBox.Show("" + Application.AllowQuit);
+            }
+            catch ( Exception ex)
+            {
+                MessageBox.Show("Adieu !");
+            }
+
         }
 
         private void buttonTresh2P_Click(object sender, EventArgs e)

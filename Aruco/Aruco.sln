@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MY_Aruco_v2", "MY_Aruco_v2\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AruDll", "AruDll\AruDll.vcxproj", "{C2855D9C-2918-40ED-8B8E-AC7A8655CC39}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestDll2", "TestDll2\TestDll2.vcxproj", "{8B33FCEE-9C12-4044-A897-D7556CFC8E97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,20 @@ Global
 		{C2855D9C-2918-40ED-8B8E-AC7A8655CC39}.Release|x64.Build.0 = Release|x64
 		{C2855D9C-2918-40ED-8B8E-AC7A8655CC39}.Release|x86.ActiveCfg = Release|Win32
 		{C2855D9C-2918-40ED-8B8E-AC7A8655CC39}.Release|x86.Build.0 = Release|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|Win32.Build.0 = Debug|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|x64.ActiveCfg = Debug|x64
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|x64.Build.0 = Debug|x64
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|x86.ActiveCfg = Debug|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Debug|x86.Build.0 = Debug|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|Win32.ActiveCfg = Release|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|Win32.Build.0 = Release|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|x64.ActiveCfg = Release|x64
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|x64.Build.0 = Release|x64
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|x86.ActiveCfg = Release|Win32
+		{8B33FCEE-9C12-4044-A897-D7556CFC8E97}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

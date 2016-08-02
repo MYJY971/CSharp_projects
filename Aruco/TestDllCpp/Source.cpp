@@ -3,7 +3,6 @@
 #include <sstream>
 #include <opencv2/highgui/highgui.hpp>
 #include "ArucoDll.h"
-#include "AruDll.h"
 
 using namespace std;
 using namespace ArucoDll;
@@ -27,7 +26,8 @@ int main(int argc, char **argv)
 	double lookat[16];
 	//TestARCpp2(InImage, pathMap, path, 640, 480, 0.1, 100, projMat, lookat, 0.5, nbM);
 	//result = TestARCPP(InImage, path);
-	result = AruDll::TestARCPP(InImage, path); //Add(5, 5);
+	result = TestARCPP(InImage, path, 1); //Add(5, 5);
+	int crash;
 
 	/*try {
 		result = TestAR(InImage, path);
@@ -36,10 +36,15 @@ int main(int argc, char **argv)
 	{
 		cout << "ERROR" << endl;
 	}*/
-
+	//vreader.release();
     cout << "SUCESS -->" << result << endl;
 	//cout << TestAR(InImage, path) << endl;
+
+	result = TestARCPP(InImage, path, 0);
+
+	cout << "SUCESS -->" << result << endl;
 	system("PAUSE");
+
 	return 0;
 	
 }
