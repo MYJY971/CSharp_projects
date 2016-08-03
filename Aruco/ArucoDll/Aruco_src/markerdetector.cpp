@@ -90,9 +90,9 @@ namespace aruco {
 	/*
 	MODIF
 	*/
-	/*std::vector< cv::Vec4i > hierarchy2;
-	std::vector< std::vector< cv::Point > > contours2;*/
-	/*vector< Point > approxCurve;*/
+	std::vector< cv::Vec4i > hierarchy2;
+	std::vector< std::vector< cv::Point > > contours2;
+	vector< Point > approxCurve;
 
 	/************************************
 	*
@@ -121,6 +121,7 @@ namespace aruco {
 	*
 	*
 	************************************/
+	
 	void MarkerDetector::detect(const cv::Mat &input, vector< Marker > &detectedMarkers, Mat camMatrix, Mat distCoeff, float markerSizeMeters,
 		bool setYPerpendicular) throw(cv::Exception) {
 
@@ -167,8 +168,179 @@ namespace aruco {
 		// find all rectangles in the thresholdes image
 		vector< MarkerCandidate > MarkerCanditates;
 		detectRectangles(thres_images, MarkerCanditates);
+		
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BUG
 /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		float desiredarea = _params._markerWarpSize*_params._markerWarpSize;
+		/// identify the markers
+		vector< vector< Marker > > markers_omp(omp_get_max_threads());
+		vector< vector< std::vector< cv::Point2f > > > candidates_omp(omp_get_max_threads());
+		//    for(int i=0;i<imagePyramid.size();i++){
+		//        string name="im"+std::to_string(i)+".jpg";
+		//        cv::imwrite(name,imagePyramid[i]);
+		//    }
+#pragma omp parallel for
+		for (int i = 0; i < int(MarkerCanditates.size()); i++) {
+			// Find proyective homography
+			Mat canonicalMarker;
+			bool resW = false;
+			//warping is one of the most time consuming operations, especially when the region is large.
+			//To reduce computing time, let us find in the image pyramid, the best configuration to save time
+			//indicates how much bigger observation is wrt to desired patch
+			int imgPyrIdx = 0;
+			for (size_t p = 1; p < imagePyramid.size(); p++) {
+				if (MarkerCanditates[i].getArea() / pow(4, p) >= desiredarea) imgPyrIdx = p;
+				else break;
+			}
+
+			vector<cv::Point2f> points2d_pyr = MarkerCanditates[i];
+			for (auto &p : points2d_pyr) p *= 1. / pow(2, imgPyrIdx);
+			resW = warp(imagePyramid[imgPyrIdx], canonicalMarker, Size(_params._markerWarpSize, _params._markerWarpSize), points2d_pyr);
+			//go to a pyramid that minimizes the ratio
+
+			if (resW) {
+				int id, nRotations;
+				if (markerIdDetector->detect(canonicalMarker, id, nRotations)) {
+					if (_params._cornerMethod == LINES) // make LINES refinement before lose contour points
+						refineCandidateLines(MarkerCanditates[i], camMatrix, distCoeff);
+					markers_omp[omp_get_thread_num()].push_back(MarkerCanditates[i]);
+					markers_omp[omp_get_thread_num()].back().id = id;
+					// sort the points so that they are always in the same order no matter the camera orientation
+					std::rotate(markers_omp[omp_get_thread_num()].back().begin(), markers_omp[omp_get_thread_num()].back().begin() + 4 - nRotations, markers_omp[omp_get_thread_num()].back().end());
+				}
+				else
+					candidates_omp[omp_get_thread_num()].push_back(MarkerCanditates[i]);
+			}
+		}
+		// unify parallel data
+		joinVectors(markers_omp, detectedMarkers, true);
+		joinVectors(candidates_omp, _candidates, true);
+
+
+
+
+
+
+		/// refine the corner location if desired
+		if (detectedMarkers.size() > 0 && _params._cornerMethod != NONE && _params._cornerMethod != LINES) {
+
+			vector< Point2f > Corners;
+			for (unsigned int i = 0; i < detectedMarkers.size(); i++)
+				for (int c = 0; c < 4; c++)
+					Corners.push_back(detectedMarkers[i][c]);
+
+
+			if (_params._cornerMethod == SUBPIX) {
+				cornerSubPix(grey, Corners, cvSize(_params._subpix_wsize, _params._subpix_wsize), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 12, 0.005));
+			}
+			// copy back
+			for (unsigned int i = 0; i < detectedMarkers.size(); i++)
+				for (int c = 0; c < 4; c++)
+					detectedMarkers[i][c] = Corners[i * 4 + c];
+		}
+
+
+		// sort by id
+		std::sort(detectedMarkers.begin(), detectedMarkers.end());
+		// there might be still the case that a marker is detected twice because of the double border indicated earlier,
+		// detect and remove these cases
+		vector< bool > toRemove(detectedMarkers.size(), false);
+
+		for (int i = 0; i < int(detectedMarkers.size()) - 1; i++) {
+			for (int j = i + 1; j < int(detectedMarkers.size()) && !toRemove[i]; j++) {
+				if (detectedMarkers[i].id == detectedMarkers[j].id) {
+					// deletes the one with smaller perimeter
+					if (perimeter(detectedMarkers[i]) < perimeter(detectedMarkers[j]))
+						toRemove[i] = true;
+					else
+						toRemove[j] = true;
+
+				}
+			}
+		}
+
+
+		// remove markers with corners too near the image limits
+		int borderDistThresX = _params._borderDistThres * float(input.cols);
+		int borderDistThresY = _params._borderDistThres * float(input.rows);
+		for (size_t i = 0; i < detectedMarkers.size(); i++) {
+			// delete if any of the corners is too near image border
+			for (size_t c = 0; c < detectedMarkers[i].size(); c++) {
+				if (detectedMarkers[i][c].x < borderDistThresX || detectedMarkers[i][c].y < borderDistThresY ||
+					detectedMarkers[i][c].x > input.cols - borderDistThresX || detectedMarkers[i][c].y > input.rows - borderDistThresY) {
+					toRemove[i] = true;
+				}
+			}
+		}
+
+
+		// remove the markers marker
+		removeElements(detectedMarkers, toRemove);
+
+		/// detect the position of detected markers if desired
+		if (camMatrix.rows != 0 && markerSizeMeters > 0) {
+			for (unsigned int i = 0; i < detectedMarkers.size(); i++)
+				detectedMarkers[i].calculateExtrinsics(markerSizeMeters, camMatrix, distCoeff, setYPerpendicular);
+		}
+
+		//    cerr << "Threshold: " << 1000*(t2 - t1) / double(cv::getTickFrequency()) << endl;
+		//    cerr << "Rectangles: " << 1000*(t3 - t2) / double(cv::getTickFrequency()) << endl;
+		//    cerr << "Identify: " << 1000*(t4 - t3) / double(cv::getTickFrequency()) << endl;
+		//    cerr << "Subpixel: " << 1000*(t5 - t4) / double(cv::getTickFrequency()) << endl;
+		//    cerr << "Filtering: " << 1000*(t6 - t5) / double(cv::getTickFrequency()) << endl;
+	}
+
+	/*MY Version*/
+	void MarkerDetector::MYdetect(std::vector<Point> &approxCurve, const cv::Mat &input, vector< Marker > &detectedMarkers, Mat camMatrix, Mat distCoeff, float markerSizeMeters,
+		bool setYPerpendicular) throw(cv::Exception) {
+
+		// it must be a 3 channel image
+		if (input.type() == CV_8UC3)
+			cv::cvtColor(input, grey, CV_BGR2GRAY);
+		else
+			grey = input;
+
+		imagePyramid.clear();
+		imagePyramid.push_back(grey);
+		while (imagePyramid.back().cols > 120) {
+			cv::Mat pyrd;
+			cv::pyrDown(imagePyramid.back(), pyrd);
+			imagePyramid.push_back(pyrd);
+		};
+
+		//     cv::cvtColor(grey,_ssImC ,CV_GRAY2BGR); //DELETE
+
+		// clear input data
+		detectedMarkers.clear();
+
+
+		cv::Mat imgToBeThresHolded = grey;
+
+		/// Do threshold the image and detect contours
+		// work simultaneouly in a range of values of the first threshold
+		int n_param1 = 2 * _params._thresParam1_range + 1;
+		vector< cv::Mat > thres_images;
+
+
+		//compute the different values of param1
+
+		vector<int> p1_values;
+		for (int i = std::max(3., _params._thresParam1 - 2 * _params._thresParam1_range); i <= _params._thresParam1 + 2 * _params._thresParam1_range; i += 2)p1_values.push_back(i);
+		thres_images.resize(p1_values.size());
+#pragma omp parallel for
+		for (int i = 0; i < int(p1_values.size()); i++)
+			thresHold(_params._thresMethod, imgToBeThresHolded, thres_images[i], p1_values[i], _params._thresParam2);
+		thres = thres_images[n_param1 / 2];
+		//
+
+
+		// find all rectangles in the thresholdes image
+		vector< MarkerCandidate > MarkerCanditates;
+		detectRectangles(thres_images, MarkerCanditates);
+
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BUG
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		float desiredarea = _params._markerWarpSize*_params._markerWarpSize;
 		/// identify the markers
@@ -594,8 +766,237 @@ namespace aruco {
 		cout << "..." << endl;
 	}
 
-	//////////////////////////
-	void MarkerDetector::detectRectangles(vector< cv::Mat > &thresImgv, vector< MarkerCandidate > &OutMarkerCanditates) {
+	template<typename T> static int
+		MYapproxPolyDP_(const Point_<T>* src_contour, int count0, Point_<T>* dst_contour,
+			bool is_closed0, double eps, AutoBuffer<Range>* _stack)
+	{
+#define PUSH_SLICE(slice) \
+        if( top >= stacksz ) \
+        { \
+            _stack->resize(stacksz*3/2); \
+            stack = *_stack; \
+            stacksz = _stack->size(); \
+        } \
+        stack[top++] = slice
+
+#define READ_PT(pt, pos) \
+        pt = src_contour[pos]; \
+        if( ++pos >= count ) pos = 0
+
+#define READ_DST_PT(pt, pos) \
+        pt = dst_contour[pos]; \
+        if( ++pos >= count ) pos = 0
+
+#define WRITE_PT(pt) \
+        dst_contour[new_count++] = pt
+
+		typedef cv::Point_<T> PT;
+		int             init_iters = 3;
+		Range           slice(0, 0), right_slice(0, 0);
+		PT              start_pt((T)-1000000, (T)-1000000), end_pt(0, 0), pt(0, 0);
+		int             i = 0, j, pos = 0, wpos, count = count0, new_count = 0;
+		int             is_closed = is_closed0;
+		bool            le_eps = false;
+		size_t top = 0, stacksz = _stack->size();
+		Range*          stack = *_stack;
+
+		if (count == 0)
+			return 0;
+
+		eps *= eps;
+
+		if (!is_closed)
+		{
+			right_slice.start = count;
+			end_pt = src_contour[0];
+			start_pt = src_contour[count - 1];
+
+			if (start_pt.x != end_pt.x || start_pt.y != end_pt.y)
+			{
+				slice.start = 0;
+				slice.end = count - 1;
+				PUSH_SLICE(slice);
+			}
+			else
+			{
+				is_closed = 1;
+				init_iters = 1;
+			}
+		}
+
+		if (is_closed)
+		{
+			// 1. Find approximately two farthest points of the contour
+			right_slice.start = 0;
+
+			for (i = 0; i < init_iters; i++)
+			{
+				double dist, max_dist = 0;
+				pos = (pos + right_slice.start) % count;
+				READ_PT(start_pt, pos);
+
+				for (j = 1; j < count; j++)
+				{
+					double dx, dy;
+
+					READ_PT(pt, pos);
+					dx = pt.x - start_pt.x;
+					dy = pt.y - start_pt.y;
+
+					dist = dx * dx + dy * dy;
+
+					if (dist > max_dist)
+					{
+						max_dist = dist;
+						right_slice.start = j;
+					}
+				}
+
+				le_eps = max_dist <= eps;
+			}
+
+			// 2. initialize the stack
+			if (!le_eps)
+			{
+				right_slice.end = slice.start = pos % count;
+				slice.end = right_slice.start = (right_slice.start + slice.start) % count;
+
+				PUSH_SLICE(right_slice);
+				PUSH_SLICE(slice);
+			}
+			else
+				WRITE_PT(start_pt);
+		}
+
+		// 3. run recursive process
+		while (top > 0)
+		{
+			slice = stack[--top];
+			end_pt = src_contour[slice.end];
+			pos = slice.start;
+			READ_PT(start_pt, pos);
+
+			if (pos != slice.end)
+			{
+				double dx, dy, dist, max_dist = 0;
+
+				dx = end_pt.x - start_pt.x;
+				dy = end_pt.y - start_pt.y;
+
+				assert(dx != 0 || dy != 0);
+
+				while (pos != slice.end)
+				{
+					READ_PT(pt, pos);
+					dist = fabs((pt.y - start_pt.y) * dx - (pt.x - start_pt.x) * dy);
+
+					if (dist > max_dist)
+					{
+						max_dist = dist;
+						right_slice.start = (pos + count - 1) % count;
+					}
+				}
+
+				le_eps = max_dist * max_dist <= eps * (dx * dx + dy * dy);
+			}
+			else
+			{
+				le_eps = true;
+				// read starting point
+				start_pt = src_contour[slice.start];
+			}
+
+			if (le_eps)
+			{
+				WRITE_PT(start_pt);
+			}
+			else
+			{
+				right_slice.end = slice.end;
+				slice.end = right_slice.start;
+				PUSH_SLICE(right_slice);
+				PUSH_SLICE(slice);
+			}
+		}
+
+		if (!is_closed)
+			WRITE_PT(src_contour[count - 1]);
+
+		// last stage: do final clean-up of the approximated contour -
+		// remove extra points on the [almost] stright lines.
+		is_closed = is_closed0;
+		count = new_count;
+		pos = is_closed ? count - 1 : 0;
+		READ_DST_PT(start_pt, pos);
+		wpos = pos;
+		READ_DST_PT(pt, pos);
+
+		for (i = !is_closed; i < count - !is_closed && new_count > 2; i++)
+		{
+			double dx, dy, dist, successive_inner_product;
+			READ_DST_PT(end_pt, pos);
+
+			dx = end_pt.x - start_pt.x;
+			dy = end_pt.y - start_pt.y;
+			dist = fabs((pt.x - start_pt.x)*dy - (pt.y - start_pt.y)*dx);
+			successive_inner_product = (pt.x - start_pt.x) * (end_pt.x - pt.x) +
+				(pt.y - start_pt.y) * (end_pt.y - pt.y);
+
+			if (dist * dist <= 0.5*eps*(dx*dx + dy*dy) && dx != 0 && dy != 0 &&
+				successive_inner_product >= 0)
+			{
+				new_count--;
+				dst_contour[wpos] = start_pt = end_pt;
+				if (++wpos >= count) wpos = 0;
+				READ_DST_PT(pt, pos);
+				i++;
+				continue;
+			}
+			dst_contour[wpos] = start_pt = pt;
+			if (++wpos >= count) wpos = 0;
+			pt = end_pt;
+		}
+
+		if (!is_closed)
+			dst_contour[wpos] = pt;
+
+		return new_count;
+	}
+
+
+
+
+	void MYapproxPolyDP(InputArray _curve, OutputArray _approxCurve, double epsilon, bool closed)
+	{
+		Mat curve = _curve.getMat();
+		int npoints = curve.checkVector(2), depth = curve.depth();
+		CV_Assert(npoints >= 0 && (depth == CV_32S || depth == CV_32F));
+
+		if (npoints == 0)
+		{
+			_approxCurve.release();
+			return;
+		}
+
+		AutoBuffer<Point> _buf(npoints);
+		AutoBuffer<Range> _stack(npoints);
+		Point* buf = _buf;
+		int nout = 0;
+
+		if (depth == CV_32S)
+			nout = MYapproxPolyDP_(curve.ptr<Point>(), npoints, buf, closed, epsilon, &_stack);
+		else if (depth == CV_32F)
+			nout = MYapproxPolyDP_(curve.ptr<Point2f>(), npoints, (Point2f*)buf, closed, epsilon, &_stack);
+		else
+			CV_Error(CV_StsUnsupportedFormat, "");
+
+		Mat(nout, 1, CV_MAKETYPE(depth, 2), buf).copyTo(_approxCurve);
+
+
+	}
+
+	///
+	void MarkerDetector::MYdetectRectangles(vector< cv::Mat > &thresImgv, vector< MarkerCandidate > &OutMarkerCanditates) {
 		//         omp_set_num_threads ( 1 );
 		vector< vector< MarkerCandidate > > MarkerCanditatesV(omp_get_max_threads());
 		// calcualte the min_max contour sizes
@@ -604,11 +1005,10 @@ namespace aruco {
 		int minSize = std::min(float(_params._minSize_pix), _params._minSize* std::max(thresImgv[0].cols, thresImgv[0].rows) * 4);
 		//         cv::Mat input;
 		//         cv::cvtColor ( thresImgv[0],input,CV_GRAY2BGR );
-		/*std::vector< cv::Vec4i > hierarchy2;
-		std::vector< std::vector< cv::Point > > contours2;*/
+
 
 #pragma omp parallel for
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		for (int img_idx = 0; img_idx < int(thresImgv.size()); img_idx++) {
 			//int img_idx = 0;
@@ -625,7 +1025,7 @@ namespace aruco {
 			////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BUG
 
 
-			/*vector< Point > approxCurve;*/
+			//vector< Point > approxCurve;
 			/// for each contour, analyze if it is a paralelepiped likely to be the marker
 			for (unsigned int i = 0; i < contours2.size(); i++) {
 
@@ -633,6 +1033,179 @@ namespace aruco {
 				if (minSize < int(contours2[i].size()) && int(contours2[i].size()) < maxSize) {
 					// approximate to a poligon
 					approxPolyDP(contours2[i], approxCurve, double(contours2[i].size()) * 0.05, true);
+					//MYapproxPolyDP(contours2[i], approxCurve, double(contours2[i].size()) * 0.05, true);
+
+
+					// 				drawApproxCurve(copy,approxCurve,Scalar(0,0,255));
+					// check that the poligon has 4 points
+					if (approxCurve.size() == 4) {
+
+						//drawContour ( input,contours2[i],Scalar ( 255,0,225 ) );
+						//namedWindow ( "input" );
+						//imshow ( "input",input );
+						//  	 	waitKey(0);
+						// and is convex
+						if (isContourConvex(Mat(approxCurve))) {
+							// 					      drawApproxCurve(input,approxCurve,Scalar(255,0,255));
+							// 						//ensure that the   distace between consecutive points is large enough
+							float minDist = 1e10;
+							for (int j = 0; j < 4; j++) {
+								float d = std::sqrt((float)(approxCurve[j].x - approxCurve[(j + 1) % 4].x) * (approxCurve[j].x - approxCurve[(j + 1) % 4].x) +
+									(approxCurve[j].y - approxCurve[(j + 1) % 4].y) * (approxCurve[j].y - approxCurve[(j + 1) % 4].y));
+								// 		norm(Mat(approxCurve[i]),Mat(approxCurve[(i+1)%4]));
+								if (d < minDist) minDist = d;
+							}
+							// check that distance is not very small
+							if (minDist > 10) {
+								// add the points
+								// 	      cout<<"ADDED"<<endl;
+								MarkerCanditatesV[omp_get_thread_num()].push_back(MarkerCandidate());
+								MarkerCanditatesV[omp_get_thread_num()].back().idx = i;
+								if (_params._cornerMethod == LINES)//save all contour points if you need lines refinement method
+									MarkerCanditatesV[omp_get_thread_num()].back().contour = contours2[i];
+								for (int j = 0; j < 4; j++)
+									MarkerCanditatesV[omp_get_thread_num()].back().push_back(Point2f(approxCurve[j].x, approxCurve[j].y));
+							}
+						}
+					}
+				}
+			}
+
+
+
+
+		}
+		/////////////////////////////////////
+		// join all candidates
+		vector< MarkerCandidate > MarkerCanditates;
+
+		for (size_t i = 0; i < MarkerCanditatesV.size(); i++)
+			for (size_t j = 0; j < MarkerCanditatesV[i].size(); j++) {
+				MarkerCanditates.push_back(MarkerCanditatesV[i][j]);
+			}
+
+		/// sort the points in anti-clockwise order
+		valarray< bool > swapped(false, MarkerCanditates.size()); // used later
+		for (unsigned int i = 0; i < MarkerCanditates.size(); i++) {
+
+			// trace a line between the first and second point.
+			// if the thrid point is at the right side, then the points are anti-clockwise
+			double dx1 = MarkerCanditates[i][1].x - MarkerCanditates[i][0].x;
+			double dy1 = MarkerCanditates[i][1].y - MarkerCanditates[i][0].y;
+			double dx2 = MarkerCanditates[i][2].x - MarkerCanditates[i][0].x;
+			double dy2 = MarkerCanditates[i][2].y - MarkerCanditates[i][0].y;
+			double o = (dx1 * dy2) - (dy1 * dx2);
+
+			if (o < 0.0) { // if the third point is in the left side, then sort in anti-clockwise order
+				swap(MarkerCanditates[i][1], MarkerCanditates[i][3]);
+				swapped[i] = true;
+				// sort the contour points
+				//  	    reverse(MarkerCanditates[i].contour.begin(),MarkerCanditates[i].contour.end());//????
+			}
+		}
+		/// remove these elements which corners are too close to each other
+		// first detect candidates to be removed
+		vector< vector< pair< int, int > > > TooNearCandidates_omp(omp_get_max_threads());
+#pragma omp parallel for
+		for (unsigned int i = 0; i < MarkerCanditates.size(); i++) {
+			// calculate the average distance of each corner to the nearest corner of the other marker candidate
+			for (unsigned int j = i + 1; j < MarkerCanditates.size(); j++) {
+				valarray< float > vdist(4);
+				for (int c = 0; c < 4; c++)
+					vdist[c] = sqrt((MarkerCanditates[i][c].x - MarkerCanditates[j][c].x) * (MarkerCanditates[i][c].x - MarkerCanditates[j][c].x) +
+					(MarkerCanditates[i][c].y - MarkerCanditates[j][c].y) * (MarkerCanditates[i][c].y - MarkerCanditates[j][c].y));
+				//                 dist/=4;
+				// if distance is too small
+				if (vdist[0] < 6 && vdist[1] < 6 && vdist[2] < 6 && vdist[3] < 6) {
+					TooNearCandidates_omp[omp_get_thread_num()].push_back(pair< int, int >(i, j));
+				}
+			}
+		}
+
+
+		// join
+		vector< pair< int, int > > TooNearCandidates;
+		joinVectors(TooNearCandidates_omp, TooNearCandidates);
+		// mark for removal the element of  the pair with smaller perimeter
+		valarray< bool > toRemove(false, MarkerCanditates.size());
+		for (unsigned int i = 0; i < TooNearCandidates.size(); i++) {
+			if (perimeter(MarkerCanditates[TooNearCandidates[i].first]) > perimeter(MarkerCanditates[TooNearCandidates[i].second]))
+				toRemove[TooNearCandidates[i].second] = true;
+			else
+				toRemove[TooNearCandidates[i].first] = true;
+		}
+
+		// remove the invalid ones
+		// finally, assign to the remaining candidates the contour
+		OutMarkerCanditates.reserve(MarkerCanditates.size());
+		for (size_t i = 0; i < MarkerCanditates.size(); i++) {
+			if (!toRemove[i]) {
+				OutMarkerCanditates.push_back(MarkerCanditates[i]);
+				//                 OutMarkerCanditates.back().contour=contours2[ MarkerCanditates[i].idx];
+				if (swapped[i] && OutMarkerCanditates.back().contour.size() > 1) // if the corners where swapped, it is required to reverse here the points so that they are in the same order
+					reverse(OutMarkerCanditates.back().contour.begin(), OutMarkerCanditates.back().contour.end()); //????
+			}
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
+
+
+
+		/*
+		for ( size_t i=0; i<OutMarkerCanditates.size(); i++ )
+		OutMarkerCanditates[i].draw ( input,cv::Scalar ( 124,  255,125 ) );
+
+
+		namedWindow ( "input" );
+		imshow ( "input",input );*/
+
+
+
+
+	}
+
+
+	//////////////////////////
+
+	void MarkerDetector::detectRectangles(vector< cv::Mat > &thresImgv, vector< MarkerCandidate > &OutMarkerCanditates) {
+		//         omp_set_num_threads ( 1 );
+		vector< vector< MarkerCandidate > > MarkerCanditatesV(omp_get_max_threads());
+		// calcualte the min_max contour sizes
+		//int minSize = _params._minSize * std::max(thresImgv[0].cols, thresImgv[0].rows) * 4;
+		int maxSize = _params._maxSize * std::max(thresImgv[0].cols, thresImgv[0].rows) * 4;
+		int minSize = std::min(float(_params._minSize_pix), _params._minSize* std::max(thresImgv[0].cols, thresImgv[0].rows) * 4);
+		//         cv::Mat input;
+		//         cv::cvtColor ( thresImgv[0],input,CV_GRAY2BGR );
+
+
+#pragma omp parallel for
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		for (int img_idx = 0; img_idx < int(thresImgv.size()); img_idx++) {
+			//int img_idx = 0;
+			/*std::vector< cv::Vec4i > hierarchy2;
+			std::vector< std::vector< cv::Point > > contours2;*/
+			cv::Mat thres2;
+			thresImgv[img_idx].copyTo(thres2);
+
+
+
+			cv::findContours(thres2, contours2, hierarchy2, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+
+
+			////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BUG
+
+
+			//vector< Point > approxCurve;
+			/// for each contour, analyze if it is a paralelepiped likely to be the marker
+			for (unsigned int i = 0; i < contours2.size(); i++) {
+
+				// check it is a possible element by first checking is has enough points
+				if (minSize < int(contours2[i].size()) && int(contours2[i].size()) < maxSize) {
+					// approximate to a poligon
+					approxPolyDP(contours2[i], approxCurve, double(contours2[i].size()) * 0.05, true);
+					//MYapproxPolyDP(contours2[i], approxCurve, double(contours2[i].size()) * 0.05, true);
+					
+					
 					// 				drawApproxCurve(copy,approxCurve,Scalar(0,0,255));
 					// check that the poligon has 4 points
 					if (approxCurve.size() == 4) {
@@ -671,10 +1244,42 @@ namespace aruco {
 
 			/*hierarchy2.clear();*/
 			/*contours2.clear();*/
-			/*approxCurve.clear();*/
+			//approxCurve.clear();
+			//approxCurve._Free_proxy();
+			//delete(&approxCurve);
+			//vector<Point> approxCurveTMP;
+
+			//approxCurveTMP = approxCurve;
+			//approxCurve.swap(approxCurveTMP);
+			///*Point p(4, 40);
+			//approxCurveTMP.push_back(p);*/
+			//int test;
+			//test = 0;
+			////approxCurveTMP.clear();
+			//test = 1;
+			////approxCurveTMP.shrink_to_fit();
+			//test = 2;
+			//vector<Point>().swap(approxCurve);
+
+
+			//Point p(0, 0);
+			//while (approxCurveTMP.size() < approxCurveTMP.capacity())
+			//	approxCurveTMP.push_back(p);
+			//approxCurveTMP.shrink_to_fit();
+			////vector<Point>().swap(approxCurveTMP);
+
+			//approxCurve.push_back(p);
+			//approxCurve.push_back(p);
+			//approxCurve.push_back(p);
+
+			//approxCurve =  vector<Point>();
+			//approxCurveTMP = vector<Point>();
+			//test = 3;
+			////approxCurve.clear();
+			////approxCurve.shrink_to_fit();
 
 		}
-
+		/////////////////////////////////////
 		// join all candidates
 		vector< MarkerCandidate > MarkerCanditates;
 

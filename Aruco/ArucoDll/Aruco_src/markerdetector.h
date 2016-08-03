@@ -148,6 +148,10 @@ public:
     void detect(const cv::Mat &input, std::vector< Marker > &detectedMarkers, cv::Mat camMatrix = cv::Mat(), cv::Mat distCoeff = cv::Mat(),
                 float markerSizeMeters = -1, bool setYPerperdicular = false) throw(cv::Exception);
 
+	//MY ADD
+	void MYdetect(std::vector<cv::Point> &approxCurve, const cv::Mat &input, std::vector< Marker > &detectedMarkers, cv::Mat camMatrix = cv::Mat(), cv::Mat distCoeff = cv::Mat(),
+		float markerSizeMeters = -1, bool setYPerperdicular = false) throw(cv::Exception);
+
     /**Sets operating params
      */
     void setParams(Params p){_params =p;}
@@ -288,9 +292,9 @@ public:
 	/////////////////////////////
 	//AJOUT
 	/////////////////////////////
-	std::vector< cv::Vec4i > hierarchy2;
+	/*std::vector< cv::Vec4i > hierarchy2;
 	std::vector< std::vector< cv::Point > > contours2;
-	std::vector< cv::Point > approxCurve;
+	std::vector< cv::Point > approxCurve;*/
 
     ///-------------------------------------------------
     /// Methods you may not need
@@ -362,6 +366,9 @@ public:
 
 
   private:
+   /*Ajout */
+   void MYdetectRectangles(vector< cv::Mat > &vimages, vector< MarkerCandidate > &candidates);
+
     bool warp_cylinder(cv::Mat &in, cv::Mat &out, cv::Size size, MarkerCandidate &mc) throw(cv::Exception);
     /**
     * Detection of candidates to be markers, i.e., rectangles.

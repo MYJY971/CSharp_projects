@@ -41,6 +41,10 @@ namespace ArucoDll
 		return a + b;
 	}
 
+	std::vector< cv::Vec4i > hierarchy2;
+	std::vector< std::vector< cv::Point > > contours2;
+	vector< Point > approxCurve;
+
 	DLL_EXPORT int TestARCPP(Mat image, char * path_CamPara, int test)
 	{
 		_set_error_mode(_OUT_TO_STDERR);
@@ -57,25 +61,27 @@ namespace ArucoDll
 
 			float theMarkerSize = 0.05f;
 
+			vector<Point> approxCurve;
+
 			//image captured
 			theUndInputImage.create(theInputImage.size(), CV_8UC3);
 			//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
 			cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
 			//remove distortion in image
 			cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
-			//detect markers
-			if (test == 1)
-			mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
+			////detect markers
+			//if (test == 1)
+			mDetector.MYdetect(approxCurve, theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
 
 
 			
 			int res = theMarkers.size();
 
-			mDetector.~MarkerDetector();
-			image.~Mat();
-			theUndInputImage.~Mat();
-			theMarkers.~vector();
-			
+			//mDetector.~MarkerDetector();
+			//image.~Mat();
+			//theUndInputImage.~Mat();
+			//theMarkers.~vector();
+			Vec4i v(0,0,0,0);
 
 			//Mat treshIm = mDetector.getThresholdedImage();
 			return 1;//res;
