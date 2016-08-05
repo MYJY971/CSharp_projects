@@ -5,6 +5,5 @@ C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\bin\Debug\Aruco.Net.dll
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\bin\Debug\OpenCV.Net.dll
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\bin\Debug\Aruco.Net.xml
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\bin\Debug\OpenCV.Net.xml
-C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\obj\Debug\ArucoWrapperConsole.csprojResolveAssemblyReference.cache
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\obj\Debug\ArucoWrapperConsole.exe
 C:\Stage\Yanis\CSharp_projects\Aruco\ArucoWrapperConsole\obj\Debug\ArucoWrapperConsole.pdb

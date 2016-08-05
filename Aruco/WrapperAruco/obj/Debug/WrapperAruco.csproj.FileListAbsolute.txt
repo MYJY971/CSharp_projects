@@ -6,7 +6,6 @@ C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\Emgu.CV.World.dll
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\ZedGraph.dll
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\Emgu.CV.UI.xml
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\bin\Debug\Emgu.CV.World.xml
-C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\obj\Debug\WrapperAruco.csprojResolveAssemblyReference.cache
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\obj\Debug\WrapperAruco.AruForm.resources
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\obj\Debug\WrapperAruco.Properties.Resources.resources
 C:\Stage\Yanis\CSharp_projects\Aruco\WrapperAruco\obj\Debug\WrapperAruco.csproj.GenerateResource.Cache

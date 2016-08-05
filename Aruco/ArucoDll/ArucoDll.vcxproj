@@ -178,7 +178,6 @@
     <ClInclude Include="Aruco_src\markerlabelers\svmmarkers.h" />
     <ClInclude Include="Aruco_src\markermap.h" />
     <ClInclude Include="Aruco_src\posetracker.h" />
-    <ClInclude Include="MYcv.h" />
     <ClInclude Include="OpenCV\filterengine.hpp" />
     <ClInclude Include="OpenCV\precomp.hpp" />
     <ClInclude Include="OpenCV\_geom.h" />

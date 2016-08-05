@@ -11,7 +11,6 @@ C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\bin\Debug\Aruco.Net.xml
 C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\bin\Debug\Emgu.CV.UI.xml
 C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\bin\Debug\Emgu.CV.World.xml
 C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\bin\Debug\OpenCV.Net.xml
-C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\obj\Debug\OpenCVFormTest.csprojResolveAssemblyReference.cache
 C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\obj\Debug\OpenCVFormTest.Properties.Resources.resources
 C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\obj\Debug\OpenCVFormTest.csproj.GenerateResource.Cache
 C:\Stage\Yanis\CSharp_projects\Aruco\OpenCVFormTest\obj\Debug\OpenCVFormTest.exe

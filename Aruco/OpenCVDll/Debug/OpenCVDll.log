@@ -1,2 +1,4 @@
-﻿  OpenCVDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\OpenCVDll.dll
+﻿  OpenDll.cpp
+     Création de la bibliothèque C:\Stage\Yanis\CSharp_projects\Aruco\Debug\OpenCVDll.lib et de l'objet C:\Stage\Yanis\CSharp_projects\Aruco\Debug\OpenCVDll.exp
+  OpenCVDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\OpenCVDll.dll
   OpenCVDll.vcxproj -> C:\Stage\Yanis\CSharp_projects\Aruco\Debug\OpenCVDll.pdb (Full PDB)

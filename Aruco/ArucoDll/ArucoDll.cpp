@@ -43,7 +43,7 @@ namespace ArucoDll
 
 	std::vector< cv::Vec4i > hierarchy2;
 	std::vector< std::vector< cv::Point > > contours2;
-	vector< Point > approxCurve;
+	vector< Point > approxCurve(100);
 
 	DLL_EXPORT int TestARCPP(Mat image, char * path_CamPara, int test)
 	{
@@ -77,6 +77,8 @@ namespace ArucoDll
 			
 			int res = theMarkers.size();
 
+			approxCurve = vector <Point>();
+
 			//mDetector.~MarkerDetector();
 			//image.~Mat();
 			//theUndInputImage.~Mat();
@@ -96,34 +98,9 @@ namespace ArucoDll
 
 	}
 
-	DLL_EXPORT int TestAR(char image[], int imageWidth, int imageHeight, char * path_CamPara)
-	{
-		MarkerDetector mDetector;
-		vector<Marker> theMarkers;
-		Mat theInputImage, theUndInputImage;
-		theInputImage = Mat(imageHeight, imageWidth, CV_8UC3, image);
+	////////
 
-		CameraParameters theCameraParameters;
-		theCameraParameters.readFromXMLFile(path_CamPara);
-		theCameraParameters.resize(theInputImage.size());
-
-		float theMarkerSize = 0.05f;
-
-		//image captured
-		theUndInputImage.create(theInputImage.size(), CV_8UC3);
-		//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
-		cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
-		//remove distortion in image
-		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
-		//detect markers
-		//mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
-		(byte)mDetector.getThresholdedImage().data;
-		return theMarkers.size();
-	}
-
-	/////////
-
-
+	/*Detection Marker Aruco*/
 
 	DLL_EXPORT void PerformARMarker(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
 		double gnear, double gfar, double proj_matrix[16], double modelview_matrix[16],
@@ -152,6 +129,15 @@ namespace ArucoDll
 		//remove distortion in image
 		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
 		//detect markers
+		/*
+		/!\ BUG avec mDetector.detect (necessaire pour l'obtention de la liste des marqueurs détéctés) : 
+		Dans "markerdetector.cpp", problème dans la fonction detectRectangles (ligne 1169) :
+			-> contour2 et hierarchy2 ne sont pas désalloué à la fin de la méthode, suite l'appel de cv::findcontour
+			-> idem pour approxCurve après l'appel de approxPolyDP
+			-> Pas réussi a désallouer ses variables manuellement non plus, exception C++ déclenché à la sortie de PerformARMarker...
+			-> Problème contourné en partie en déclarant les variable au début du fichier markerdetector.cpp, détéction des marqueurs fonctionnelle,
+			mais exception levé à a fermeture de l'applcation (même problème d'allocation mémoire)
+		*/
 		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
 
 		for (unsigned int i = 0; i < theMarkers.size(); i++)
@@ -166,60 +152,8 @@ namespace ArucoDll
 
 	}
 
-	///
-	DLL_EXPORT int PerformARMarkerTEST(char image[], char * path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
-		double gnear, double gfar, double proj_matrix[16], double modelview_matrix[16],
-		float markerSize, int &nbDetectedMarkers, int tresh1, int tresh2)
-	{
-		_set_error_mode(_OUT_TO_STDERR);
-		try
-		{
-		MarkerDetector mDetector;
-		vector<Marker> theMarkers;
-		Mat theInputImage, theUndInputImage;
-		theInputImage = Mat(imageHeight, imageWidth, CV_8UC3, image);
 
-		CameraParameters theCameraParameters;
-		theCameraParameters.readFromXMLFile(path_CamPara);
-		theCameraParameters.resize(theInputImage.size());
-
-		theCameraParameters.glGetProjectionMatrix(theInputImage.size(), Size(glWidth, glHeight), proj_matrix, gnear, gfar);
-
-		float theMarkerSize = markerSize;
-
-		//tresh1 : dilatation, tresh2 : erosion (couleur de réference : blanc)
-		mDetector.setThresholdParams(tresh1, tresh2);
-
-		//image captured
-		theUndInputImage.create(theInputImage.size(), CV_8UC3);
-		//transform color that by default is BGR to RGB because windows systems do not allow reading BGR images with opengl properly
-		cv::cvtColor(theInputImage, theInputImage, CV_BGR2RGB);
-		//remove distortion in image
-		cv::undistort(theInputImage, theUndInputImage, theCameraParameters.CameraMatrix, theCameraParameters.Distorsion);
-		//detect markers
-		mDetector.detect(theUndInputImage, theMarkers, theCameraParameters.CameraMatrix, Mat(), theMarkerSize, false);
-
-		for (unsigned int i = 0; i < theMarkers.size(); i++)
-		{
-			theMarkers[i].glGetModelViewMatrix(modelview_matrix);
-			break;
-		}
-
-
-		nbDetectedMarkers = theMarkers.size();
-
-		return nbDetectedMarkers;
-		}
-		catch (const std::exception&)
-		{
-			printf("OH NO !!! EXCEPTION ! >_<");
-			return 0;
-		}
-
-	}
-
-	///////
-	//void  __glGetModelViewMatrix(double modelview_matrix[16], const cv::Mat &Rvec, const cv::Mat &Tvec) throw(cv::Exception);
+	/*Detection board*/
 
 	void  __glGetModelViewMatrix(double modelview_matrix[16], const cv::Mat &Rvec, const cv::Mat &Tvec) throw(cv::Exception) {
 		assert(Tvec.type() == CV_32F);
