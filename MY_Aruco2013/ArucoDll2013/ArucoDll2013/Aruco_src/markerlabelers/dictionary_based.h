@@ -28,12 +28,13 @@ or implied, of Rafael Muñoz Salinas.
 
 #ifndef ArucoDictionaryBasedMarkerDetector_H
 #define ArucoDictionaryBasedMarkerDetector_H
-#include <opencv2/core/core.hpp>
-#include "exports.h"
-#include "marker.h"
-#include "markermap.h"
-#include "markerlabeler.h"
-#include "dictionary.h"
+#include "../opencv2/core/core.hpp"
+#include "../exports.h"
+#include "../marker.h"
+#include "../markermap.h"
+#include "../markerlabeler.h"
+#include "../dictionary.h"
+
 namespace aruco {
 /**Labeler using a dictionary
  */

@@ -55,12 +55,12 @@ namespace MY_Aruco2013
 
         private int _tresh1, _tresh2;
 
-        //[DllImport("DllCpp.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //[DllImport("C:\\Stage\\Yanis\\CSharp_projects\\MY_Aruco2013\\Debug\\DllCpp.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         [DllImport("ArucoDll2013.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         //[DllImport("C:\\Stage\\Yanis\\CSharp_projects\\MY_Aruco2013\\Debug\\ArucoDll2013.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        //public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
-        //double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
-        public static extern double Add(double a, double b);
+        public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
+        double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
+        //public static extern double Add(double a, double b);
 
         Mesh _mesh;
 
@@ -262,14 +262,15 @@ namespace MY_Aruco2013
                 Image<Bgr, byte> _imageForARCompute = new Image<Bgr, byte>(_frameComputed.Width, _frameComputed.Height);
                 CvInvoke.Resize(_frameComputed, _imageForARCompute, _frameComputed.Size);
                 byte[] byteImageForARCompute = _imageForARCompute.Bytes;
+                
 
                 double[] projMatrix = new double[16];
                 double[] modelviewMatrix = new double[16];
 
                 //fonction de détection des marqueurs
                 if (_ARactived)
-                    //PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
-                    label1.Text=""+Add(5, 5);
+                    PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
+                    //label1.Text=""+Add(5, 5);
 
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
 
@@ -292,7 +293,7 @@ namespace MY_Aruco2013
 
                 //Scene 3D
 
-                label1.Text = "nb:" + _nbMarker + Add(5,5);
+                label1.Text = "nb:" + _nbMarker/* + Add(5,5)*/;
 
                 GL.MatrixMode(MatrixMode.Projection);
 

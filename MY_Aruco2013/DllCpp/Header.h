@@ -1,7 +1,7 @@
 #pragma once
 #include <stdexcept>
 #include <Windows.h>
-#include <opencv/cv.h>
+#include "opencv\cv.h"
 
 using namespace std;
 

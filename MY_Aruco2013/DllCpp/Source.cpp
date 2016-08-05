@@ -38,7 +38,7 @@ namespace testDll
 	DLL_EXPORT double Add(double a, double b)
 	{
 		cv::Mat M;
-		return a + b;
+		return a + b+4;
 	}
 
 	

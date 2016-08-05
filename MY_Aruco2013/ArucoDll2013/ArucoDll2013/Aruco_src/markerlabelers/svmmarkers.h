@@ -29,8 +29,8 @@ or implied, of Rafael Muñoz Salinas.
 #ifndef SVMMARKERS_H
 #define SVMMARKERS_H
 
-#include "exports.h"
-#include "markerlabeler.h"
+#include "../exports.h"
+#include "../markerlabeler.h"
 
 
 namespace aruco {
