@@ -54,6 +54,7 @@ public:
 
     enum ThresholdMethods { FIXED_THRES, ADPT_THRES, CANNY };
 
+
     /**Operating params
      */
     struct Params{
@@ -146,6 +147,10 @@ public:
      */
     void detect(const cv::Mat &input, std::vector< Marker > &detectedMarkers, cv::Mat camMatrix = cv::Mat(), cv::Mat distCoeff = cv::Mat(),
                 float markerSizeMeters = -1, bool setYPerperdicular = false) throw(cv::Exception);
+
+	//MY ADD
+	void MYdetect(std::vector<cv::Point> &approxCurve, const cv::Mat &input, std::vector< Marker > &detectedMarkers, cv::Mat camMatrix = cv::Mat(), cv::Mat distCoeff = cv::Mat(),
+		float markerSizeMeters = -1, bool setYPerperdicular = false) throw(cv::Exception);
 
     /**Sets operating params
      */
@@ -284,8 +289,12 @@ public:
 
 
 
-
-
+	/////////////////////////////
+	//AJOUT
+	/////////////////////////////
+	/*std::vector< cv::Vec4i > hierarchy2;
+	std::vector< std::vector< cv::Point > > contours2;
+	std::vector< cv::Point > approxCurve;*/
 
     ///-------------------------------------------------
     /// Methods you may not need
@@ -357,6 +366,9 @@ public:
 
 
   private:
+   /*Ajout */
+   void MYdetectRectangles(vector<cv::Point> &approxCurve, vector< cv::Mat > &vimages, vector< MarkerCandidate > &candidates);
+
     bool warp_cylinder(cv::Mat &in, cv::Mat &out, cv::Size size, MarkerCandidate &mc) throw(cv::Exception);
     /**
     * Detection of candidates to be markers, i.e., rectangles.
@@ -423,6 +435,14 @@ public:
     }
 
     vector<cv::Mat > imagePyramid;
+
+
+	/////////AJOUT
+	/*void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
+		OutputArray _hierarchy, int mode, int method, Point offsetof);
+
+	void MYfindContours(InputOutputArray _image, OutputArrayOfArrays _contours,
+		int mode, int method, Point offset);*/
 };
 };
 #endif

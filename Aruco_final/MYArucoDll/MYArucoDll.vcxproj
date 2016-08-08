@@ -93,7 +93,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>\lib\x86\opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Stage\Yanis\CSharp_projects\Aruco_final\MYArucoDll\lib\x86\opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,10 +103,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;MYARUCODLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>C:\Stage\Yanis\CSharp_projects\Aruco_final\MYArucoDll\lib\x64\opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,9 +147,37 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MYAruco.h" />
+    <ClInclude Include="src\aruco.h" />
+    <ClInclude Include="src\ar_omp.h" />
+    <ClInclude Include="src\cameraparameters.h" />
+    <ClInclude Include="src\cvdrawingutils.h" />
+    <ClInclude Include="src\dictionary.h" />
+    <ClInclude Include="src\exports.h" />
+    <ClInclude Include="src\levmarq.h" />
+    <ClInclude Include="src\marker.h" />
+    <ClInclude Include="src\markerdetector.h" />
+    <ClInclude Include="src\markerlabeler.h" />
+    <ClInclude Include="src\markerlabelers\dictionary_based.h" />
+    <ClInclude Include="src\markerlabelers\svmmarkers.h" />
+    <ClInclude Include="src\markermap.h" />
+    <ClInclude Include="src\posetracker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MYAruco.cpp" />
+    <ClCompile Include="src\ar_omp.cpp" />
+    <ClCompile Include="src\cameraparameters.cpp" />
+    <ClCompile Include="src\cvdrawingutils.cpp" />
+    <ClCompile Include="src\dictionary.cpp" />
+    <ClCompile Include="src\marker.cpp" />
+    <ClCompile Include="src\markerdetector.cpp" />
+    <ClCompile Include="src\markerlabeler.cpp" />
+    <ClCompile Include="src\markerlabelers\dictionary_based.cpp" />
+    <ClCompile Include="src\markerlabelers\svmmarkers.cpp" />
+    <ClCompile Include="src\markermap.cpp" />
+    <ClCompile Include="src\posetracker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

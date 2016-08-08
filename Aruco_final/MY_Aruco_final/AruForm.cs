@@ -110,7 +110,9 @@ namespace MY_Aruco_final
         /// <param name="nbDetectedMarkers">Nombre de marqueurs détécté</param>
         /// <param name="treshParam1">Paramètre de seuillage : érosion </param>
         /// <param name="treshParam2">Paramètre de seuillage : dilatation </param>
-        [DllImport("ArucoDll2013.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //[DllImport("ArucoDll2013.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        //[DllImport("C:\\Stage\\Yanis\\CSharp_projects\\Aruco_final\\x64\\Debug\\MYAruco.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("MYAruco.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
 
