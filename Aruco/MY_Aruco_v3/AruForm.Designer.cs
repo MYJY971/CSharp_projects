@@ -39,7 +39,6 @@
             this.buttonTresh1P = new System.Windows.Forms.Button();
             this.buttonAdaptedSize = new System.Windows.Forms.Button();
             this.buttonFullSize = new System.Windows.Forms.Button();
-            this.buttonStop = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panelImage.SuspendLayout();
@@ -78,7 +77,6 @@
             this.panelInfo.Controls.Add(this.buttonTresh1P);
             this.panelInfo.Controls.Add(this.buttonAdaptedSize);
             this.panelInfo.Controls.Add(this.buttonFullSize);
-            this.panelInfo.Controls.Add(this.buttonStop);
             this.panelInfo.Controls.Add(this.label2);
             this.panelInfo.Controls.Add(this.label1);
             this.panelInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -165,34 +163,23 @@
             this.buttonFullSize.UseVisualStyleBackColor = true;
             this.buttonFullSize.Click += new System.EventHandler(this.buttonFullSize_Click);
             // 
-            // buttonStop
-            // 
-            this.buttonStop.BackColor = System.Drawing.Color.DarkRed;
-            this.buttonStop.Location = new System.Drawing.Point(557, 71);
-            this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(75, 23);
-            this.buttonStop.TabIndex = 2;
-            this.buttonStop.Text = "Stop";
-            this.buttonStop.UseVisualStyleBackColor = false;
-            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(151, 36);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.Size = new System.Drawing.Size(57, 13);
             this.label2.TabIndex = 1;
-            this.label2.Text = "label2";
+            this.label2.Text = "Résolution";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(47, 36);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.Size = new System.Drawing.Size(73, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "label1";
+            this.label1.Text = "Nb marqueurs";
             // 
             // AruForm
             // 
@@ -218,7 +205,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private OpenTK.GLControl glControl1;
-        private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button buttonAdaptedSize;
         private System.Windows.Forms.Button buttonFullSize;
         private System.Windows.Forms.Label tresh2Label;

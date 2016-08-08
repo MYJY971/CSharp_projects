@@ -119,7 +119,7 @@ namespace ArucoDll
 
 		float theMarkerSize = markerSize;
 
-		//tresh1 : dilatation, tresh2 : erosion (couleur de réference : blanc)
+		//tresh1 : erosion, tresh2 : dilatation (couleur de réference : noir)
 		mDetector.setThresholdParams(tresh1, tresh2);
 
 		//image captured
