@@ -1,9 +1,10 @@
 #pragma once
 #include <stdexcept>
 #include <Windows.h>
-#include <opencv/cv.h>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
+//#include "opencv/cv.h"
+#include "src/opencv/cv.h"
+#include "src/opencv2/imgproc/imgproc.hpp"
+#include "src/opencv2/calib3d/calib3d.hpp"
 #include "src/aruco.h"
 
 using namespace std;

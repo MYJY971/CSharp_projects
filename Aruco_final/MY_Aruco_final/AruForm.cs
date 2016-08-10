@@ -92,6 +92,10 @@ namespace MY_Aruco_final
         /// </summary>
         private int _tresh2;
 
+        /// <summary>
+        /// objet .obj
+        /// </summary>
+        Mesh _mesh;
 
         /// <summary>
         /// Fonction de détéction de marqueur aruco, renvoie le nombre de marqueurs détécté ainsi que la matrice de projection et de modelview associé au marqueur
@@ -110,13 +114,11 @@ namespace MY_Aruco_final
         /// <param name="nbDetectedMarkers">Nombre de marqueurs détécté</param>
         /// <param name="treshParam1">Paramètre de seuillage : érosion </param>
         /// <param name="treshParam2">Paramètre de seuillage : dilatation </param>
-        //[DllImport("ArucoDll2013.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        [DllImport("C:\\Stage\\Yanis\\CSharp_projects\\Aruco_final\\x64\\Debug\\MYAruco.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
-        //[DllImport("MYAruco.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("ArucoDll2013.dll", ExactSpelling = false, CallingConvention = CallingConvention.Cdecl)]
         public static extern void PerformARMarker(byte[] image, string path_CamPara, int imageWidth, int imageHeight, int glWidth, int glHeight,
         double gnear, double gfar, double[] proj_matrix, double[] modelview_matrix, float markerSize, out int nbDetectedMarkers, int treshParam1, int treshParam2);
 
-        Mesh _mesh;
+        
 
         public AruForm()
         {
@@ -290,7 +292,7 @@ namespace MY_Aruco_final
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            if (_cameraOn) 
+            if (_cameraOn)
             {
                 #region Affiche en plain écran ou taille réelle
                 if (!_isFullSize)
@@ -341,7 +343,7 @@ namespace MY_Aruco_final
                 double[] modelviewMatrix = new double[16];
 
                 //fonction de détection des marqueurs
-                //if (_ARactived)
+
                 PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
 
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
