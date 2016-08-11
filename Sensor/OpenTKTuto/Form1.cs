@@ -59,7 +59,7 @@ namespace OpenTKTuto
                                         };
 
             _mviewdata = new Matrix4[] { Matrix4.Identity };
-
+            
             
 
             GL.ClearColor(Color.CornflowerBlue);
@@ -182,23 +182,23 @@ namespace OpenTKTuto
             glControl1.SwapBuffers();
         }
 
-        private void OnUpdate()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo_position);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(_vertdata.Length * Vector3.SizeInBytes), _vertdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(_attribute_vpos, 3, VertexAttribPointerType.Float, false, 0, 0);
+        //private void OnUpdate()
+        //{
+        //    GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo_position);
+        //    GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(_vertdata.Length * Vector3.SizeInBytes), _vertdata, BufferUsageHint.StaticDraw);
+        //    GL.VertexAttribPointer(_attribute_vpos, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo_color);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(_coldata.Length * Vector3.SizeInBytes), _coldata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(_attribute_vcol, 3, VertexAttribPointerType.Float, true, 0, 0);
+        //    GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo_color);
+        //    GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(_coldata.Length * Vector3.SizeInBytes), _coldata, BufferUsageHint.StaticDraw);
+        //    GL.VertexAttribPointer(_attribute_vcol, 3, VertexAttribPointerType.Float, true, 0, 0);
 
-            GL.UniformMatrix4(_uniform_mview, false, ref _mviewdata[0]);
+        //    GL.UniformMatrix4(_uniform_mview, false, ref _mviewdata[0]);
 
-            GL.UseProgram(_pgmID);
+        //    GL.UseProgram(_pgmID);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        //    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-        }
+        //}
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
