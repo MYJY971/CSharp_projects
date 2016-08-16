@@ -15,7 +15,7 @@ using OpenTK.Graphics.OpenGL;
 using TexLib;
 using OpenTK;
 using MY_Mesh;
-
+using MYTestOpenGl;
 
 //sensor
 using Windows.Devices.Sensors;
@@ -26,43 +26,66 @@ namespace Sensor
     {
         List<int> _idTextures;
 
-        Mesh _obj1, _sky; 
+        Mesh _obj1, _sky;
 
         double[] _modelViewMatrix;
 
-        Vector3 _eye= new Vector3(-5.0f, 0.0f, 0.0f);
+        Vector3 _eye = new Vector3(-5.0f, 0.0f, 0.0f);
         Vector3 _target = Vector3.Zero;
         Vector3 _up = Vector3.UnitZ;
 
         Vector3 _eye0, _target0, _up0;
 
-        
-        Matrix4 _sensorMatrix;
 
-        //tmp
-        float _angle = 0;
+        Matrix4 _sensorMatrix;
 
         //sensor
         private OrientationSensor _orientationSensor;
 
+        #region tmp
+        float _angle;
+
+        #region oldVersion
+        bool _old;
+        private float _M11, _M12, _M13, _M21, _M22, _M23, _M31, _M32, _M33;
+
+        Matrix _matRot = new Matrix(3);
+
+        private static double _angleX = -Math.PI / 2;
+        private static double _angleY = Math.PI / 2;
+        private static double _angleZ = -Math.PI / 2;
+
+        Vector _oldtarget0 = new Vector(0, 0, 0);
+        Vector _oldtarget = new Vector(0, 0, 0);
+        Vector _oldeye = new Vector(15, 0, 0);
+        Vector _oldup0 = new Vector(0, 0, 1);
+        Vector _oldup = new Vector(0, 0, 1);
+        Vector _tmp = new Vector(0, 0, 0);
+
+        #endregion
+
+        #endregion
         public Form1()
         {
-            
+
 
             InitializeComponent();
         }
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+
+            _old = true;
+
             panel1.Visible = false;
             panel2.Visible = false;
 
             _eye0 = _eye;
             _target0 = _target;
             _up0 = _up;
-            
+
             _modelViewMatrix = new double[16];
-            
+
             _sensorMatrix = Matrix4.Identity;
 
             initMeshes();
@@ -79,7 +102,7 @@ namespace Sensor
             _orientationSensor = OrientationSensor.GetDefault();
             if (_orientationSensor != null)
             {
-                
+
                 _orientationSensor.ReadingChanged += _orientationSensor_ReadingChanged;
             }
             else
@@ -145,7 +168,33 @@ namespace Sensor
             //_sensorMat = Matrix4.Mult(_sensorMat, Matrix4.CreateRotationZ((float)-Math.PI / 2));
             _sensorMatrix = Matrix4.Mult(_sensorMatrix, Matrix4.CreateRotationZ((float)-Math.PI / 2));
 
+            #region old version
+            if (_old)
+            {
+                _M11 = args.Reading.RotationMatrix.M11;
+                _M12 = args.Reading.RotationMatrix.M12;
+                _M13 = args.Reading.RotationMatrix.M13;
 
+                _M21 = args.Reading.RotationMatrix.M21;
+                _M22 = args.Reading.RotationMatrix.M22;
+                _M23 = args.Reading.RotationMatrix.M23;
+
+                _M31 = args.Reading.RotationMatrix.M31;
+                _M32 = args.Reading.RotationMatrix.M32;
+                _M33 = args.Reading.RotationMatrix.M33;
+
+                _matRot.SetValues(new float[3, 3] { { _M11, _M12, _M13 }, { _M21, _M22, _M23 }, { _M31, _M32, _M33 } });
+
+                _matRot = _matRot.Rotate(0, (float)_angleX);
+                _matRot = _matRot.Rotate(2, (float)_angleZ);
+
+                _tmp = _oldtarget0.Translate(-1, _matRot.ProductMat(_oldeye));
+                _oldtarget = _tmp.Translate(_oldeye);
+
+                _oldup = _matRot.ProductMat(_oldup0);
+
+            }
+            #endregion
         }
 
         private void InitGLContext()
@@ -202,7 +251,7 @@ namespace Sensor
 
         private void Render()
         {
-            
+
             int w = glControl1.Width;
             int h = glControl1.Height;
 
@@ -246,17 +295,17 @@ namespace Sensor
 
         private void initTextures()
         {
-            
-           
-            
+
+
+
             _idTextures = new List<int>();
 
             int sky = TexUtil.CreateTextureFromFile("DATA\\sky10.jpg");
             int sand = TexUtil.CreateTextureFromFile("Data\\sand_texture.jpg");
             int obj1 = TexUtil.CreateTextureFromFile("DATA\\garnet_texture.jpg");
             int sky2 = TexUtil.CreateTextureFromFile("DATA\\sky_photo.jpg");
-            
-            
+
+
             _idTextures.Add(sky);
             _idTextures.Add(sand);
             _idTextures.Add(obj1);
@@ -265,7 +314,7 @@ namespace Sensor
 
         private void initMeshes()
         {
-            
+
             _obj1 = new Mesh("DATA\\icosphere.obj");
             _sky = new Mesh("DATA\\dome.obj");
             //_obj1 = new Mesh("DATA\\dome.obj");
@@ -318,7 +367,7 @@ namespace Sensor
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             //Matrix4 modelView = Matrix4.LookAt(_eye, _target, _up);
-            
+
             ComputeModelView();
             GL.LoadMatrix(/*ref modelView /**/_modelViewMatrix/**/);
 
@@ -331,7 +380,7 @@ namespace Sensor
             DrawTrihedral();
             DrawObject1();
             DrawSky();
-           
+
         }
 
         private void DrawGround()
@@ -434,7 +483,7 @@ namespace Sensor
 
         private void DrawObject1()
         {
-            
+
             GL.Enable(EnableCap.Texture2D);
 
             GL.BindTexture(TextureTarget.Texture2D, _idTextures[2]);
@@ -456,7 +505,7 @@ namespace Sensor
 
             GL.Scale(s, s, s);
             _sky.Draw();
-            GL.Scale(1/s, 1/s,1/ s);
+            GL.Scale(1 / s, 1 / s, 1 / s);
 
 
             GL.Disable(EnableCap.Texture2D);
@@ -486,9 +535,9 @@ namespace Sensor
         /// <returns></returns>
         private Matrix4 DoubleToMatrix4(double[] m)
         {
-            Matrix4 res = new Matrix4((float)m[0],  (float)m[1],  (float)m[2],  (float)m[3],
-                                      (float)m[4],  (float)m[5],  (float)m[6],  (float)m[7],
-                                      (float)m[8],  (float)m[9], (float)m[10],  (float)m[11],
+            Matrix4 res = new Matrix4((float)m[0], (float)m[1], (float)m[2], (float)m[3],
+                                      (float)m[4], (float)m[5], (float)m[6], (float)m[7],
+                                      (float)m[8], (float)m[9], (float)m[10], (float)m[11],
                                       (float)m[12], (float)m[13], (float)m[14], (float)m[15]);
 
             return res;
@@ -501,14 +550,22 @@ namespace Sensor
         {
             //DisplayRotationMatrix();
 
-            Vector3 tmp1, tmp2;
+            if (!_old)
+            {
+                Vector3 tmp1, tmp2;
 
-            tmp1 = Vector3.Transform(_eye, _sensorMatrix);
-            tmp2 = _target0 - tmp1;
-            _target = tmp2 + _eye;
+                tmp1 = Vector3.Transform(_eye, _sensorMatrix);
+                tmp2 = _target0 - tmp1;
+                _target = tmp2 + _eye;
 
-            _up = Vector3.Transform(_up0, _sensorMatrix);
-
+                _up = Vector3.Transform(_up0, _sensorMatrix);
+            }
+            else
+            {
+                _eye = new Vector3(_oldeye.GetX(), _oldeye.GetY(), _oldeye.GetZ());
+                _target = new Vector3(_oldtarget.GetX(), _oldtarget.GetY(), _oldtarget.GetZ());
+                _up = new Vector3(_oldup.GetX(), _oldup.GetY(), _oldup.GetZ());
+            }
             Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
 
             _modelViewMatrix = Matrix4ToDouble(lookat);

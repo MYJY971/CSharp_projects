@@ -32,22 +32,22 @@
             this.glControl1 = new OpenTK.GLControl();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.textBoxM11 = new System.Windows.Forms.TextBox();
-            this.textBoxM12 = new System.Windows.Forms.TextBox();
-            this.textBoxM13 = new System.Windows.Forms.TextBox();
-            this.textBoxM14 = new System.Windows.Forms.TextBox();
-            this.textBoxM21 = new System.Windows.Forms.TextBox();
-            this.textBoxM22 = new System.Windows.Forms.TextBox();
-            this.textBoxM23 = new System.Windows.Forms.TextBox();
-            this.textBoxM24 = new System.Windows.Forms.TextBox();
-            this.textBoxM31 = new System.Windows.Forms.TextBox();
-            this.textBoxM32 = new System.Windows.Forms.TextBox();
-            this.textBoxM33 = new System.Windows.Forms.TextBox();
-            this.textBoxM34 = new System.Windows.Forms.TextBox();
-            this.textBoxM41 = new System.Windows.Forms.TextBox();
-            this.textBoxM42 = new System.Windows.Forms.TextBox();
-            this.textBoxM43 = new System.Windows.Forms.TextBox();
             this.textBoxM44 = new System.Windows.Forms.TextBox();
+            this.textBoxM43 = new System.Windows.Forms.TextBox();
+            this.textBoxM42 = new System.Windows.Forms.TextBox();
+            this.textBoxM41 = new System.Windows.Forms.TextBox();
+            this.textBoxM34 = new System.Windows.Forms.TextBox();
+            this.textBoxM33 = new System.Windows.Forms.TextBox();
+            this.textBoxM32 = new System.Windows.Forms.TextBox();
+            this.textBoxM31 = new System.Windows.Forms.TextBox();
+            this.textBoxM24 = new System.Windows.Forms.TextBox();
+            this.textBoxM23 = new System.Windows.Forms.TextBox();
+            this.textBoxM22 = new System.Windows.Forms.TextBox();
+            this.textBoxM21 = new System.Windows.Forms.TextBox();
+            this.textBoxM14 = new System.Windows.Forms.TextBox();
+            this.textBoxM13 = new System.Windows.Forms.TextBox();
+            this.textBoxM12 = new System.Windows.Forms.TextBox();
+            this.textBoxM11 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.textBoxMV44 = new System.Windows.Forms.TextBox();
@@ -125,103 +125,12 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(181, 100);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
-            // textBoxM11
+            // textBoxM44
             // 
-            this.textBoxM11.Location = new System.Drawing.Point(3, 3);
-            this.textBoxM11.Name = "textBoxM11";
-            this.textBoxM11.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM11.TabIndex = 0;
-            // 
-            // textBoxM12
-            // 
-            this.textBoxM12.Location = new System.Drawing.Point(48, 3);
-            this.textBoxM12.Name = "textBoxM12";
-            this.textBoxM12.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM12.TabIndex = 1;
-            // 
-            // textBoxM13
-            // 
-            this.textBoxM13.Location = new System.Drawing.Point(93, 3);
-            this.textBoxM13.Name = "textBoxM13";
-            this.textBoxM13.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM13.TabIndex = 2;
-            // 
-            // textBoxM14
-            // 
-            this.textBoxM14.Location = new System.Drawing.Point(138, 3);
-            this.textBoxM14.Name = "textBoxM14";
-            this.textBoxM14.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM14.TabIndex = 3;
-            // 
-            // textBoxM21
-            // 
-            this.textBoxM21.Location = new System.Drawing.Point(3, 28);
-            this.textBoxM21.Name = "textBoxM21";
-            this.textBoxM21.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM21.TabIndex = 4;
-            // 
-            // textBoxM22
-            // 
-            this.textBoxM22.Location = new System.Drawing.Point(48, 28);
-            this.textBoxM22.Name = "textBoxM22";
-            this.textBoxM22.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM22.TabIndex = 5;
-            // 
-            // textBoxM23
-            // 
-            this.textBoxM23.Location = new System.Drawing.Point(93, 28);
-            this.textBoxM23.Name = "textBoxM23";
-            this.textBoxM23.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM23.TabIndex = 6;
-            // 
-            // textBoxM24
-            // 
-            this.textBoxM24.Location = new System.Drawing.Point(138, 28);
-            this.textBoxM24.Name = "textBoxM24";
-            this.textBoxM24.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM24.TabIndex = 7;
-            // 
-            // textBoxM31
-            // 
-            this.textBoxM31.Location = new System.Drawing.Point(3, 53);
-            this.textBoxM31.Name = "textBoxM31";
-            this.textBoxM31.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM31.TabIndex = 8;
-            // 
-            // textBoxM32
-            // 
-            this.textBoxM32.Location = new System.Drawing.Point(48, 53);
-            this.textBoxM32.Name = "textBoxM32";
-            this.textBoxM32.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM32.TabIndex = 9;
-            // 
-            // textBoxM33
-            // 
-            this.textBoxM33.Location = new System.Drawing.Point(93, 53);
-            this.textBoxM33.Name = "textBoxM33";
-            this.textBoxM33.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM33.TabIndex = 10;
-            // 
-            // textBoxM34
-            // 
-            this.textBoxM34.Location = new System.Drawing.Point(138, 53);
-            this.textBoxM34.Name = "textBoxM34";
-            this.textBoxM34.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM34.TabIndex = 11;
-            // 
-            // textBoxM41
-            // 
-            this.textBoxM41.Location = new System.Drawing.Point(3, 78);
-            this.textBoxM41.Name = "textBoxM41";
-            this.textBoxM41.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM41.TabIndex = 12;
-            // 
-            // textBoxM42
-            // 
-            this.textBoxM42.Location = new System.Drawing.Point(48, 78);
-            this.textBoxM42.Name = "textBoxM42";
-            this.textBoxM42.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM42.TabIndex = 13;
+            this.textBoxM44.Location = new System.Drawing.Point(138, 78);
+            this.textBoxM44.Name = "textBoxM44";
+            this.textBoxM44.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM44.TabIndex = 15;
             // 
             // textBoxM43
             // 
@@ -230,12 +139,103 @@
             this.textBoxM43.Size = new System.Drawing.Size(39, 20);
             this.textBoxM43.TabIndex = 14;
             // 
-            // textBoxM44
+            // textBoxM42
             // 
-            this.textBoxM44.Location = new System.Drawing.Point(138, 78);
-            this.textBoxM44.Name = "textBoxM44";
-            this.textBoxM44.Size = new System.Drawing.Size(39, 20);
-            this.textBoxM44.TabIndex = 15;
+            this.textBoxM42.Location = new System.Drawing.Point(48, 78);
+            this.textBoxM42.Name = "textBoxM42";
+            this.textBoxM42.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM42.TabIndex = 13;
+            // 
+            // textBoxM41
+            // 
+            this.textBoxM41.Location = new System.Drawing.Point(3, 78);
+            this.textBoxM41.Name = "textBoxM41";
+            this.textBoxM41.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM41.TabIndex = 12;
+            // 
+            // textBoxM34
+            // 
+            this.textBoxM34.Location = new System.Drawing.Point(138, 53);
+            this.textBoxM34.Name = "textBoxM34";
+            this.textBoxM34.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM34.TabIndex = 11;
+            // 
+            // textBoxM33
+            // 
+            this.textBoxM33.Location = new System.Drawing.Point(93, 53);
+            this.textBoxM33.Name = "textBoxM33";
+            this.textBoxM33.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM33.TabIndex = 10;
+            // 
+            // textBoxM32
+            // 
+            this.textBoxM32.Location = new System.Drawing.Point(48, 53);
+            this.textBoxM32.Name = "textBoxM32";
+            this.textBoxM32.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM32.TabIndex = 9;
+            // 
+            // textBoxM31
+            // 
+            this.textBoxM31.Location = new System.Drawing.Point(3, 53);
+            this.textBoxM31.Name = "textBoxM31";
+            this.textBoxM31.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM31.TabIndex = 8;
+            // 
+            // textBoxM24
+            // 
+            this.textBoxM24.Location = new System.Drawing.Point(138, 28);
+            this.textBoxM24.Name = "textBoxM24";
+            this.textBoxM24.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM24.TabIndex = 7;
+            // 
+            // textBoxM23
+            // 
+            this.textBoxM23.Location = new System.Drawing.Point(93, 28);
+            this.textBoxM23.Name = "textBoxM23";
+            this.textBoxM23.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM23.TabIndex = 6;
+            // 
+            // textBoxM22
+            // 
+            this.textBoxM22.Location = new System.Drawing.Point(48, 28);
+            this.textBoxM22.Name = "textBoxM22";
+            this.textBoxM22.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM22.TabIndex = 5;
+            // 
+            // textBoxM21
+            // 
+            this.textBoxM21.Location = new System.Drawing.Point(3, 28);
+            this.textBoxM21.Name = "textBoxM21";
+            this.textBoxM21.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM21.TabIndex = 4;
+            // 
+            // textBoxM14
+            // 
+            this.textBoxM14.Location = new System.Drawing.Point(138, 3);
+            this.textBoxM14.Name = "textBoxM14";
+            this.textBoxM14.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM14.TabIndex = 3;
+            // 
+            // textBoxM13
+            // 
+            this.textBoxM13.Location = new System.Drawing.Point(93, 3);
+            this.textBoxM13.Name = "textBoxM13";
+            this.textBoxM13.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM13.TabIndex = 2;
+            // 
+            // textBoxM12
+            // 
+            this.textBoxM12.Location = new System.Drawing.Point(48, 3);
+            this.textBoxM12.Name = "textBoxM12";
+            this.textBoxM12.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM12.TabIndex = 1;
+            // 
+            // textBoxM11
+            // 
+            this.textBoxM11.Location = new System.Drawing.Point(3, 3);
+            this.textBoxM11.Name = "textBoxM11";
+            this.textBoxM11.Size = new System.Drawing.Size(39, 20);
+            this.textBoxM11.TabIndex = 0;
             // 
             // panel2
             // 

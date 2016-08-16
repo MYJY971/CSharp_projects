@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aruco_HOME", "Aruco_HOME\Ar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MY_Aruco", "..\Aruco\MY_Aruco\MY_Aruco.csproj", "{69CBCB25-3A9A-4F7D-8D57-CC2A899247E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sensor", "..\Sensor\Sensor\Sensor.csproj", "{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{69CBCB25-3A9A-4F7D-8D57-CC2A899247E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69CBCB25-3A9A-4F7D-8D57-CC2A899247E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69CBCB25-3A9A-4F7D-8D57-CC2A899247E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
