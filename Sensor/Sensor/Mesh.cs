@@ -205,13 +205,13 @@ namespace MY_Mesh
             //foreach(Vector3 face in _mesh._faces)
             for (int i = 0; i < _faces.Count(); i++)
             {
-                if (_haveNormale)
-                {
-                    GL.Color3((Vector3)_normales[(int)_normalID[i].X]);
-                }
+                //if (_haveNormale)
+                //{
+                //    GL.Color3((Vector3)_normales[(int)_normalID[i].X]);
+                //}
 
-                else
-                    GL.Color3((Vector3)_vertices[(int)_faces[i].X]);
+                //else
+                //    GL.Color3((Vector3)_vertices[(int)_faces[i].X]);
 
                 if (_haveNormale)
                     GL.Normal3(_normales[(int)_normalID[i].X]);
