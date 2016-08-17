@@ -378,10 +378,10 @@ namespace Sensor
             GL.BindTexture(TextureTarget.Texture2D, _idTextures[1]);
 
             GL.Begin(BeginMode.Quads);
-            GL.TexCoord2(0, 1); GL.Vertex3(-100.0f, -100.0f, 0.0f);
+            GL.TexCoord2(0, 10); GL.Vertex3(-100.0f, -100.0f, 0.0f);
             GL.TexCoord2(0, 0); GL.Vertex3(-100.0f, 100.0f, 0.0f);
-            GL.TexCoord2(1, 0); GL.Vertex3(100.0f, 100.0f, 0.0f);
-            GL.TexCoord2(1, 1); GL.Vertex3(100.0f, -100.0f, 0.0f);
+            GL.TexCoord2(10, 0); GL.Vertex3(100.0f, 100.0f, 0.0f);
+            GL.TexCoord2(10, 10); GL.Vertex3(100.0f, -100.0f, 0.0f);
             GL.End();
 
 
