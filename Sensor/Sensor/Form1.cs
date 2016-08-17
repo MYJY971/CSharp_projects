@@ -30,7 +30,7 @@ namespace Sensor
 
         double[] _modelViewMatrix;
 
-        Vector3 _eye = new Vector3(-5.0f, 0.0f, 0.0f);
+        Vector3 _eye = new Vector3(15.0f, 0.0f, 4.0f);
         Vector3 _target = Vector3.Zero;
         Vector3 _up = Vector3.UnitZ;
 
@@ -39,30 +39,14 @@ namespace Sensor
 
         Matrix4 _sensorMatrix;
 
+        private Matrix4 _RotationX;
+        private Matrix4 _RotationZ;
+
         //sensor
         private OrientationSensor _orientationSensor;
 
         #region tmp
         float _angle;
-
-        #region oldVersion
-        bool _old;
-        private float _M11, _M12, _M13, _M21, _M22, _M23, _M31, _M32, _M33;
-
-        Matrix _matRot = new Matrix(3);
-
-        private static double _angleX = -Math.PI / 2;
-        private static double _angleY = Math.PI / 2;
-        private static double _angleZ = -Math.PI / 2;
-
-        Vector _oldtarget0 = new Vector(0, 0, 0);
-        Vector _oldtarget = new Vector(0, 0, 0);
-        Vector _oldeye = new Vector(15, 0, 0);
-        Vector _oldup0 = new Vector(0, 0, 1);
-        Vector _oldup = new Vector(0, 0, 1);
-        Vector _tmp = new Vector(0, 0, 0);
-
-        #endregion
 
         #endregion
         public Form1()
@@ -75,8 +59,6 @@ namespace Sensor
         private void glControl1_Load(object sender, EventArgs e)
         {
 
-            _old = true;
-
             panel1.Visible = false;
             panel2.Visible = false;
 
@@ -88,11 +70,15 @@ namespace Sensor
 
             _sensorMatrix = Matrix4.Identity;
 
+            //initRotationXZ();
+
             initMeshes();
             initTextures();
             TexUtil.InitTexturing();
             InitGLContext();
             SetupViewport();
+
+            //TestComputeSensorOr();
 
             Run();
         }
@@ -119,8 +105,8 @@ namespace Sensor
             {
                 if (_orientationSensor == null)
                 {
-                    _angle += 0.001f;
-                    _sensorMatrix = Matrix4.CreateRotationZ(_angle);
+                    //_angle += 0.001f;
+                    //_sensorMatrix = Matrix4.CreateRotationZ(_angle);
                 }
                 Render();
             }
@@ -164,37 +150,32 @@ namespace Sensor
                                      (float)M41, (float)M42, (float)M43, (float)M44);
 
 
-            //_sensorMatrix = Matrix4.Mult(_sensorMatrix, Matrix4.CreateRotationX((float)-Math.PI / 2));
-            //_sensorMat = Matrix4.Mult(_sensorMat, Matrix4.CreateRotationZ((float)-Math.PI / 2));
-            _sensorMatrix = Matrix4.Mult(_sensorMatrix, Matrix4.CreateRotationZ((float)-Math.PI / 2));
 
-            #region old version
-            if (_old)
-            {
-                _M11 = args.Reading.RotationMatrix.M11;
-                _M12 = args.Reading.RotationMatrix.M12;
-                _M13 = args.Reading.RotationMatrix.M13;
+            _RotationX = Matrix4.CreateRotationX((float)-Math.PI / 2);
+            _RotationZ = Matrix4.CreateRotationZ((float)-Math.PI / 2);
 
-                _M21 = args.Reading.RotationMatrix.M21;
-                _M22 = args.Reading.RotationMatrix.M22;
-                _M23 = args.Reading.RotationMatrix.M23;
+            //Les Matrices doivent être inversé pour la multiplication matricielle car Opentk multiplie par colonne et non lineairement
+            _RotationX.Invert();
+            _RotationZ.Invert();
 
-                _M31 = args.Reading.RotationMatrix.M31;
-                _M32 = args.Reading.RotationMatrix.M32;
-                _M33 = args.Reading.RotationMatrix.M33;
+            //le repère de la surface n'est pas le même que OpenTK,
+            //on fait corespondre les deux repère par une rotation de -90° autour de X et Z
+            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
+            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
 
-                _matRot.SetValues(new float[3, 3] { { _M11, _M12, _M13 }, { _M21, _M22, _M23 }, { _M31, _M32, _M33 } });
 
-                _matRot = _matRot.Rotate(0, (float)_angleX);
-                _matRot = _matRot.Rotate(2, (float)_angleZ);
+            Vector3 tmp1, tmp2;
 
-                _tmp = _oldtarget0.Translate(-1, _matRot.ProductMat(_oldeye));
-                _oldtarget = _tmp.Translate(_oldeye);
+            _sensorMatrix.Invert();
+            tmp1 = Vector3.Transform(_eye, _sensorMatrix);
+            tmp2 = _target0 - tmp1;
+            _target = tmp2 + _eye;
 
-                _oldup = _matRot.ProductMat(_oldup0);
+            _up = Vector3.Transform(_up0, _sensorMatrix);
 
-            }
-            #endregion
+
+            
+
         }
 
         private void InitGLContext()
@@ -293,10 +274,11 @@ namespace Sensor
             Render();
         }
 
+        /// <summary>
+        /// Initialise les textures les ajoute dans _idTextures
+        /// </summary>
         private void initTextures()
         {
-
-
 
             _idTextures = new List<int>();
 
@@ -312,6 +294,9 @@ namespace Sensor
             _idTextures.Add(sky2);
         }
 
+        /// <summary>
+        /// initialise les objet .obj
+        /// </summary>
         private void initMeshes()
         {
 
@@ -321,17 +306,17 @@ namespace Sensor
 
         }
 
-        private void GetLookat()
-        {
-            Matrix4 mv = Matrix4.LookAt(_eye, _target, _up);
+        //private void GetLookat()
+        //{
+        //    Matrix4 mv = Matrix4.LookAt(_eye, _target, _up);
 
-            //_modelViewMatrix = new double[16] { mv.M11, mv.M12, mv.M13, mv.M14,
-            //                                    mv.M21, mv.M22, mv.M23, mv.M24,
-            //                                    mv.M31, mv.M32, mv.M33, mv.M34,
-            //                                    mv.M41, mv.M42, mv.M43, mv.M44};
+        //    //_modelViewMatrix = new double[16] { mv.M11, mv.M12, mv.M13, mv.M14,
+        //    //                                    mv.M21, mv.M22, mv.M23, mv.M24,
+        //    //                                    mv.M31, mv.M32, mv.M33, mv.M34,
+        //    //                                    mv.M41, mv.M42, mv.M43, mv.M44};
 
-            _modelViewMatrix = Matrix4ToDouble(mv);
-        }
+        //    _modelViewMatrix = Matrix4ToDouble(mv);
+        //}
 
         #region DrawMethods
 
@@ -361,26 +346,27 @@ namespace Sensor
             GL.DepthMask(true);
         }
 
+        
+
         private void DrawScene()
         {
-            //modelview
+            #region ModelView
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            //Matrix4 modelView = Matrix4.LookAt(_eye, _target, _up);
 
-            ComputeModelView();
+            Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
+            _modelViewMatrix = Matrix4ToDouble(lookat);
+
             GL.LoadMatrix(/*ref modelView /**/_modelViewMatrix/**/);
-
-            //correction repère opentk
-            //GL.Rotate(-90, Vector3.UnitZ);
-            //GL.Scale(0.0f, 0.0f, -1.0f);
-            GL.Translate(0.0f, 0.0f, -1.0f);
+            #endregion
 
             DrawGround();
             DrawTrihedral();
             DrawObject1();
             DrawSky();
 
+            //Vector3 e, t, u;
+            //ExtractEyeTargetUp(_modelViewMatrix,out e,out t,out u);
         }
 
         private void DrawGround()
@@ -543,41 +529,6 @@ namespace Sensor
             return res;
         }
 
-        /// <summary>
-        /// Calcule la matrice de modelView
-        /// </summary>
-        private void ComputeModelView()
-        {
-            //DisplayRotationMatrix();
-
-            if (!_old)
-            {
-                Vector3 tmp1, tmp2;
-
-                tmp1 = Vector3.Transform(_eye, _sensorMatrix);
-                tmp2 = _target0 - tmp1;
-                _target = tmp2 + _eye;
-
-                _up = Vector3.Transform(_up0, _sensorMatrix);
-            }
-            else
-            {
-                _eye = new Vector3(_oldeye.GetX(), _oldeye.GetY(), _oldeye.GetZ());
-                _target = new Vector3(_oldtarget.GetX(), _oldtarget.GetY(), _oldtarget.GetZ());
-                _up = new Vector3(_oldup.GetX(), _oldup.GetY(), _oldup.GetZ());
-            }
-            Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
-
-            _modelViewMatrix = Matrix4ToDouble(lookat);
-
-
-            //Matrix4 mtest = lookat;
-            //mtest.Invert();
-
-            //DisplayModelViewMatrix();
-
-
-        }
 
         /// <summary>
         /// Affiche les valeur de la matrice de rotation récupéré par le capteur d'orientation
@@ -640,9 +591,44 @@ namespace Sensor
         /// <summary>
         /// recupère les vecteur eye, target et up à partir de la matrice modelView
         /// </summary>
-        private void ExtractEyeTargetUp()
+        private void ExtractEyeTargetUp(double[] modelViewMatrix, out Vector3 eye, out Vector3 target, out Vector3 up)
         {
+            //Vector3 eye, target, up;
+            Vector4 eyePos;
 
+            Matrix4 modelView = DoubleToMatrix4(modelViewMatrix);
+
+            Matrix4 rotatMatrixTransposed = modelView;
+            rotatMatrixTransposed.Row3 = Vector4.UnitW;
+
+            rotatMatrixTransposed.Transpose();
+
+            up = Vector3.Transform(new Vector3(0, 1, 0), rotatMatrixTransposed);
+
+            modelView.Invert();
+            eyePos = Vector4.Transform(new Vector4(0, 0, 0, 1), modelView);
+            eyePos /= eyePos.W;
+            eye = new Vector3(eyePos);
+
+            Vector3 ZVectorTransf = Vector3.Transform(new Vector3(0, 0, -1), rotatMatrixTransposed);
+
+            target = MoveVector3(eye, ZVectorTransf, eye.Length);
+
+        }
+
+        /// <summary>
+        /// Déplace la vecteur pos d'une distance d dans la direction du vecteur dir (fonction move de Vect3D)
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="dir"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        private Vector3 MoveVector3(Vector3 pos, Vector3 dir, float d)
+        {
+            Vector3 l_dir = dir;
+            l_dir.Normalize();
+            l_dir = Vector3.Multiply(l_dir, d);
+            return pos + l_dir;
         }
     }
 }

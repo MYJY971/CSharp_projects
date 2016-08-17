@@ -23,10 +23,13 @@ using Emgu.CV.Structure;
 //DllImport
 using System.Runtime.InteropServices;
 
-//Texture
+//Bibliothèque pour texture OpenTK
 using TexLib;
 
-namespace MY_Aruco2013_v2
+//Sensor
+using Windows.Devices.Sensors;
+
+namespace MY_Aruco2013_v3
 {
     public partial class AruForm : Form
     {
@@ -43,7 +46,7 @@ namespace MY_Aruco2013_v2
         /// </summary>
         Mat _frame;
 
-        
+
         private Mat _backgroundImage;// = new Mat();
         private Mat _frameComputed;// = new Mat();
         //private Mat _frameResized;
@@ -103,6 +106,52 @@ namespace MY_Aruco2013_v2
         Mesh _mesh;
 
         /// <summary>
+        /// Capteur d'orientation
+        /// </summary>
+        private OrientationSensor _orientationSensor;
+
+        /// <summary>
+        /// Matrices de rotation utilisées pour corriger le repère de la tablette
+        /// </summary>
+        private Matrix4 _RotationX;
+        private Matrix4 _RotationZ;
+
+        /// <summary>
+        /// Vecteurs caractéristiques de la matrice de vue (lookat)
+        /// </summary>
+        private Vector3 _eye, _target, _up, _target0, _up0;
+
+        /// <summary>
+        /// Matrice de rotation récupéré par le capteur
+        /// </summary>
+        private Matrix4 _sensorMatrix;
+
+        /// <summary>
+        /// Indique si un capteur d'orientation à été trouvé
+        /// </summary>
+        private bool _sensorFound;
+
+        /// <summary>
+        /// Indique si on se sert du capteur pour effectuer une rotation
+        /// </summary>
+        private bool _activateSensor;
+
+        /// <summary>
+        /// indique si le marqueur aruco à été trouvé au moins une fois
+        /// </summary>
+        private bool _arucoSuccess;
+
+        /// <summary>
+        /// target0 et up0 doivent être initialisé une seule fois à chaque fois que le marqueur n'est plus reconnu
+        /// </summary>
+        private bool inittargetUp0;
+
+        /// <summary>
+        /// Indique si l'on peu utiliser les vecteur eye, target et up pour générer un lookat
+        /// </summary>
+        private bool _lookatOK;
+
+        /// <summary>
         /// Fonction de détéction de marqueur aruco, renvoie le nombre de marqueurs détécté ainsi que la matrice de projection et de modelview associé au marqueur
         /// </summary>
         /// <param name="image">Image où sera éffectué le traitement</param>
@@ -131,9 +180,13 @@ namespace MY_Aruco2013_v2
             try
             {
                 //initialisation des variables
+                _sensorFound = false;
+                _activateSensor = false;
+                _arucoSuccess = false;
+                _lookatOK = false;
 
-                 _backgroundImage = new Mat();
-                 _frameComputed = new Mat();
+                _backgroundImage = new Mat();
+                _frameComputed = new Mat();
 
                 _pathCamPara = "DATA\\intrinsics.yml";
 
@@ -183,10 +236,10 @@ namespace MY_Aruco2013_v2
             {
                 //Allume la caméra 
                 //test personnel, idx = 1 zedCamera
-               
-                  _cameraCapture = new Capture();
 
-  
+                _cameraCapture = new Capture();
+
+
 
                 /* La résolution par défaut prise en compte par Emgu est de 640x480
                  * Ici on fixe une résoltion de base, parmis les différentes résolution que peut prendre la caméra,
@@ -204,7 +257,81 @@ namespace MY_Aruco2013_v2
                 return;
             }
 
+
+            _orientationSensor = OrientationSensor.GetDefault();
+            if (_orientationSensor != null)
+            {
+                _sensorFound = true;
+                _orientationSensor.ReadingChanged += _orientationSensor_ReadingChanged;
+            }
+
             Application.Idle += ProcessFrame;
+        }
+
+        /// <summary>
+        /// Récupère la matrice d'orientation obtenue par le capteur et l'adapte au repère OpenTK
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void _orientationSensor_ReadingChanged(OrientationSensor sender, OrientationSensorReadingChangedEventArgs args)
+        {
+            double M11, M12, M13, M14,
+                   M21, M22, M23, M24,
+                   M31, M32, M33, M34,
+                   M41, M42, M43, M44;
+
+            M11 = args.Reading.RotationMatrix.M11;
+            M12 = args.Reading.RotationMatrix.M12;
+            M13 = args.Reading.RotationMatrix.M13;
+            M14 = 0.0;
+
+            M21 = args.Reading.RotationMatrix.M21;
+            M22 = args.Reading.RotationMatrix.M22;
+            M23 = args.Reading.RotationMatrix.M23;
+            M24 = 0.0;
+
+            M31 = args.Reading.RotationMatrix.M31;
+            M32 = args.Reading.RotationMatrix.M32;
+            M33 = args.Reading.RotationMatrix.M33;
+            M34 = 0.0;
+
+            M41 = 0.0;
+            M42 = 0.0;
+            M43 = 0.0;
+            M44 = 1.0;
+
+            _sensorMatrix = new Matrix4((float)M11, (float)M12, (float)M13, (float)M14,
+                                     (float)M21, (float)M22, (float)M23, (float)M24,
+                                     (float)M31, (float)M32, (float)M33, (float)M34,
+                                     (float)M41, (float)M42, (float)M43, (float)M44);
+
+
+
+            _RotationX = Matrix4.CreateRotationX((float)-Math.PI / 2);
+            _RotationZ = Matrix4.CreateRotationZ((float)-Math.PI / 2);
+
+            //Les Matrices doivent être inversé pour la multiplication matricielle car Opentk multiplie par colonne et non lineairement
+            _RotationX.Invert();
+            _RotationZ.Invert();
+
+            //le repère de la surface n'est pas le même que OpenTK,
+            //on fait corespondre les deux repère par une rotation de -90° autour de X et Z
+            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
+            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
+
+            if (_activateSensor)
+            {
+                Vector3 tmp1, tmp2;
+
+                _sensorMatrix.Invert();
+                tmp1 = Vector3.Transform(_eye, _sensorMatrix);
+                tmp2 = _target0 - tmp1;
+                _target = tmp2 + _eye;
+
+                _up = Vector3.Transform(_up0, _sensorMatrix);
+
+                _lookatOK = true;
+            }
         }
 
         /// <summary>
@@ -357,6 +484,12 @@ namespace MY_Aruco2013_v2
 
                 PerformARMarker(byteImageForARCompute, _pathCamPara, _frameComputed.Width, _frameComputed.Height, glControl1.Width, glControl1.Height, 0.1, 100, projMatrix, modelviewMatrix, _markerSize, out _nbMarker, _tresh1, _tresh2);
 
+                if (!_arucoSuccess && _nbMarker > 0)
+                {
+                    _arucoSuccess = true;
+                }
+
+
                 GL.RasterPos3(0f, h - 0.5f, -1.0f);
 
                 if (!_isFullSize)
@@ -387,11 +520,43 @@ namespace MY_Aruco2013_v2
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                ////Conserve la dernière position si aucun marker détécté
-                //if (_nbMarker != 0)
-                //{
-                _modelViewMatrix = modelviewMatrix;
-                //}
+                //Conserve la dernière position si aucun marker détécté
+                if (_nbMarker != 0)
+                {
+                    if (_sensorFound && _activateSensor)
+                        _activateSensor = false;
+
+                    _modelViewMatrix = modelviewMatrix;
+                    ExtractEyeTargetUp(_modelViewMatrix, out _eye, out _target, out _up);
+                }
+                else
+                {
+                    if (_sensorFound && _arucoSuccess)
+                    {
+                        ExtractEyeTargetUp(_modelViewMatrix, out _eye, out _target, out _up);
+
+                        if (!_activateSensor)
+                        {
+                            _activateSensor = true;
+
+
+                            _target0 = _target;
+                            _up0 = _up;
+
+                        }
+
+                        if (_lookatOK)
+                        {
+                            Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
+                            _modelViewMatrix = Matrix4ToDouble(lookat);
+                        }
+                    }
+                    //else
+                    //    _modelViewMatrix = modelviewMatrix;
+
+
+                }
+
                 GL.LoadMatrix(_modelViewMatrix);
                 DrawScene();
 
@@ -429,6 +594,16 @@ namespace MY_Aruco2013_v2
             GL.Translate(0, 0, -_markerSize / 2);
             GL.End();
 
+            GL.PointSize(10);
+            GL.Begin(BeginMode.Points);
+            GL.Color3(1.0f, 0.0f, 0.0f);
+            GL.Vertex3(_target);
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(-0.5f, -0.5f, 0.5f);
+            GL.Vertex3(0.5f, -0.5f, 0.5f);
+            GL.Vertex3(0.5f, 0.5f, 0.5f);
+            GL.Vertex3(-0.5f, 0.5f, 0.5f);
+            GL.End();
 
         }
 
@@ -726,7 +901,82 @@ namespace MY_Aruco2013_v2
         #endregion
 
 
+        /// <summary>
+        /// converti le type Matrix4 d'OpenTK en tableau de double
+        /// </summary>
+        /// <param name="m4">Matrix4 à convertir </param>
+        /// <returns></returns>
+        private double[] Matrix4ToDouble(Matrix4 m4)
+        {
+            double[] res = new double[16] {m4.M11, m4.M12, m4.M13, m4.M14,
+                                           m4.M21, m4.M22, m4.M23, m4.M24,
+                                           m4.M31, m4.M32, m4.M33, m4.M34,
+                                           m4.M41, m4.M42, m4.M43, m4.M44 };
 
+            return res;
+        }
+
+        /// <summary>
+        /// Converti une matrice double en Matrix4 d'OpenTK
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        private Matrix4 DoubleToMatrix4(double[] m)
+        {
+            Matrix4 res = new Matrix4((float)m[0], (float)m[1], (float)m[2], (float)m[3],
+                                      (float)m[4], (float)m[5], (float)m[6], (float)m[7],
+                                      (float)m[8], (float)m[9], (float)m[10], (float)m[11],
+                                      (float)m[12], (float)m[13], (float)m[14], (float)m[15]);
+
+            return res;
+        }
+
+        /// <summary>
+        /// Déplace la vecteur pos d'une distance d dans la direction du vecteur dir (fonction move de Vect3D)
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="dir"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        private Vector3 MoveVector3(Vector3 pos, Vector3 dir, float d)
+        {
+            Vector3 l_dir = dir;
+            l_dir.Normalize();
+            l_dir = Vector3.Multiply(l_dir, d);
+            return pos + l_dir;
+        }
+
+        /// <summary>
+        /// recupère les vecteur eye, target et up à partir de la matrice modelView
+        /// </summary>
+        private void ExtractEyeTargetUp(double[] modelViewMatrix, out Vector3 eye, out Vector3 target, out Vector3 up)
+        {
+            Vector4 eyePos;
+
+            Matrix4 modelView = DoubleToMatrix4(modelViewMatrix);
+
+            Matrix4 rotatMatrixTransposed = modelView;
+            rotatMatrixTransposed.Row3 = Vector4.UnitW;
+
+            rotatMatrixTransposed.Transpose();
+
+            up = Vector3.Transform(new Vector3(0, 1, 0), rotatMatrixTransposed);
+
+            modelView.Invert();
+            eyePos = Vector4.Transform(new Vector4(0, 0, 0, 1), modelView);
+            eyePos /= eyePos.W;
+            eye = new Vector3(eyePos);
+
+            Vector3 ZVectorTransf = Vector3.Transform(new Vector3(0, 0, -1), rotatMatrixTransposed);
+
+            target = MoveVector3(eye, ZVectorTransf, eye.Length);
+
+        }
+
+        //private void InitTarget0Up0(out Vector3 t0, out Vector3 u0)
+        //{
+
+        //}
 
 
         /// <summary>
@@ -758,7 +1008,7 @@ namespace MY_Aruco2013_v2
             {
                 factor = 1.0f;
             }
-            
+
             Size sizeGL = new Size((int)(frameSize.Width * factor), (int)(frameSize.Height * factor));
 
 

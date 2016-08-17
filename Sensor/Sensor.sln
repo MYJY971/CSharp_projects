@@ -7,20 +7,40 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sensor", "Sensor\Sensor.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTKTuto", "OpenTKTuto\OpenTKTuto.csproj", "{EB061AE2-2E54-441A-B782-01E939E173F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MY_Aruco2013_v3", "..\MY_Aruco2013\MY_Aruco2013_v3\MY_Aruco2013_v3.csproj", "{158BC150-3200-4B16-B7CC-C3DEE17AACDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Debug|x86.Build.0 = Debug|Any CPU
 		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{9EA6BB51-66EA-4BA8-89CA-031E3DA7F2C0}.Release|x86.Build.0 = Release|Any CPU
 		{EB061AE2-2E54-441A-B782-01E939E173F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB061AE2-2E54-441A-B782-01E939E173F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB061AE2-2E54-441A-B782-01E939E173F4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EB061AE2-2E54-441A-B782-01E939E173F4}.Debug|x86.Build.0 = Debug|Any CPU
 		{EB061AE2-2E54-441A-B782-01E939E173F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB061AE2-2E54-441A-B782-01E939E173F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB061AE2-2E54-441A-B782-01E939E173F4}.Release|x86.ActiveCfg = Release|Any CPU
+		{EB061AE2-2E54-441A-B782-01E939E173F4}.Release|x86.Build.0 = Release|Any CPU
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Debug|x86.ActiveCfg = Debug|x86
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Debug|x86.Build.0 = Debug|x86
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Release|x86.ActiveCfg = Release|x86
+		{158BC150-3200-4B16-B7CC-C3DEE17AACDD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
