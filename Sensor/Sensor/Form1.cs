@@ -44,6 +44,11 @@ namespace Sensor
 
         //sensor
         private OrientationSensor _orientationSensor;
+        private Compass _compass;
+
+        private bool _compassON;
+
+        private double _angleCompass;
 
         #region tmp
         float _angle;
@@ -58,6 +63,7 @@ namespace Sensor
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+            _compassON = true;
 
             panel1.Visible = false;
             panel2.Visible = false;
@@ -86,7 +92,7 @@ namespace Sensor
         private void Run()
         {
             _orientationSensor = OrientationSensor.GetDefault();
-            if (_orientationSensor != null)
+            if (_orientationSensor != null && !_compassON)
             {
 
                 _orientationSensor.ReadingChanged += _orientationSensor_ReadingChanged;
@@ -96,8 +102,21 @@ namespace Sensor
                 MessageBox.Show("Aucun capteur d'orientation détécté");
             }
 
+            _compass = Compass.GetDefault();
+            if(_compass != null && _compassON)
+            {
+                _compass.ReadingChanged += _compass_ReadingChanged;
+            }
+            else
+            {
+                MessageBox.Show("Aucun capteur d'orientation détécté");
+            }
+            
+
             Application.Idle += Application_Idle;
         }
+
+        
 
         private void Application_Idle(object sender, EventArgs e)
         {
@@ -175,6 +194,26 @@ namespace Sensor
 
 
             
+
+        }
+
+        /// <summary>
+        /// Recupère l'angle en degrès entre notre position et le nord
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void _compass_ReadingChanged(Compass sender, CompassReadingChangedEventArgs args)
+        {
+            _angleCompass = Math.PI * -args.Reading.HeadingMagneticNorth / 180.0;
+
+            Vector3 tmp1, tmp2;
+
+            Matrix4 _compassMat = Matrix4.CreateRotationZ((float)_angleCompass);
+            tmp1 = Vector3.Transform(_eye, _compassMat);
+            tmp2 = _target0 - tmp1;
+            _target = tmp2 + _eye;
+
+            _up = Vector3.Transform(_up0, _compassMat);
 
         }
 
@@ -306,17 +345,6 @@ namespace Sensor
 
         }
 
-        //private void GetLookat()
-        //{
-        //    Matrix4 mv = Matrix4.LookAt(_eye, _target, _up);
-
-        //    //_modelViewMatrix = new double[16] { mv.M11, mv.M12, mv.M13, mv.M14,
-        //    //                                    mv.M21, mv.M22, mv.M23, mv.M24,
-        //    //                                    mv.M31, mv.M32, mv.M33, mv.M34,
-        //    //                                    mv.M41, mv.M42, mv.M43, mv.M44};
-
-        //    _modelViewMatrix = Matrix4ToDouble(mv);
-        //}
 
         #region DrawMethods
 
@@ -366,7 +394,7 @@ namespace Sensor
             DrawSky();
 
             //Vector3 e, t, u;
-            //ExtractEyeTargetUp(_modelViewMatrix,out e,out t,out u);
+            //ExtractEyeTargetUp(_modelViewMatrix, out e, out t, out u);
         }
 
         private void DrawGround()
@@ -595,8 +623,10 @@ namespace Sensor
         {
             //Vector3 eye, target, up;
             Vector4 eyePos;
+             
 
             Matrix4 modelView = DoubleToMatrix4(modelViewMatrix);
+            //Matrix4 OriginalModelView = modelView;
 
             Matrix4 rotatMatrixTransposed = modelView;
             rotatMatrixTransposed.Row3 = Vector4.UnitW;
@@ -614,6 +644,8 @@ namespace Sensor
 
             target = MoveVector3(eye, ZVectorTransf, eye.Length);
 
+
+            //Matrix4 extratedModelView = Matrix4.LookAt(_eye, target, _up);
         }
 
         /// <summary>
@@ -630,5 +662,10 @@ namespace Sensor
             l_dir = Vector3.Multiply(l_dir, d);
             return pos + l_dir;
         }
+
+
+        #region Test Personnel
+
+        #endregion
     }
 }

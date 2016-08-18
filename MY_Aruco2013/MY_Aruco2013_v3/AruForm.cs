@@ -111,6 +111,16 @@ namespace MY_Aruco2013_v3
         private OrientationSensor _orientationSensor;
 
         /// <summary>
+        /// Boussole
+        /// </summary>
+        private Compass _compass;
+
+
+        private double _angleCompass;
+
+        private double _angleMarker;
+
+        /// <summary>
         /// Matrices de rotation utilisées pour corriger le repère de la tablette
         /// </summary>
         private Matrix4 _RotationX;
@@ -120,6 +130,7 @@ namespace MY_Aruco2013_v3
         /// Vecteurs caractéristiques de la matrice de vue (lookat)
         /// </summary>
         private Vector3 _eye, _target, _up, _target0, _up0;
+
 
         /// <summary>
         /// Matrice de rotation récupéré par le capteur
@@ -151,6 +162,16 @@ namespace MY_Aruco2013_v3
         /// </summary>
         private bool _lookatOK;
 
+
+        #region tmp
+        private bool _onlySensor;
+
+        private bool _useCompass;
+
+        private float _angleTest = 0.0f;
+        #endregion
+
+
         /// <summary>
         /// Fonction de détéction de marqueur aruco, renvoie le nombre de marqueurs détécté ainsi que la matrice de projection et de modelview associé au marqueur
         /// </summary>
@@ -180,6 +201,7 @@ namespace MY_Aruco2013_v3
             try
             {
                 //initialisation des variables
+                _useCompass = true;
                 _sensorFound = false;
                 _activateSensor = false;
                 _arucoSuccess = false;
@@ -212,14 +234,29 @@ namespace MY_Aruco2013_v3
         {
             //initialisation des variables propres a OpenGL
 
+            #region tmp
+            _eye = new Vector3(10.0f, 0.0f, 0.0f);
+            _target = Vector3.Zero;
+            _target0 = _target;
+            _up = Vector3.UnitZ;
+            _up0 = _up;
+
+
+            _modelViewMatrix = new double[16] {1,0,0,0,
+                                               0,1,0,0,
+                                               0,0,1,0,
+                                               0,0,0,1};
+            #endregion
+
+
             //Objet .OBJ
             _mesh = new Mesh();
             //sphere troué
             //_mesh.Load("DATA\\sphere.obj");
             //torus
-            _mesh.Load("DATA\\torus.obj");
+            //_mesh.Load("DATA\\torus.obj");
             //coque piscine
-            //_mesh.Load("DATA\\Caraïbes.obj");
+            _mesh.Load("DATA\\Caraïbes.obj");
 
             //texture
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
@@ -259,13 +296,29 @@ namespace MY_Aruco2013_v3
 
 
             _orientationSensor = OrientationSensor.GetDefault();
-            if (_orientationSensor != null)
+            if (_orientationSensor != null && !_useCompass)
             {
                 _sensorFound = true;
                 _orientationSensor.ReadingChanged += _orientationSensor_ReadingChanged;
             }
 
+            _compass = Compass.GetDefault();
+            if (_compass != null && _useCompass)
+            {
+                _compass.ReadingChanged += _compass_ReadingChanged;
+            }
+
             Application.Idle += ProcessFrame;
+        }
+
+        /// <summary>
+        /// Recupère l'angle en degrès entre notre position et le nord
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void _compass_ReadingChanged(Compass sender, CompassReadingChangedEventArgs args)
+        {
+            _angleCompass =  Math.PI * -args.Reading.HeadingMagneticNorth / 180.0;
         }
 
         /// <summary>
@@ -319,19 +372,19 @@ namespace MY_Aruco2013_v3
             _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
             _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
 
-            if (_activateSensor)
-            {
-                Vector3 tmp1, tmp2;
+            //if (_activateSensor)
+            //{
+            Vector3 tmp1, tmp2;
 
-                _sensorMatrix.Invert();
-                tmp1 = Vector3.Transform(_eye, _sensorMatrix);
-                tmp2 = _target0 - tmp1;
-                _target = tmp2 + _eye;
+            _sensorMatrix.Invert();
+            tmp1 = Vector3.Transform(_eye, _sensorMatrix);
+            tmp2 = _target0 - tmp1;
+            _target = tmp2 + _eye;
 
-                _up = Vector3.Transform(_up0, _sensorMatrix);
+            _up = Vector3.Transform(_up0, _sensorMatrix);
 
-                _lookatOK = true;
-            }
+            _lookatOK = true;
+            //}
         }
 
         /// <summary>
@@ -350,11 +403,6 @@ namespace MY_Aruco2013_v3
                 //indique que la caméra est allumé
                 if (!_cameraOn)
                     _cameraOn = true;
-
-                //_backgroundImage = _frame;
-
-                //_frameComputed = _frame;
-                //_frameResized = _frame;
 
                 //Redimensionne l'image 
                 CvInvoke.Resize(_frame, _frameComputed, new Size(640, 480));
@@ -527,38 +575,89 @@ namespace MY_Aruco2013_v3
                         _activateSensor = false;
 
                     _modelViewMatrix = modelviewMatrix;
+
                     ExtractEyeTargetUp(_modelViewMatrix, out _eye, out _target, out _up);
+
+                    _target0 = _target;
+                    _angleTest = 0;
+                    _angleMarker = _angleCompass;
+
+                    //GL.LoadMatrix(_modelViewMatrix);
+
+                    //DrawScene();
                 }
                 else
                 {
-                    if (_sensorFound && _arucoSuccess)
+
+                    if (/*_sensorFound &&*/ _arucoSuccess)
                     {
-                        ExtractEyeTargetUp(_modelViewMatrix, out _eye, out _target, out _up);
+                        Vector3 tmp1, tmp2;
 
-                        if (!_activateSensor)
-                        {
-                            _activateSensor = true;
+                        double angle = _angleCompass  - _angleMarker;
 
+                        textBoxCompass.Text = "" + _angleCompass;
+                        textBoxAngle.Text = "" + angle;
 
-                            _target0 = _target;
-                            _up0 = _up;
+                        Matrix4 _compassMat = Matrix4.CreateRotationZ((float)angle);
+                        tmp1 = Vector3.Transform(_eye, _compassMat);
+                        tmp2 = _target0 - tmp1;
+                        _target = tmp2 + _eye;
 
-                        }
+                        Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
+                        Matrix4 scaling = Matrix4.Scale(-1, 1, 1);
 
-                        if (_lookatOK)
-                        {
-                            Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
-                            _modelViewMatrix = Matrix4ToDouble(lookat);
-                        }
+                        lookat = Matrix4.Mult(lookat, scaling);
+
+                        _modelViewMatrix = Matrix4ToDouble(lookat);
+
+                        //GL.LoadMatrix(_modelViewMatrix);
+
+                        //DrawScene();
                     }
-                    //else
-                    //    _modelViewMatrix = modelviewMatrix;
-
-
                 }
 
                 GL.LoadMatrix(_modelViewMatrix);
+
                 DrawScene();
+
+
+
+                ////_up = Vector3.Transform(_up, rotat);
+                //_eye = new Vector3(-_eye.X, _eye.Y, _eye.Z);
+
+                //Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
+
+                ////_modelViewMatrix = Matrix4ToDouble(lookat);
+
+                //GL.MatrixMode(MatrixMode.Modelview);
+                //GL.LoadIdentity();
+                //GL.LoadMatrix(ref lookat);
+
+                //GL.Color3(1.0f, 1.0f, 0.0f);
+
+                //GL.Translate(_angleTest, 0, 0);
+                //GL.Scale(-1, 1, 1);
+
+                //Vector3 targetSym = new Vector3(-_target.X, _target.Y, _target.Z);
+                //Vector3 targetAxis = _target - targetSym;
+                //_target = MoveVector3(_target, targetAxis, targetAxis.Length);
+                //_eye = MoveVector3(_eye, targetAxis, targetAxis.Length);
+                ////Vector3 tt = new Vector3(targetAxis.Length, 0, 0);
+                ////_target += tt;
+                ////GL.Translate(tt);
+                //DrawScene();
+                //GL.Begin(BeginMode.Points);
+                //GL.Color3(1.0f, 1.0f, 1.0f);
+                //GL.Color3(0.0f, 0.0f, 0.0f);
+                ////GL.Vertex3(targetSym);
+                //GL.Vertex3(_eye);
+
+                //GL.End();
+
+                //GL.Color3(1.0f, 1.0f, 1.0f);
+
+
+
 
                 GL.PushMatrix();
 
@@ -578,21 +677,23 @@ namespace MY_Aruco2013_v3
         private void DrawScene()
         {
 
-            GL.Translate(0, 0, _markerSize + 0.0001f);
-            DrawTrihedral(_markerSize / 2);
-            GL.Translate(0, 0, -(_markerSize + 0.0001f));
+            
 
             GL.Enable(EnableCap.Texture2D);
             DrawCube(_markerSize);
             GL.Disable(EnableCap.Texture2D);
             //int indiceat = 0;
 
+            GL.Translate(0, 0, _markerSize + 0.0001f);
+            DrawTrihedral(_markerSize / 2);
+            GL.Translate(0, 0, -(_markerSize + 0.0001f));
+
             GL.Translate(0, 0, _markerSize / 2);
             GL.Color3(1.0f, 0.0f, 0.0f);
             _mesh.Draw();
             GL.Color3(1.0f, 1.0f, 1.0f);
             GL.Translate(0, 0, -_markerSize / 2);
-            GL.End();
+            //GL.End();
 
             GL.PointSize(10);
             GL.Begin(BeginMode.Points);
@@ -604,7 +705,6 @@ namespace MY_Aruco2013_v3
             GL.Vertex3(0.5f, 0.5f, 0.5f);
             GL.Vertex3(-0.5f, 0.5f, 0.5f);
             GL.End();
-
         }
 
         /// <summary>
@@ -931,6 +1031,7 @@ namespace MY_Aruco2013_v3
             return res;
         }
 
+
         /// <summary>
         /// Déplace la vecteur pos d'une distance d dans la direction du vecteur dir (fonction move de Vect3D)
         /// </summary>
@@ -1040,5 +1141,22 @@ namespace MY_Aruco2013_v3
 
             glControl1.SetBounds(x, y, size.Width, size.Height);
         }
+
+        #region Test Personnel
+
+        private void glControl1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs key)
+        {
+            switch (key.KeyCode)
+            {
+                case Keys.Left:
+                    _angleTest += 0.01f;
+                    break;
+                case Keys.Right:
+                    _angleTest -= 0.01f;
+                    break;
+            }
+        }
+
+        #endregion
     }
 }

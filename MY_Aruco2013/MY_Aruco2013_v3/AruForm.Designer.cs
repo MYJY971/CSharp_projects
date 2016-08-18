@@ -43,6 +43,10 @@
             this.buttonStop = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.textBoxCompass = new System.Windows.Forms.TextBox();
+            this.textBoxAngle = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.panelImage.SuspendLayout();
             this.panelInfo.SuspendLayout();
             this.SuspendLayout();
@@ -67,10 +71,15 @@
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
+            this.glControl1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.glControl1_PreviewKeyDown);
             // 
             // panelInfo
             // 
             this.panelInfo.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.panelInfo.Controls.Add(this.label4);
+            this.panelInfo.Controls.Add(this.label3);
+            this.panelInfo.Controls.Add(this.textBoxAngle);
+            this.panelInfo.Controls.Add(this.textBoxCompass);
             this.panelInfo.Controls.Add(this.tresh2Label);
             this.panelInfo.Controls.Add(this.tresh1Label);
             this.panelInfo.Controls.Add(this.buttonTresh2M);
@@ -194,6 +203,38 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "label1";
             // 
+            // textBoxCompass
+            // 
+            this.textBoxCompass.Location = new System.Drawing.Point(532, 6);
+            this.textBoxCompass.Name = "textBoxCompass";
+            this.textBoxCompass.Size = new System.Drawing.Size(100, 20);
+            this.textBoxCompass.TabIndex = 11;
+            // 
+            // textBoxAngle
+            // 
+            this.textBoxAngle.Location = new System.Drawing.Point(532, 29);
+            this.textBoxAngle.Name = "textBoxAngle";
+            this.textBoxAngle.Size = new System.Drawing.Size(100, 20);
+            this.textBoxAngle.TabIndex = 12;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(476, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(50, 13);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "Boussole";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(476, 32);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Angle";
+            // 
             // AruForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -228,6 +269,10 @@
         private System.Windows.Forms.Button buttonTresh2P;
         private System.Windows.Forms.Button buttonTresh1M;
         private System.Windows.Forms.Button buttonTresh1P;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxAngle;
+        private System.Windows.Forms.TextBox textBoxCompass;
     }
 }
 
