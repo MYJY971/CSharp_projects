@@ -201,7 +201,7 @@ namespace MY_Aruco2013_v3
             try
             {
                 //initialisation des variables
-                _useCompass = true;
+                _useCompass = false;
                 _sensorFound = false;
                 _activateSensor = false;
                 _arucoSuccess = false;
@@ -254,9 +254,9 @@ namespace MY_Aruco2013_v3
             //sphere troué
             //_mesh.Load("DATA\\sphere.obj");
             //torus
-            //_mesh.Load("DATA\\torus.obj");
+            _mesh.Load("DATA\\torus.obj");
             //coque piscine
-            _mesh.Load("DATA\\Caraïbes.obj");
+            //_mesh.Load("DATA\\Caraïbes.obj");
 
             //texture
             _objectTextureId = TexUtil.CreateTextureFromFile("DATA\\texture.png");
@@ -360,30 +360,30 @@ namespace MY_Aruco2013_v3
 
 
 
-            _RotationX = Matrix4.CreateRotationX((float)-Math.PI / 2);
-            _RotationZ = Matrix4.CreateRotationZ((float)-Math.PI / 2);
+            //_RotationX = Matrix4.CreateRotationX((float)-Math.PI / 2);
+            //_RotationZ = Matrix4.CreateRotationZ((float)-Math.PI / 2);
 
-            //Les Matrices doivent être inversé pour la multiplication matricielle car Opentk multiplie par colonne et non lineairement
-            _RotationX.Invert();
-            _RotationZ.Invert();
+            ////Les Matrices doivent être inversé pour la multiplication matricielle car Opentk multiplie par colonne et non lineairement
+            //_RotationX.Invert();
+            //_RotationZ.Invert();
 
-            //le repère de la surface n'est pas le même que OpenTK,
-            //on fait corespondre les deux repère par une rotation de -90° autour de X et Z
-            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
-            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
+            ////le repère de la surface n'est pas le même que OpenTK,
+            ////on fait corespondre les deux repère par une rotation de -90° autour de X et Z
+            //_sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
+            //_sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
 
             //if (_activateSensor)
             //{
-            Vector3 tmp1, tmp2;
+            //Vector3 tmp1, tmp2;
 
-            _sensorMatrix.Invert();
-            tmp1 = Vector3.Transform(_eye, _sensorMatrix);
-            tmp2 = _target0 - tmp1;
-            _target = tmp2 + _eye;
+            //_sensorMatrix.Invert();
+            //tmp1 = Vector3.Transform(_eye, _sensorMatrix);
+            //tmp2 = _target0 - tmp1;
+            //_target = tmp2 + _eye;
 
-            _up = Vector3.Transform(_up0, _sensorMatrix);
+            //_up = Vector3.Transform(_up0, _sensorMatrix);
 
-            _lookatOK = true;
+            //_lookatOK = true;
             //}
         }
 
@@ -591,25 +591,59 @@ namespace MY_Aruco2013_v3
 
                     if (/*_sensorFound &&*/ _arucoSuccess)
                     {
-                        Vector3 tmp1, tmp2;
+                        if (_useCompass)
+                        {
+                            Vector3 tmp1, tmp2;
 
-                        double angle = _angleCompass  - _angleMarker;
+                            double angle = _angleCompass - _angleMarker;
 
-                        textBoxCompass.Text = "" + _angleCompass;
-                        textBoxAngle.Text = "" + angle;
+                            textBoxCompass.Text = "" + _angleCompass;
+                            textBoxAngle.Text = "" + angle;
 
-                        Matrix4 _compassMat = Matrix4.CreateRotationZ((float)angle);
-                        tmp1 = Vector3.Transform(_eye, _compassMat);
-                        tmp2 = _target0 - tmp1;
-                        _target = tmp2 + _eye;
+                            Matrix4 _compassMat = Matrix4.CreateRotationZ((float)angle);
+                            tmp1 = Vector3.Transform(_eye, _compassMat);
+                            tmp2 = _target0 - tmp1;
+                            _target = tmp2 + _eye;
 
-                        Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
-                        Matrix4 scaling = Matrix4.Scale(-1, 1, 1);
+                            Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
+                            Matrix4 scaling = Matrix4.Scale(-1, 1, 1);
 
-                        lookat = Matrix4.Mult(lookat, scaling);
+                            lookat = Matrix4.Mult(lookat, scaling);
 
-                        _modelViewMatrix = Matrix4ToDouble(lookat);
+                            _modelViewMatrix = Matrix4ToDouble(lookat);
+                        }
+                        else
+                        {
 
+                            _RotationX = Matrix4.CreateRotationX((float)-Math.PI / 2);
+                            _RotationZ = Matrix4.CreateRotationZ((float)-Math.PI / 2);
+
+                            //Les Matrices doivent être inversé pour la multiplication matricielle car Opentk multiplie par colonne et non lineairement
+                            _RotationX.Invert();
+                            _RotationZ.Invert();
+
+                            //le repère de la surface n'est pas le même que OpenTK,
+                            //on fait corespondre les deux repère par une rotation de -90° autour de X et Z
+                            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
+                            _sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
+
+                            Vector3 tmp1, tmp2;
+
+                            _sensorMatrix.Invert();
+                            tmp1 = Vector3.Transform(_eye, _sensorMatrix);
+                            tmp2 = _target0 - tmp1;
+                            _target = tmp2 + _eye;
+
+                            _up = Vector3.Transform(_up0, _sensorMatrix);
+
+                            Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
+                            Matrix4 scaling = Matrix4.Scale(-1, 1, 1);
+
+                            lookat = Matrix4.Mult(lookat, scaling);
+
+                            _modelViewMatrix = Matrix4ToDouble(lookat);
+
+                        }
                         //GL.LoadMatrix(_modelViewMatrix);
 
                         //DrawScene();

@@ -30,7 +30,7 @@ namespace Sensor
 
         double[] _modelViewMatrix;
 
-        Vector3 _eye = new Vector3(15.0f, 0.0f, 4.0f);
+        Vector3 _eye = new Vector3(0.0f, -15.0f, 4.0f);
         Vector3 _target = Vector3.Zero;
         Vector3 _up = Vector3.UnitZ;
 
