@@ -14,13 +14,19 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using TexLib;
 using OpenTK;
-
+using MY_Mesh;
+using MY_PC;
 namespace ZedTest
 {
     public partial class Form1 : Form
     {
         int _idTextBackground;
         Size _backgroundSize;
+        Matrix4 _proj;
+        
+        Matrix4 _pose;
+
+        MY_PointCloud _pc;
         public Form1()
         {
             InitializeComponent();
@@ -28,8 +34,11 @@ namespace ZedTest
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+            SetProjectionMat();
+            _pc = new MY_PointCloud("DATA\\PC_894.xyz");
             _idTextBackground = TexUtil.CreateTextureFromFile("DATA\\ZED_image.png", out _backgroundSize);
-            glControl1.Size = _backgroundSize;
+            glControl1.Width = _backgroundSize.Width/2;
+            glControl1.Height = _backgroundSize.Height;
             TexUtil.InitTexturing();
             InitGLContext();
             SetupViewport();
@@ -129,6 +138,31 @@ namespace ZedTest
             #endregion
             DrawBackground();
 
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.LoadMatrix(ref _proj);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            DrawPointCloud();
+
+            GL.PointSize(10);
+            GL.Begin(BeginMode.Points);
+
+            
+            GL.Color3(1.0f, 0.0f, 0.0f);
+
+            GL.Vertex3(0.0f, 0.0f, 0.0f);
+            GL.Vertex3(1.0f, 0.0f, 0.0f);
+            GL.Vertex3(0.0f, 1.0f, 0.0f);
+            GL.Vertex3(0.0f, 0.0f, 1.0f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+
+
+            GL.End();
+            //GL.PointSize(1);
+
             glControl1.SwapBuffers();
         }
 
@@ -165,7 +199,27 @@ namespace ZedTest
             GL.DepthMask(true);
         }
 
+        private void DrawPointCloud()
+        {
+
+            _pc.Draw();
+        }
+
         #endregion
+
+        private void SetProjectionMat()
+        {
+            _proj = new Matrix4(1.73205f, 0, 0, 0,
+                                0, 1.73205f, 0, 0,
+                                0, 0, -1.0002f, -0.020002f,
+                                0, 0, -1, 0);
+            _proj.Invert();
+        }
+
+        private void SetViewMat()
+        {
+            _pose = new Matrix4(1.f, -)
+        }
 
     }
 }
