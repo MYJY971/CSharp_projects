@@ -201,7 +201,7 @@ namespace MY_Aruco2013_v3
             try
             {
                 //initialisation des variables
-                _useCompass = false;
+                _useCompass = true;
                 _sensorFound = false;
                 _activateSensor = false;
                 _arucoSuccess = false;
@@ -272,8 +272,6 @@ namespace MY_Aruco2013_v3
             try
             {
                 //Allume la caméra 
-                //test personnel, idx = 1 zedCamera
-
                 _cameraCapture = new Capture();
 
 
@@ -360,31 +358,7 @@ namespace MY_Aruco2013_v3
 
 
 
-            //_RotationX = Matrix4.CreateRotationX((float)-Math.PI / 2);
-            //_RotationZ = Matrix4.CreateRotationZ((float)-Math.PI / 2);
 
-            ////Les Matrices doivent être inversé pour la multiplication matricielle car Opentk multiplie par colonne et non lineairement
-            //_RotationX.Invert();
-            //_RotationZ.Invert();
-
-            ////le repère de la surface n'est pas le même que OpenTK,
-            ////on fait corespondre les deux repère par une rotation de -90° autour de X et Z
-            //_sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationX);
-            //_sensorMatrix = Matrix4.Mult(_sensorMatrix, _RotationZ);
-
-            //if (_activateSensor)
-            //{
-            //Vector3 tmp1, tmp2;
-
-            //_sensorMatrix.Invert();
-            //tmp1 = Vector3.Transform(_eye, _sensorMatrix);
-            //tmp2 = _target0 - tmp1;
-            //_target = tmp2 + _eye;
-
-            //_up = Vector3.Transform(_up0, _sensorMatrix);
-
-            //_lookatOK = true;
-            //}
         }
 
         /// <summary>
@@ -644,55 +618,14 @@ namespace MY_Aruco2013_v3
                             _modelViewMatrix = Matrix4ToDouble(lookat);
 
                         }
-                        //GL.LoadMatrix(_modelViewMatrix);
 
-                        //DrawScene();
                     }
                 }
 
                 GL.LoadMatrix(_modelViewMatrix);
 
                 DrawScene();
-
-
-
-                ////_up = Vector3.Transform(_up, rotat);
-                //_eye = new Vector3(-_eye.X, _eye.Y, _eye.Z);
-
-                //Matrix4 lookat = Matrix4.LookAt(_eye, _target, _up);
-
-                ////_modelViewMatrix = Matrix4ToDouble(lookat);
-
-                //GL.MatrixMode(MatrixMode.Modelview);
-                //GL.LoadIdentity();
-                //GL.LoadMatrix(ref lookat);
-
-                //GL.Color3(1.0f, 1.0f, 0.0f);
-
-                //GL.Translate(_angleTest, 0, 0);
-                //GL.Scale(-1, 1, 1);
-
-                //Vector3 targetSym = new Vector3(-_target.X, _target.Y, _target.Z);
-                //Vector3 targetAxis = _target - targetSym;
-                //_target = MoveVector3(_target, targetAxis, targetAxis.Length);
-                //_eye = MoveVector3(_eye, targetAxis, targetAxis.Length);
-                ////Vector3 tt = new Vector3(targetAxis.Length, 0, 0);
-                ////_target += tt;
-                ////GL.Translate(tt);
-                //DrawScene();
-                //GL.Begin(BeginMode.Points);
-                //GL.Color3(1.0f, 1.0f, 1.0f);
-                //GL.Color3(0.0f, 0.0f, 0.0f);
-                ////GL.Vertex3(targetSym);
-                //GL.Vertex3(_eye);
-
-                //GL.End();
-
-                //GL.Color3(1.0f, 1.0f, 1.0f);
-
-
-
-
+                                
                 GL.PushMatrix();
 
                 GL.PopMatrix();

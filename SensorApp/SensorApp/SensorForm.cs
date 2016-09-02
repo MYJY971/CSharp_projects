@@ -22,6 +22,9 @@ namespace SensorApp
     {
         List<Mesh> _listMeshes;
         List<Shape> _listShapes;
+        List<int> _idTextures;
+
+        private bool _isTextured;
 
         Vector3 _eye = new Vector3(0.0f, -15.0f, 4.0f);
         Vector3 _target = Vector3.Zero;
@@ -41,6 +44,8 @@ namespace SensorApp
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+            _isTextured = true;
+            initIdTexture();
             initShape();
 
             TexUtil.InitTexturing();
@@ -49,6 +54,8 @@ namespace SensorApp
 
             Run();
         }
+
+
 
         private void Run()
         {
@@ -159,21 +166,43 @@ namespace SensorApp
 
             #endregion
 
-            DrawScene();
+            DrawScene(_isTextured);
 
             glControl1.SwapBuffers();
         }
 
+        private void initIdTexture()
+        {
+            _idTextures = new List<int>();
+            
+            int sky = TexUtil.CreateTextureFromFile("DATA\\sky10.jpg");
+            _idTextures.Add(sky);
+
+            int sand = TexUtil.CreateTextureFromFile("Data\\sand_texture.jpg");
+            _idTextures.Add(sand);
+
+            int obj1 = TexUtil.CreateTextureFromFile("DATA\\garnet_texture.jpg");
+            _idTextures.Add(obj1);
+
+            int sky2 = TexUtil.CreateTextureFromFile("DATA\\sky_photo.jpg");
+            _idTextures.Add(sky2);
+
+
+
+        }
 
         private void initShape()
         {
             _listShapes = new List<Shape>();
 
-            Quad quad = new Quad();
-            quad.Scale(100);
+            Quad ground = new Quad(100);
+            ground.GiveColor(Color.Beige);
+            ground.GiveTexture(_idTextures[1]);
+            ground.ScaleUV(10);
 
-            _listShapes.Add(quad);
+            _listShapes.Add(ground);
         }
+
 
         #region Draw Methods
 
@@ -260,13 +289,117 @@ namespace SensorApp
             GL.Vertex3(-l_flecheH, 0.0f, l_lenghAxis - l_flecheW);
             GL.End();
 
-            GL.Color3(1.0f, 1.0f, 1.0f);
+            
 
             GL.Translate(0.0f, 0.0f, -0.001f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+        }
+
+        private void afficherToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            panelMenu.Visible = true;
+        }
+
+        private void masquerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            panelMenu.Visible = false;
+        }
+
+        private void radioButtonTextured_CheckedChanged(object sender, EventArgs e)
+        {
+            _isTextured = true;
+        }
+
+        private void radioButtonNoTextured_CheckedChanged(object sender, EventArgs e)
+        {
+            _isTextured = false;
+        }
+
+        private void DrawTrihedralSimple()
+        {
+            //DrawTrihedral ///////////////////////
+            GL.Translate(0.0f, 0.0f, 0.001f);
+
+            float[] l_couleur = new float[4];
+            float l_shin;
+            float l_lenghAxis = 1f;
+            float l_flecheW = 0.1f; float l_flecheH = 0.05f;
+
+            // axe X
+            GL.Color4(1.0f, 0.0f, 0.0f, 1.0f);
+            //l_couleur[0] = 1.0f; l_couleur[1] = 0.0f; l_couleur[2] = 0.0f; l_couleur[3] = 1.0f;
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, @l_couleur);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, @l_couleur);
+            //l_shin = 128;
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, l_shin);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, @l_couleur);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, @l_couleur);
+
+            GL.Begin(BeginMode.LineStrip);
+            GL.Vertex3(0.0f, 0.0f, 0.0001f);
+            GL.Vertex3(l_lenghAxis, 0.0f, 0.0f);
+            GL.End();
+
+            // point axe X
+            GL.Begin(BeginMode.LineStrip);
+            GL.Vertex3(l_lenghAxis - l_flecheW, l_flecheH, 0.0f);
+            GL.Vertex3(l_lenghAxis, 0.0f, 0.0f);
+            GL.Vertex3(l_lenghAxis - l_flecheW, -l_flecheH, 0.0f);
+            GL.End();
+
+            // axe Y
+            //GL.Vertex4(0.0f, 1.0f, 0.0f, 1.0f);
+            //l_couleur[0] = 0.0f; l_couleur[1] = 1.0f; l_couleur[2] = 0.0f; l_couleur[3] = 1.0f;
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, @l_couleur);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, @l_couleur);
+            //l_shin = 128;
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, l_shin);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, @l_couleur);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, @l_couleur);
+            GL.Color3(0.0f, 1.0f, 0.0f);
+
+            GL.Begin(BeginMode.LineStrip);
+            GL.Vertex3(0.0f, 0.0f, 0.0f);
+            GL.Vertex3(0.0f, l_lenghAxis, 0.0001f);
+            GL.End();
+            // pointe axe Y
+            GL.Begin(BeginMode.LineStrip);
+            GL.Vertex3(0.0f - l_flecheH, l_lenghAxis - l_flecheW, 0.0f);
+            GL.Vertex3(0.0f, l_lenghAxis, 0.0f);
+            GL.Vertex3(0.0f + l_flecheH, l_lenghAxis - l_flecheW, 0.0f);
+            GL.End();
+
+            // axe Z
+            //GL.Color4(0.0f, 0.0f, 1.0f, 1.0f);
+            //l_couleur[0] = 0.0f; l_couleur[1] = 0.0f; l_couleur[2] = 1.0f; l_couleur[3] = 1.0f;
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, @l_couleur);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, @l_couleur);
+            //l_shin = 128;
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, l_shin);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, @l_couleur);
+            //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, @l_couleur);
+            GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Begin(BeginMode.LineStrip);
+            GL.Vertex3(0.0f, 0.0f, 0.0f);
+            GL.Vertex3(0.0f, 0.0f, l_lenghAxis);
+            GL.End();
+            // pointe axe Z
+            GL.Begin(BeginMode.LineStrip);
+            GL.Vertex3(l_flecheH, 0.0f, l_lenghAxis - l_flecheW);
+            GL.Vertex3(0.0f, 0.0f, l_lenghAxis);
+            GL.Vertex3(-l_flecheH, 0.0f, l_lenghAxis - l_flecheW);
+            GL.End();
+
+
+
+            GL.Translate(0.0f, 0.0f, -0.001f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
         }
 
 
-        private void DrawScene()
+        private void DrawScene(bool textured)
         {
             #region ModelView
 
@@ -278,9 +411,14 @@ namespace SensorApp
             GL.LoadMatrix(ref lookat);
 
             #endregion
-            DrawTrihedral();
 
-            _listShapes[0].Draw();
+
+            DrawTrihedralSimple();
+        
+
+            _listShapes[0].Draw(textured);
+
+            
 
         }
 

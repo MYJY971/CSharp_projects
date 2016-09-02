@@ -30,7 +30,7 @@ namespace Sensor
 
         double[] _modelViewMatrix;
 
-        Vector3 _eye = new Vector3(0.0f, -15.0f, 4.0f);
+        Vector3 _eye = new Vector3(15.0f, 0.0f, 4.0f);
         Vector3 _target = Vector3.Zero;
         Vector3 _up = Vector3.UnitZ;
 
@@ -63,7 +63,7 @@ namespace Sensor
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            _compassON = true;
+            _compassON = false;
 
             panel1.Visible = false;
             panel2.Visible = false;
@@ -109,7 +109,7 @@ namespace Sensor
             }
             else
             {
-                MessageBox.Show("Aucun capteur d'orientation détécté");
+                MessageBox.Show("Aucune boussole détécté");
             }
             
 
